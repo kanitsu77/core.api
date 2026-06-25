@@ -1,4 +1,4 @@
-const BASE_URL = "https://core-api-eta.vercel.app/";
+const BASE_URL = "https://core-api-eta.vercel.app";
 
 let dat = {};
 let activeApi = null, activeFilter = "ALL", keyShown = false, statsFilter = "today", chatOpen = false;
@@ -344,4 +344,157 @@ function renderBars(data){
   data.forEach(ep=>{
     const pct=Math.round(ep.hits/max*100);
     const div=document.createElement("div"); div.className="bar-item";
-    di
+    div.innerHTML=`<div class="bar-meta"><span class="bar-name">${ep.name}</span><div class="bar-stats"><span class="bar-num">${fmtNum(ep.hits)}</span><span class="bar-pct">${pct}%</span></div></div><div class="bar-track"><div class="bar-fill" data-w="${pct}" style="background:${ep.color}"></div></div>`;
+    el.appendChild(div);
+  });
+  setTimeout(()=>el.querySelectorAll(".bar-fill").forEach(b=>b.style.width=b.dataset.w+"%"),80);
+}
+
+function renderRing(data){
+  const svg=document.getElementById("ringSvg"); svg.innerHTML="";
+  const legend=document.getElementById("ringLegend"); legend.innerHTML="";
+  const cx=55,cy=55,r=40,stroke=12,circ=2*Math.PI*r; let offset=0;
+  const bg=document.createElementNS("http://www.w3.org/2000/svg","circle");
+  bg.setAttribute("cx",cx);bg.setAttribute("cy",cy);bg.setAttribute("r",r);bg.setAttribute("fill","none");bg.setAttribute("stroke","rgba(255,255,255,.05)");bg.setAttribute("stroke-width",stroke);
+  svg.appendChild(bg);
+  data.forEach(cat=>{
+    const len=(cat.val/100)*circ;
+    const circle=document.createElementNS("http://www.w3.org/2000/svg","circle");
+    circle.setAttribute("cx",cx);circle.setAttribute("cy",cy);circle.setAttribute("r",r);circle.setAttribute("fill","none");circle.setAttribute("stroke",cat.color);circle.setAttribute("stroke-width",stroke);circle.setAttribute("stroke-dasharray",`${len} ${circ-len}`);circle.setAttribute("stroke-dashoffset",-offset);circle.setAttribute("stroke-linecap","round");circle.style.transform="rotate(-90deg)";circle.style.transformOrigin="55px 55px";
+    svg.appendChild(circle); offset+=len;
+    const li=document.createElement("div"); li.className="ring-item";
+    li.innerHTML=`<div class="ring-dot" style="background:${cat.color}"></div><div class="ring-lname">${cat.name}</div><div class="ring-lval">${cat.val}%</div>`;
+    legend.appendChild(li);
+  });
+}
+
+function renderRespTime(data){
+  const el=document.getElementById("respList"); el.innerHTML="";
+  const max=Math.max(...data.map(d=>d.ms));
+  data.forEach(d=>{
+    const cls=d.ms<200?"fast":d.ms<500?"mid":"slow";
+    const pct=Math.round(d.ms/max*100);
+    const row=document.createElement("div"); row.className="resp-row";
+    row.innerHTML=`<span class="resp-name">${d.name}</span><div class="resp-right"><div class="resp-bar"><div class="resp-fill" data-w="${pct}" style="background:${cls==="fast"?"var(--green)":cls==="mid"?"var(--amber)":"var(--red)"}"></div></div><span class="resp-ms ${cls}">${d.ms}ms</span></div>`;
+    el.appendChild(row);
+  });
+  setTimeout(()=>el.querySelectorAll(".resp-fill").forEach(b=>b.style.width=b.dataset.w+"%"),80);
+}
+
+function renderStatusTable(data){
+  const tb=document.getElementById("statusTable"); tb.innerHTML="";
+  data.forEach(ep=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><span class="sdot2 ${ep.status?"on":"off"}"></span>${ep.name}</td><td><span class="cat-pill">${ep.cat}</span></td><td class="hit-num">${fmtNum(ep.hits)}</td><td style="font-family:var(--mono);font-size:.72rem;color:${ep.status?"var(--green)":"var(--red)"}">${ep.status?"Active":"Down"}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function renderUptime(){
+  const el=document.getElementById("uptimeBars"); el.innerHTML="";
+  let downDays=0; const vals=[];
+  for(let i=0;i<60;i++){
+    const up=Math.random()>0.03; if(!up)downDays++;
+    vals.push({up,h:up?Math.round(20+Math.random()*30):Math.round(4+Math.random()*10),day:i+1});
+  }
+  document.getElementById("uptimePct").textContent=(((60-downDays)/60)*100).toFixed(1)+"% uptime";
+  vals.forEach((v,i)=>{
+    const bar=document.createElement("div"); bar.className="ubar";
+    bar.style.cssText=`height:${v.h}px;background:${v.up?"var(--green)":"var(--red)"};opacity:${v.up?.7:.9}`;
+    bar.innerHTML=`<div class="ubar-tip">${v.up?"✓ Online":"✗ Down"} · Hari ke-${i+1}</div>`;
+    el.appendChild(bar);
+  });
+}
+
+function setStatsFilter(f,btn){
+  document.querySelectorAll(".fbtn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active"); renderStats(f);
+}
+
+function doRefresh(){
+  const btn=document.getElementById("refreshBtn"); btn.classList.add("spin");
+  setTimeout(()=>{ renderStats(statsFilter); btn.classList.remove("spin"); },600);
+}
+
+// ── LIVE CHAT ──
+// ── TYPEWRITER ──
+const twLines = [
+  "GET core.api.vercel.app/download/tiktok?url=",
+  "GET core.api.vercel.app/search/pinterest?query=",
+  "GET core.api.vercel.app/ai/chat?prompt=",
+  "GET core.api.vercel.app/stalk/github?username=",
+  "GET core.api.vercel.app/random/waifu",
+  "GET core.api.vercel.app/tools/qrcode?text=",
+  "GET core.api.vercel.app/image/removebg?image=",
+  "GET core.api.vercel.app/text/translate?text=&to=",
+];
+let twIdx=0, twPos=0, twDeleting=false;
+function typeTick(){
+  const el=document.getElementById("twText");
+  if(!el) return;
+  const current=twLines[twIdx];
+  if(!twDeleting){
+    twPos++;
+    el.textContent=current.slice(0,twPos);
+    if(twPos===current.length){ setTimeout(()=>{ twDeleting=true; typeTick(); },1800); return; }
+    setTimeout(typeTick, 38);
+  } else {
+    twPos--;
+    el.textContent=current.slice(0,twPos);
+    if(twPos===0){ twDeleting=false; twIdx=(twIdx+1)%twLines.length; setTimeout(typeTick,400); return; }
+    setTimeout(typeTick,18);
+  }
+}
+setTimeout(typeTick, 900);
+
+// ── GEMINI CHAT ──
+const GEMINI_KEY = "";
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+const SYSTEM_PROMPT = `Kamu adalah support bot untuk core.api — sebuah REST API documentation platform. Jawab pertanyaan user seputar cara pakai API, endpoint, params, dan fitur platform. Jawab singkat, pakai bahasa Indonesia informal. Base URL: https://core.api.vercel.app`;
+let chatHistory = [];
+
+function toggleChat(){
+  chatOpen = !chatOpen;
+  document.getElementById("chatWindow").classList.toggle("open",chatOpen);
+  if(chatOpen) document.getElementById("chatInput").focus();
+}
+
+async function sendChat(){
+  const input = document.getElementById("chatInput");
+  const msg = input.value.trim(); if(!msg) return;
+  appendMsg("user",msg); input.value="";
+  chatHistory.push({role:"user",parts:[{text:msg}]});
+  const typing=document.getElementById("chatTyping");
+  typing.style.display="flex"; scrollChat();
+  try {
+    const body = {
+      system_instruction:{parts:[{text:SYSTEM_PROMPT}]},
+      contents: chatHistory
+    };
+    const res = await fetch(GEMINI_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    const json = await res.json();
+    const reply = json?.candidates?.[0]?.content?.parts?.[0]?.text || "Maaf, gw ga bisa jawab sekarang.";
+    chatHistory.push({role:"model",parts:[{text:reply}]});
+    typing.style.display="none";
+    appendMsg("bot", reply);
+  } catch(e) {
+    typing.style.display="none";
+    appendMsg("bot","Error koneksi ke AI. Pastiin API key Gemini sudah diisi.");
+  }
+  scrollChat();
+}
+
+function appendMsg(role,text){
+  const msgs=document.getElementById("chatMsgs");
+  const div=document.createElement("div"); div.className=`msg ${role}`;
+  div.innerHTML=`<div class="msg-bubble">${text}</div><div class="msg-time">${nowTime()}</div>`;
+  msgs.insertBefore(div,document.getElementById("chatTyping"));
+}
+
+function scrollChat(){ const m=document.getElementById("chatMsgs"); setTimeout(()=>m.scrollTo({top:m.scrollHeight,behavior:"smooth"}),50); }
+
+document.getElementById("chatInput").addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); sendChat(); } });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeModal(); closeSidebar(); } });
+
+renderUptime();
+loadData();
