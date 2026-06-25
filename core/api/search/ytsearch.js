@@ -10,12 +10,12 @@ module.exports = async (req, res) => {
     return res.status(400).json({
       status: false,
       creator: "Nixx",
-      message: "Parameter 'q' diperlukan"
+      message: "Parameter 'query' diperlukan"
     });
   }
 
   try {
-    const { videos } = await yts(q);
+    const { videos } = await yts(query);
 
     if (!videos.length) {
       return res.status(404).json({
@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
       link: v.url,
       thumbnail: v.thumbnail,
       duration: v.timestamp,
-      channel: v.author.name,
+      channel: v.author?.name || "Unknown",
       views: v.views
     }));
 
