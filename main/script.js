@@ -247,17 +247,57 @@ function updatePreview(){
 }
 
 function clearResult(){
+  lastResultRaw = "";
+  document.getElementById("resultLoading").classList.remove("show");
   document.getElementById("resultWrap").classList.remove("show");
   document.getElementById("resultContent").innerHTML="";
 }
 
+function copyUrl(btn){
+  const url = buildUrlRaw(activeApi);
+  navigator.clipboard.writeText(url).then(()=>{
+    const svg = btn.querySelector("svg");
+    btn.style.color="var(--green)"; btn.style.borderColor="rgba(74,222,128,.4)";
+    setTimeout(()=>{ btn.style.color=""; btn.style.borderColor=""; },1400);
+  });
+}
+
+let lastResultRaw = "";
+
+function copyResult(){
+  if(!lastResultRaw) return;
+  const btn = document.getElementById("copyResultBtn");
+  const lbl = document.getElementById("copyResultLabel");
+  navigator.clipboard.writeText(lastResultRaw).then(()=>{
+    lbl.textContent="Copied!";
+    btn.style.color="var(--green)"; btn.style.borderColor="rgba(74,222,128,.4)";
+    setTimeout(()=>{ lbl.textContent="Copy"; btn.style.color=""; btn.style.borderColor=""; },1400);
+  });
+}
+
 async function runApi(){
   if(!activeApi) return;
+
+  const keys = Object.keys(activeApi.params||{});
+  let hasError = false;
+  keys.forEach(k=>{
+    const inp = document.getElementById("inp_"+k);
+    if(inp && !inp.value.trim()){
+      inp.classList.add("error");
+      inp.addEventListener("input",()=>inp.classList.remove("error"),{once:true});
+      hasError = true;
+    }
+  });
+  if(hasError) return;
+
   const btn=document.getElementById("runBtn");
   const spinner=document.getElementById("runSpinner");
   const label=document.getElementById("runLabel");
+  const loading=document.getElementById("resultLoading");
   btn.disabled=true; spinner.style.display="block"; label.textContent="Loading...";
   clearResult();
+  document.getElementById("resultWrap").classList.add("show");
+  loading.classList.add("show");
 
   const url = buildUrlRaw(activeApi);
   const type = activeApi.type;
@@ -269,6 +309,8 @@ async function runApi(){
   try {
     const res = await fetch(url);
     const json = await res.json();
+    loading.classList.remove("show");
+    lastResultRaw = JSON.stringify(json, null, 2);
 
     if(type==="image"){
       const imgUrl = json?.result||json?.url||json?.data?.url||"";
@@ -301,13 +343,14 @@ async function runApi(){
       appendJson(content,json);
     }
   } catch(e) {
+    loading.classList.remove("show");
     const box=document.createElement("div"); box.className="json-box err";
     box.textContent=`Error: ${e.message}\n\nPastikan endpoint sudah aktif di Vercel.`;
     content.appendChild(box);
   }
-
   wrap.classList.add("show");
-  btn.disabled=false; spinner.style.display="none"; label.textContent="▶  Run Request";
+  btn.disabled=false; spinner.style.display="none";
+  label.innerHTML=`<svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-right:5px"><polygon points="5 3 19 12 5 21 5 3"/></svg>Run Request`;
   setTimeout(()=>document.querySelector(".modal-inner").scrollTo({top:99999,behavior:"smooth"}),80);
 }
 
@@ -446,3 +489,4 @@ document.getElementById("chatInput").addEventListener("keydown",e=>{
 });
 
 loadData();
+                                      
