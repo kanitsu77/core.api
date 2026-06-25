@@ -37,7 +37,7 @@
   },
   "Facebook Download": {
    "status": true,
-    "path": "/api/download/facebook",
+    "path": "api/download/facebook",
     "type": "json",
     "endpoint": "/api/download/facebook",
     "method": "GET",
