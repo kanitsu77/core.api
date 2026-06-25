@@ -1,43 +1,32 @@
-const db = require("../../../database.json");
+const yts = require("yt-search");
 
-module.exports = (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Content-Type", "application/json");
+module.exports = async (req, res) => {
+  const { q } = req.query;
+  if (!q) return res.status(400).json({ status: false, message: "Query required" });
 
-  const { kategory } = req.query;
+  try {
+    const { videos } = await yts(q);
+    const results = videos.slice(0, 10).map(v => ({
+      title: v.title,
+      link: v.url,
+      thumbnail: v.thumbnail,
+      duration: v.timestamp,
+      channel: v.author.name,
+      views: v.views
+    }));
 
-  if (!kategory) {
-    const summary = {};
-    for (const [cat, apis] of Object.entries(db)) {
-      summary[cat] = {
-        total: Object.keys(apis).length,
-        active: Object.values(apis).filter((a) => a.status).length,
-        apis: Object.keys(apis),
-      };
-    }
-    return res.json({
-      status: true,
-      creator: "core.api",
-      message: "API kategory list",
-      data: summary,
+    res.json({ 
+      status: true, 
+      creator: "Nixx"
+      total: results.length, 
+      results 
+    });
+
+  } catch (e) {
+    res.status(500).json({ 
+      status: false, 
+      creator: "Nixx"
+      message: e.message 
     });
   }
-
-  const key = kategory.toUpperCase();
-  if (!db[key]) {
-    return res.status(404).json({
-      status: false,
-      creator: "Nixx",
-      message: `Kategory '${kategory}' tidak ditemukan`,
-      available: Object.keys(db),
-    });
-  }
-
-  return res.json({
-    status: true,
-    creator: "Nixx",
-    kategory: key,
-    total: Object.keys(db[key]).length,
-    data: db[key],
-  });
 };
