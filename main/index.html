@@ -13,33 +13,43 @@
 <div class="stars" id="stars"></div>
 <div class="sidebar-backdrop" id="sbBackdrop" onclick="closeSidebar()"></div>
 
-<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
   <div class="sb-head">
-    <div class="sb-logo"><span class="sb-logo-icon">⬡</span>core<span style="color:var(--accent)">.</span>api</div>
-    <button class="sb-close" onclick="closeSidebar()">✕</button>
+    <div class="sb-logo">
+      <svg class="sb-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/></svg>
+      core<span style="color:var(--accent)">.</span>api
+    </div>
+    <button class="sb-close" onclick="closeSidebar()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
   </div>
   <nav class="sb-nav">
     <div class="sb-item active" onclick="showPage('home')" id="nav-home">
-      <span class="sb-item-icon">⬡</span><span class="sb-item-label">Endpoints</span>
+      <svg class="sb-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/></svg>
+      <span class="sb-item-label">Endpoints</span>
     </div>
     <div class="sb-divider"></div>
     <div class="sb-item" onclick="showPage('stats')" id="nav-stats">
-      <span class="sb-item-icon">◈</span><span class="sb-item-label">Statistics</span>
+      <svg class="sb-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span class="sb-item-label">Statistics</span>
     </div>
     <div class="sb-item" onclick="showPage('profile')" id="nav-profile">
-      <span class="sb-item-icon">◎</span><span class="sb-item-label">Profile</span>
+      <svg class="sb-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="sb-item-label">Profile</span>
     </div>
     <div class="sb-item" onclick="showPage('apikey')" id="nav-apikey">
-      <span class="sb-item-icon">◇</span><span class="sb-item-label">API Key</span>
+      <svg class="sb-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+      <span class="sb-item-label">API Key</span>
       <span class="sb-item-badge">Free</span>
     </div>
     <div class="sb-divider"></div>
     <div class="sb-item" onclick="showPage('changelog')" id="nav-changelog">
-      <span class="sb-item-icon">◉</span><span class="sb-item-label">Changelog</span>
+      <svg class="sb-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <span class="sb-item-label">Changelog</span>
     </div>
-    <div class="sb-item" onclick="window.open('https://github.com','_blank')">
-      <span class="sb-item-icon">⊕</span><span class="sb-item-label">GitHub</span>
+    <div class="sb-item" onclick="window.open('https://github.com/kanitsu77/core.api','_blank')">
+      <svg class="sb-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+      <span class="sb-item-label">GitHub</span>
     </div>
   </nav>
   <div class="sb-footer">
@@ -47,13 +57,15 @@
   </div>
 </aside>
 
-<!-- NAVBAR -->
 <nav class="navbar">
   <div class="nav-left">
     <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()">
       <span></span><span></span><span></span>
     </button>
-    <div class="nav-brand"><span style="color:var(--accent)">⬡</span> core<span class="nav-dot">.</span>api</div>
+    <div class="nav-brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--accent)"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/></svg>
+      core<span class="nav-dot">.</span>api
+    </div>
   </div>
   <div class="nav-pills">
     <span class="pill" id="pTotal">— APIs</span>
@@ -61,7 +73,6 @@
   </div>
 </nav>
 
-<!-- HOME PAGE -->
 <div id="page-home" class="page active">
   <header class="hero">
     <div class="hero-glow"></div>
@@ -70,7 +81,7 @@
     <p class="hero-sub">Kumpulan API siap pakai. Downloader, AI, Tools, Search — semua dalam satu endpoint.</p>
     <div class="hero-ep">
       <span class="ep-m">GET</span>
-      <span class="ep-u">https://core.api.vercel.app/kategory/file</span>
+      <span class="ep-u">https://core-api-eta.vercel.app/api/kategori/file</span>
       <button class="copy-btn" onclick="copyEp(this)">copy</button>
     </div>
     <div class="typewriter-wrap">
@@ -86,7 +97,6 @@
   </main>
 </div>
 
-<!-- STATS PAGE -->
 <div id="page-stats" class="page">
   <div class="container" style="padding-top:32px">
     <div class="stats-header-row">
@@ -101,67 +111,59 @@
           <button class="fbtn" onclick="setStatsFilter('30d',this)">30 Days</button>
         </div>
         <button class="refresh-btn" id="refreshBtn" onclick="doRefresh()">
-          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
           Refresh
         </button>
       </div>
     </div>
-
     <div class="stat-row">
       <div class="scard" style="--sd:.08s;--gc:rgba(124,106,247,.1);--nc:var(--accent2)">
         <div class="scard-glow"></div>
         <div class="scard-label">Total Requests</div>
-        <div class="scard-num" id="sc-req">0</div>
-        <div class="scard-sub"><span class="trend up">↑ 12.4%</span> dari kemarin</div>
+        <div class="scard-num" id="sc-req">—</div>
+        <div class="scard-sub"><span class="trend up">live</span> data real</div>
       </div>
       <div class="scard" style="--sd:.14s;--gc:rgba(74,222,128,.08);--nc:var(--green)">
         <div class="scard-glow"></div>
         <div class="scard-label">Uptime</div>
-        <div class="scard-num" id="sc-up">0%</div>
-        <div class="scard-sub"><span class="trend up">↑ stable</span> 30 hari terakhir</div>
+        <div class="scard-num" id="sc-up">—</div>
+        <div class="scard-sub"><span class="trend up">stable</span> 30 hari terakhir</div>
       </div>
       <div class="scard" style="--sd:.2s;--gc:rgba(251,191,36,.07);--nc:var(--amber)">
         <div class="scard-glow"></div>
         <div class="scard-label">Avg Response</div>
-        <div class="scard-num" id="sc-ms">0ms</div>
-        <div class="scard-sub"><span class="trend up">↓ 8ms</span> lebih cepat</div>
+        <div class="scard-num" id="sc-ms">—</div>
+        <div class="scard-sub"><span class="trend up">measured</span> per request</div>
       </div>
       <div class="scard" style="--sd:.26s;--gc:rgba(96,165,250,.07);--nc:var(--blue)">
         <div class="scard-glow"></div>
         <div class="scard-label">Active Endpoints</div>
         <div class="scard-num" id="sc-ep">0</div>
-        <div class="scard-sub"><span class="trend up">↑ 3</span> baru bulan ini</div>
+        <div class="scard-sub"><span class="trend up">dari</span> database.json</div>
       </div>
     </div>
-
     <div class="mid-row">
       <div class="chart-box">
-        <div class="slabel">Top Endpoints</div>
+        <div class="slabel">Per Kategori</div>
         <div class="bar-list" id="barList"></div>
       </div>
       <div class="ring-box">
-        <div class="slabel">Per Kategori</div>
+        <div class="slabel">Distribusi</div>
         <div class="ring-wrap">
           <svg width="110" height="110" viewBox="0 0 110 110" id="ringSvg"></svg>
           <div class="ring-legend" id="ringLegend"></div>
         </div>
       </div>
     </div>
-
     <div class="bot-row">
-      <div class="resp-box">
-        <div class="slabel">Response Time</div>
-        <div class="resp-list" id="respList"></div>
-      </div>
-      <div class="status-box">
+      <div class="status-box" style="grid-column:1/-1">
         <div class="slabel">Endpoint Status</div>
         <table class="stable">
-          <thead><tr><th>Endpoint</th><th>Kategori</th><th>Hits</th><th>Status</th></tr></thead>
+          <thead><tr><th>Endpoint</th><th>Kategori</th><th>Type</th><th>Status</th></tr></thead>
           <tbody id="statusTable"></tbody>
         </table>
       </div>
     </div>
-
     <div class="uptime-box">
       <div class="slabel">Uptime History — 60 Hari</div>
       <div class="uptime-bars" id="uptimeBars"></div>
@@ -174,13 +176,14 @@
   </div>
 </div>
 
-<!-- PROFILE PAGE -->
 <div id="page-profile" class="page">
   <div class="container" style="padding-top:32px">
     <div class="page-title">Profile</div>
     <div class="page-sub">Informasi akun kamu</div>
     <div class="profile-card">
-      <div class="avatar">👤</div>
+      <div class="avatar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:22px;height:22px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
       <div>
         <div class="profile-info-name">Developer</div>
         <div class="profile-info-role">core.api user</div>
@@ -195,12 +198,14 @@
   </div>
 </div>
 
-<!-- API KEY PAGE -->
 <div id="page-apikey" class="page">
   <div class="container" style="padding-top:32px">
     <div class="page-title">API Key</div>
     <div class="page-sub">Kelola API key kamu</div>
-    <div class="plan-badge">● Free Plan — 100 req/day</div>
+    <div class="plan-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><circle cx="12" cy="12" r="10"/></svg>
+      Free Plan — 100 req/day
+    </div>
     <div class="apikey-box">
       <div class="apikey-label">Your API Key</div>
       <div class="apikey-val">
@@ -218,14 +223,13 @@
     <div class="apikey-box">
       <div class="apikey-label">Cara Pakai</div>
       <div style="font-family:var(--mono);font-size:.72rem;color:var(--muted);line-height:2">
-        GET /kategory/file?params=value&apikey=YOUR_KEY<br>
+        GET /kategori/file?params=value&apikey=YOUR_KEY<br>
         Header: Authorization: Bearer YOUR_KEY
       </div>
     </div>
   </div>
 </div>
 
-<!-- CHANGELOG PAGE -->
 <div id="page-changelog" class="page">
   <div class="container" style="padding-top:32px">
     <div class="page-title">Changelog</div>
@@ -249,7 +253,6 @@
   </div>
 </div>
 
-<!-- MODAL -->
 <div class="overlay" id="overlay" onclick="closeModal()">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="mhead">
@@ -257,7 +260,9 @@
         <div class="meyebrow" id="mCat"></div>
         <div class="mtitle" id="mTitle"></div>
       </div>
-      <button class="mclose" onclick="closeModal()">✕</button>
+      <button class="mclose" onclick="closeModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <div class="modal-inner">
       <div class="mbody">
@@ -273,13 +278,28 @@
         <div id="mInputs"></div>
         <div class="ep-preview">
           <div class="ep-line">GET <span id="epPreview"></span></div>
+          <button class="copy-url-btn" id="copyUrlBtn" onclick="copyUrl(this)" title="Copy URL">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
         </div>
         <button class="run-btn" id="runBtn" onclick="runApi()">
           <div class="run-spinner" id="runSpinner"></div>
-          <span id="runLabel">▶  Run Request</span>
+          <span id="runLabel">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-right:5px"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Run Request
+          </span>
         </button>
         <div class="result-wrap" id="resultWrap">
-          <div class="result-label">Output — <span class="tbadge" id="rTypeLabel"></span></div>
+          <div class="result-label">
+            Output — <span class="tbadge" id="rTypeLabel"></span>
+            <button class="result-action-btn" id="copyResultBtn" onclick="copyResult()" title="Copy result">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              <span id="copyResultLabel">Copy</span>
+            </button>
+          </div>
+          <div class="result-loading" id="resultLoading">
+            <span></span><span></span><span></span>
+          </div>
           <div id="resultContent"></div>
         </div>
       </div>
@@ -287,19 +307,22 @@
   </div>
 </div>
 
-<!-- LIVE CHAT -->
 <div class="chat-window" id="chatWindow">
   <div class="chat-head">
-    <div class="chat-avatar">⬡</div>
+    <div class="chat-avatar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/></svg>
+    </div>
     <div class="chat-info">
       <div class="chat-name">core.api Support</div>
       <div class="chat-status">Online</div>
     </div>
-    <button class="chat-close" onclick="toggleChat()">✕</button>
+    <button class="chat-close" onclick="toggleChat()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
   </div>
   <div class="chat-msgs" id="chatMsgs">
     <div class="msg bot">
-      <div class="msg-bubble">Halo! 👋 Ada yang bisa gw bantu soal core.api?</div>
+      <div class="msg-bubble">Ada yang bisa gw bantu soal core.api?</div>
       <div class="msg-time">Sekarang</div>
     </div>
     <div class="chat-typing" id="chatTyping">
@@ -307,7 +330,7 @@
     </div>
   </div>
   <div class="chat-input-row">
-    <input class="chat-input" id="chatInput" placeholder="Ketik pesan..." />
+    <input class="chat-input" id="chatInput" placeholder="Ketik pesan..."/>
     <button class="chat-send" onclick="sendChat()">
       <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     </button>
@@ -315,7 +338,7 @@
 </div>
 
 <button class="chat-fab" onclick="toggleChat()" title="Live Chat">
-  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
   <div class="chat-badge"></div>
 </button>
 
@@ -325,4 +348,5 @@
 
 <script src="script.js"></script>
 </body>
-</html>
+  </html>
+                              
