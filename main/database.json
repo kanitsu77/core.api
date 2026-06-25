@@ -18,7 +18,7 @@
    "type": "json",
    "endpoint": "/api/ai/gpt",
    "method": "GET",
-    "params": {
+   "params": {
       "text": "Beri pertanyaan",
       "sessionId": "Masukan sessionId"
     }  
@@ -29,10 +29,20 @@
     "status": true,
     "path": "api/download/mediafire",
     "type": "json",
-    "endpoint": "/api/information/mediafire",
+    "endpoint": "/api/download/mediafire",
     "method": "GET",
     "params": {
       "url": "Masukan url mediafire"
+    }
+  },
+  "Facebook Download": {
+   "status": true,
+    "path": "/api/download/facebook",
+    "type": "json",
+    "endpoint": "/api/download/facebook",
+    "method": "GET",
+    "params": {
+      "url": "Masukan URL Facebook"
     }
   }
 }
