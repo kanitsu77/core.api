@@ -4,9 +4,9 @@ module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Content-Type", "application/json");
 
-  const { q } = req.query;
+  const { query } = req.query;
 
-  if (!q) {
+  if (!query) {
     return res.status(400).json({
       status: false,
       creator: "Nixx",
