@@ -11,7 +11,7 @@
     }  
    }
  },
- "AK": {
+ "AI": {
    "Chat GPT": {
    "status": true,
    "path": "api/ai/gpt",
