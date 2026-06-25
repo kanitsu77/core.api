@@ -1,12 +1,14 @@
 {
- "INFORMATION": {
-   "Totalfitur": {
+ "SEARCH": {
+   "YouTube Search": {
    "status": true,
-   "path": "api/information/totalfitur",
+   "path": "api/search/ytsearch",
    "type": "json",
-   "endpoint": "/api/information/totalfitur",
+   "endpoint": "/api/search/ytsearch",
    "method": "GET",
-    "params": {}  
+    "params": {
+      "url": "Masukan query"
+    }  
    }
  },
 "DOWNLOAD": {
