@@ -1,4 +1,4 @@
-const db = require("../../database.json");
+const db = require("../../../database.json");
 
 module.exports = (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -27,7 +27,7 @@ module.exports = (req, res) => {
   if (!db[key]) {
     return res.status(404).json({
       status: false,
-      creator: "core.api",
+      creator: "Nixx",
       message: `Kategory '${kategory}' tidak ditemukan`,
       available: Object.keys(db),
     });
@@ -35,7 +35,7 @@ module.exports = (req, res) => {
 
   return res.json({
     status: true,
-    creator: "core.api",
+    creator: "Nixx",
     kategory: key,
     total: Object.keys(db[key]).length,
     data: db[key],
