@@ -11,6 +11,19 @@
     }  
    }
  },
+ "AK": {
+   "Chat GPT": {
+   "status": true,
+   "path": "api/ai/gpt",
+   "type": "json",
+   "endpoint": "/api/ai/gpt",
+   "method": "GET",
+    "params": {
+      "text": "Beri pertanyaan",
+      "sessionId": "Masukan sessionId"
+    }  
+   }
+ },
 "DOWNLOAD": {
   "MediaFire Download": {
     "status": true,
