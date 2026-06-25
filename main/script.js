@@ -437,21 +437,30 @@ async function sendChat(){
   scrollChat();
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method:"POST",
-      headers:{"Content-Type":"application/json"},
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":`Bearer ${process.env.apikey}`
+      },
       body:JSON.stringify({
-        model:"claude-sonnet-4-6",
+        model:"llama-3.3-70b-versatile",
         max_tokens:1000,
-        system:`Kamu adalah support assistant untuk core.api — sebuah REST API documentation platform. Jawab pertanyaan tentang endpoint, cara pakai, error, dll. Singkat dan jelas. Pakai bahasa Indonesia casual.
+        temperature:0.7,
+        messages:[
+          {
+            role:"system",
+            content:`Kamu adalah support assistant untuk core.api — sebuah REST API documentation platform. Jawab pertanyaan tentang endpoint, cara pakai, error, dll. Singkat dan jelas. Pakai bahasa Indonesia casual.
 
 Data endpoint yang tersedia:
-${JSON.stringify(dat, null, 2)}`,
-        messages: chatHistory
+${JSON.stringify(dat, null, 2)}`
+          },
+          ...chatHistory
+        ]
       })
     });
     const data = await res.json();
-    const reply = data.content?.find(c=>c.type==="text")?.text || "Maaf, ga bisa jawab sekarang.";
+    const reply = data.choices?.[0]?.message?.content || "Maaf, ga bisa jawab sekarang.";
     chatHistory.push({role:"assistant", content:reply});
     typing.style.display="none";
     appendMsg("bot", reply);
@@ -459,7 +468,7 @@ ${JSON.stringify(dat, null, 2)}`,
     typing.style.display="none";
     appendMsg("bot","Maaf, koneksi ke AI bermasalah. Coba lagi ya.");
   }
-}
+    }
 
 function appendMsg(role, text){
   const wrap = document.getElementById("chatMsgs");
