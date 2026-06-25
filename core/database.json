@@ -1,0 +1,101 @@
+{
+  "DOWNLOAD": {
+    "Tiktok Download": {
+      "status": true,
+      "description": "Download video tiktok no wm",
+      "type": "json",
+      "endpoint": "/api/kategory/downloader",
+      "method": "GET",
+      "params": {
+        "url": "Masukan url tiktok"
+      }
+    },
+    "YouTube Download": {
+      "status": true,
+      "description": "Download video YouTube best quality",
+      "type": "json",
+      "endpoint": "/api/kategory/downloader",
+      "method": "GET",
+      "params": {
+        "url": "Masukan url YouTube"
+      }
+    },
+    "Instagram Download": {
+      "status": false,
+      "description": "Download foto & video Instagram",
+      "type": "json",
+      "endpoint": "/api/kategory/downloader",
+      "method": "GET",
+      "params": {
+        "url": "Masukan url Instagram"
+      }
+    }
+  },
+  "TOOLS": {
+    "Remove Background": {
+      "status": true,
+      "description": "Hapus background gambar secara otomatis",
+      "type": "image",
+      "endpoint": "/api/kategory/tools",
+      "method": "GET",
+      "params": {
+        "url": "Masukan url gambar"
+      }
+    },
+    "Text to QR": {
+      "status": true,
+      "description": "Generate QR Code dari text atau URL",
+      "type": "image",
+      "endpoint": "/api/kategory/tools",
+      "method": "GET",
+      "params": {
+        "text": "Masukan text atau URL"
+      }
+    }
+  },
+  "AI": {
+    "GPT-4o": {
+      "status": true,
+      "description": "Chat dengan GPT-4o AI",
+      "type": "json",
+      "endpoint": "/api/kategory/ai",
+      "method": "GET",
+      "params": {
+        "text": "Masukan pertanyaan"
+      }
+    },
+    "Gemini": {
+      "status": true,
+      "description": "Chat dengan Google Gemini AI",
+      "type": "json",
+      "endpoint": "/api/kategory/ai",
+      "method": "GET",
+      "params": {
+        "text": "Masukan pertanyaan"
+      }
+    }
+  },
+  "SEARCH": {
+    "Pinterest": {
+      "status": true,
+      "description": "Cari gambar di Pinterest",
+      "type": "json",
+      "endpoint": "/api/kategory/search",
+      "method": "GET",
+      "params": {
+        "query": "Keyword pencarian",
+        "page": "Halaman (opsional, default 1)"
+      }
+    },
+    "Spotify": {
+      "status": true,
+      "description": "Cari lagu di Spotify",
+      "type": "json",
+      "endpoint": "/api/kategory/search",
+      "method": "GET",
+      "params": {
+        "query": "Nama lagu atau artis"
+      }
+    }
+  }
+}
