@@ -1,6 +1,9 @@
 const yts = require("yt-search");
 
 module.exports = async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Content-Type", "application/json");
+  
   const { q } = req.query;
   if (!q) return res.status(400).json({ status: false, message: "Query required" });
 
