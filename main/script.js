@@ -1,4 +1,4 @@
-const BASE_URL = "https://core-api.vercel.app";
+const BASE_URL = window.location.origin + "/";
 
 let dat = {};
 let activeApi = null, activeFilter = "ALL", keyShown = false, chatOpen = false;
