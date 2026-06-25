@@ -7,7 +7,7 @@
    "endpoint": "/api/search/ytsearch",
    "method": "GET",
     "params": {
-      "url": "Masukan query"
+      "query": "Masukan query"
     }  
    }
  },
