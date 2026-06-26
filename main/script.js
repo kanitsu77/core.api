@@ -32,7 +32,7 @@ function nowTime(){ return new Date().toLocaleTimeString("id-ID",{hour:"2-digit"
 // ── LOAD DATA ──
 async function loadData(){
   try {
-    const res = await fetch("/api/list");
+    const res = await fetch("/database.json");
     const json = await res.json();
     if(json.status && json.data) dat = json.data;
     else throw new Error("bad response");
