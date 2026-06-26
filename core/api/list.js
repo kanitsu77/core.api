@@ -6,11 +6,11 @@ module.exports = async function handler(req, res) {
   res.setHeader("Content-Type", "application/json");
 
   try {
-    const dbPath = path.join(process.cwd(), "core", "database.json");
+    const dbPath = path.join(__dirname, "..", "..", "main", "database.json");
     const raw = fs.readFileSync(dbPath, "utf8");
     const data = JSON.parse(raw);
     return res.json({ status: true, creator: "core.api", data });
   } catch (e) {
-    return res.status(500).json({ status: false, message: "Gagal baca database.json: " + e.message });
+    return res.status(500).json({ status: false, message: "Gagal baca: " + e.message });
   }
 };
