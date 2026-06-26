@@ -424,43 +424,20 @@ typeTick();
 let chatHistory = [];
 
 async function sendChat(){
-  const inp = document.getElementById("chatInput");
-  const msg = inp.value.trim();
-  if(!msg) return;
-  inp.value="";
-
-  appendMsg("user", msg);
+  const input = document.getElementById("chatInput");
+  const msg = input.value.trim(); if(!msg) return;
+  appendMsg("user",msg); input.value="";
   chatHistory.push({role:"user", content:msg});
-
-  const typing = document.getElementById("chatTyping");
-  typing.style.display="flex";
-  scrollChat();
-
+  const typing=document.getElementById("chatTyping");
+  typing.style.display="flex"; scrollChat();
   try {
-    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    const res = await fetch("/api/chat",{
       method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "Authorization":`Bearer ${process.env.apikey}`
-      },
-      body:JSON.stringify({
-        model:"llama-3.3-70b-versatile",
-        max_tokens:1000,
-        temperature:0.7,
-        messages:[
-          {
-            role:"system",
-            content:`Kamu adalah support assistant untuk core.api — sebuah REST API documentation platform. Jawab pertanyaan tentang endpoint, cara pakai, error, dll. Singkat dan jelas. Pakai bahasa Indonesia casual.
-
-Data endpoint yang tersedia:
-${JSON.stringify(dat, null, 2)}`
-          },
-          ...chatHistory
-        ]
-      })
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ messages: chatHistory, dat })
     });
-    const data = await res.json();
-    const reply = data.choices?.[0]?.message?.content || "Maaf, ga bisa jawab sekarang.";
+    const json = await res.json();
+    const reply = json?.result || "Maaf, ga bisa jawab sekarang.";
     chatHistory.push({role:"assistant", content:reply});
     typing.style.display="none";
     appendMsg("bot", reply);
@@ -468,7 +445,8 @@ ${JSON.stringify(dat, null, 2)}`
     typing.style.display="none";
     appendMsg("bot","Maaf, koneksi ke AI bermasalah. Coba lagi ya.");
   }
-    }
+  scrollChat();
+}
 
 function appendMsg(role, text){
   const wrap = document.getElementById("chatMsgs");
