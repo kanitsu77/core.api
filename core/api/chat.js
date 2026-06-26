@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ status: false, message: "Parameter 'messages' wajib diisi" });
   }
 
-  const apiKey = process.env.GROQ_KEY;
+  const apiKey = process.env.apikey;
   if (!apiKey) return res.status(500).json({ status: false, message: "GROQ_KEY belum diset di environment Vercel" });
 
   try {
