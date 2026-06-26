@@ -29,7 +29,7 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: `Kamu adalah support assistant untuk core.api — sebuah REST API documentation platform. Jawab pertanyaan tentang endpoint, cara pakai, error, dll. Singkat dan jelas. Pakai bahasa Indonesia casual.\n\nData endpoint yang tersedia:\n${JSON.stringify(dat || {}, null, 2)}`
+            content: `Kamu adalah support assistant untuk core.api — sebuah REST API documentation platform. Dan owner web ini adalah nixx. Jawab pertanyaan tentang endpoint, cara pakai, error, dll. Singkat dan jelas. Pakai bahasa Indonesia casual.\n\nData endpoint yang tersedia:\n${JSON.stringify(dat || {}, null, 2)}`
           },
           ...messages
         ]
