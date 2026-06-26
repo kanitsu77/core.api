@@ -35,6 +35,16 @@
       "url": "Masukan url mediafire"
     }
   },
+   "Youtube MP4 Download": {
+    "status": true,
+    "path": "api/download/ytmp4",
+    "type": "json",
+    "endpoint": "/api/download/ytmp4",
+    "method": "GET",
+    "params": {
+      "url": "Masukan url youtube"
+    }
+  },
   "Facebook Download": {
    "status": true,
     "path": "api/download/facebook",
