@@ -9,7 +9,17 @@
     "params": {
       "query": "Masukan query"
     }  
-   }
+   },
+  "LK21 Search": {
+   "status": true,
+   "path": "api/search/lk21",
+   "type": "json",
+   "endpoint": "/api/search/lk21",
+   "method": "GET",
+    "params": {
+      "query": "Masukan query"
+    }  
+     }
  },
   "STALK": {
    "Instagram Stalk": {
