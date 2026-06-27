@@ -11,6 +11,18 @@
     }  
    }
  },
+  "STALK": {
+   "Instagram Stalk": {
+   "status": true,
+   "path": "api/stalk/igstalk",
+   "type": "json",
+   "endpoint": "/api/stalk/igstalk",
+   "method": "GET",
+    "params": {
+      "username": "Masukan username"
+    }  
+   }
+ },
  "AI": {
    "Chat GPT": {
    "status": true,
