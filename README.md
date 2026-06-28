@@ -1,107 +1,168 @@
-Nixx API
+# ⬡ core.api
 
-REST API sederhana yang menyediakan berbagai fitur seperti AI, Search, Downloader, Tools, dan lainnya.
+> Kumpulan REST API siap pakai — Downloader, AI, Tools, Search, dan masih banyak lagi.
 
-Base URL
-
-https://core-api1.vercel.app
-
----
-
-Features
-
-AI
-
-GPT Chat
-
-GET /api/ai/gpt
-
-Parameters:
-
-Name| Type| Required| Description
-text| string| Yes| Pertanyaan atau pesan
-sessionId| number| No| ID percakapan (default: 1)
-
-Example:
-
-/api/ai/gpt?text=Halo&sessionId=1
+[![Status](https://img.shields.io/badge/status-active-4ade80?style=flat-square)](https://www.core-api.my.id)
+[![Deploy](https://img.shields.io/badge/deploy-vercel-000?style=flat-square&logo=vercel)](https://vercel.com)
+[![Made by](https://img.shields.io/badge/made%20by-Nixx-7c6af7?style=flat-square)](https://wa.me/6281410502451)
 
 ---
 
-Search
+## 🌐 Base URL
 
-YouTube Search
-
-GET /api/search/ytsearch
-
-Parameters:
-
-Name| Type| Required| Description
-query| string| Yes| Kata kunci pencarian
-
-Example:
-
-/api/search/ytsearch?query=MrBeast
+```
+https://www.core-api.my.id
+```
 
 ---
 
-Downloader
+## 📦 Endpoints
 
-Facebook Downloader
+### 🔍 SEARCH
 
-GET /api/download/facebook
-
-Parameters:
-
-Name| Type| Required| Description
-url| string| Yes| URL Facebook
-
-Example:
-
-/api/download/facebook?url=https://www.facebook.com/share/v/14dpuyHMtz1/
+| Nama | Endpoint | Parameter |
+|------|----------|-----------|
+| YouTube Search | `GET /api/search/ytsearch` | `query` |
+| LK21 Search | `GET /api/search/lk21` | `query` |
 
 ---
 
-Response Format
+### 👤 STALK
 
-Success:
+| Nama | Endpoint | Parameter |
+|------|----------|-----------|
+| Instagram Stalk | `GET /api/stalk/igstalk` | `username` |
 
+---
+
+### 🤖 AI
+
+| Nama | Endpoint | Parameter |
+|------|----------|-----------|
+| Chat GPT | `GET /api/ai/gpt` | `text`, `sessionId` |
+| Text To Image | `GET /api/ai/txt2img` | `prompt` |
+
+---
+
+### 🎨 MAKER
+
+| Nama | Endpoint | Parameter |
+|------|----------|-----------|
+| Remove Background | `GET /api/maker/removebg` | `url` |
+
+---
+
+### ⬇️ DOWNLOAD
+
+| Nama | Endpoint | Parameter |
+|------|----------|-----------|
+| MediaFire Download | `GET /api/download/mediafire` | `url` |
+| Youtube MP4 Download | `GET /api/download/ytmp4` | `url` |
+| Facebook Download | `GET /api/download/facebook` | `url` |
+| Spotify Download | `GET /api/download/spotifydl` | `url` |
+
+---
+
+### ℹ️ INFO
+
+| Nama | Endpoint | Parameter |
+|------|----------|-----------|
+| API Info | `GET /api/info/api` | — |
+
+---
+
+## 📋 Response Format
+
+Semua endpoint mengembalikan response dalam format JSON:
+
+```json
 {
   "status": true,
   "creator": "Nixx",
   "result": {}
 }
+```
 
-Error:
+### ❌ Error Response
 
+```json
 {
   "status": false,
   "creator": "Nixx",
-  "message": "Terjadi kesalahan"
+  "message": "Pesan error",
+  "error": "Detail error"
 }
+```
 
 ---
 
-Session System
+## 💡 Contoh Penggunaan
 
-Endpoint AI mendukung session.
+#### YouTube Search
+```bash
+GET https://www.core-api.my.id/api/search/ytsearch?query=lofi music
+```
 
-Contoh:
+#### Chat GPT
+```bash
+GET https://www.core-api.my.id/api/ai/gpt?text=Halo siapa kamu&sessionId=abc123
+```
 
-sessionId=1
-
-Percakapan berikutnya dengan session yang sama akan melanjutkan konteks sebelumnya.
-
-/api/ai/gpt?text=Halo&sessionId=1
-
-/api/ai/gpt?text=Siapa nama saya?&sessionId=1
+#### Spotify Download
+```bash
+GET https://www.core-api.my.id/api/download/spotifydl?url=https://open.spotify.com/track/xxx
+```
 
 ---
 
-Status
+## 🛠️ Tech Stack
 
-API masih dalam tahap pengembangan dan endpoint akan terus bertambah.
+```
+⬡  Node.js          — Runtime
+⬡  Vercel           — Serverless deployment
+⬡  Vanilla JS       — Frontend
+⬡  GitHub           — Source & database storage
+```
 
-Creator
+---
 
-Nixx
+## 📁 Struktur Project
+
+```
+├── core/
+│   └── api/
+│       ├── ai/
+│       ├── download/
+│       ├── info/
+│       ├── maker/
+│       ├── search/
+│       ├── stalk/
+│       ├── chat.js
+│       └── list.js
+├── main/
+│   ├── index.html
+│   ├── script.js
+│   ├── style.css
+│   └── database.json
+├── package.json
+└── vercel.json
+```
+
+---
+
+## 👨‍💻 Developer
+
+<table>
+  <tr>
+    <td align="center">
+      <b>Nixx</b><br/>
+      <a href="https://wa.me/6281410502451">WhatsApp</a>
+    </td>
+  </tr>
+</table>
+
+---
+
+<div align="center">
+  <sub>⬡ core.api — By Nixx</sub>
+</div>
