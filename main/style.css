@@ -494,3 +494,26 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 
 /* sidebar WA icon fix */
 .sb-item-icon svg{vertical-align:middle}
+
+.search-input{
+  background:var(--surface2);border:1px solid var(--border);border-radius:7px;
+  padding:7px 13px;color:var(--text);font-family:var(--mono);font-size:.75rem;
+  outline:none;transition:border-color .18s;width:220px;
+}
+.search-input:focus{border-color:rgba(124,106,247,.5)}
+.search-input::placeholder{color:var(--muted2)}
+
+.empty-search{
+  font-family:var(--mono);font-size:.8rem;color:var(--muted);
+  text-align:center;padding:48px 0;width:100%;
+}
+.empty-search span{color:var(--accent2)}
+
+.cat-group{margin-bottom:28px}
+.cat-group-title{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;
+}
+.cat-group-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.cat-group-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
