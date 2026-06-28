@@ -16,21 +16,23 @@ module.exports = async (req, res) => {
       categories[category] = names.length;
     }
 
-    return res.json({
+    res.statusCode = 200;
+    return res.end(JSON.stringify({
       status: true,
       creator: "Nixx",
       url: `${req.headers["x-forwarded-proto"] || "https"}://${req.headers.host}`,
       endpoint: totalEndpoint,
       categories,
-      endpointList      
-    });
+      endpointList
+    }, null, 2));
 
   } catch (e) {
-    return res.status(500).json({
+    res.statusCode = 500;
+    return res.end(JSON.stringify({
       status: false,
       creator: "Nixx",
       message: "Terjadi kesalahan",
       error: e.message
-    });
+    }, null, 2));
   }
 };
