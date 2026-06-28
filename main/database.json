@@ -3,6 +3,7 @@
    "YouTube Search": {
    "status": true,
    "path": "api/search/ytsearch",
+   "description": "Tes",
    "type": "json",
    "endpoint": "/api/search/ytsearch",
    "method": "GET",
