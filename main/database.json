@@ -96,19 +96,15 @@
       }
     }
   },
-  {
-    "INFO": {
-      "api info": {
+  "INFO": {
+    "API Info": {
       "status": true,
       "path": "api/info/api",
-      "description": "Mengambil info api.",
+      "description": "Mengambil informasi lengkap semua endpoint yang tersedia beserta kategori dan jumlahnya.",
       "type": "json",
       "endpoint": "/api/info/api",
       "method": "GET",
-      "params": {
-        
-      }
-      }
+      "params": {}
     }
   }
 }
