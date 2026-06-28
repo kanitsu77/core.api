@@ -9,6 +9,16 @@
       "method": "GET",
       "params": {
         "query": "Masukan query"
+      },
+    "Ytes": {
+      "status": true,
+      "path": "api/tes/tes",
+      "description": "Cari video YouTube berdasarkan kata kunci dan dapatkan informasi lengkap seperti judul, durasi, thumbnail, dan link.",
+      "type": "json",
+      "endpoint": "/api/tes/tes",
+      "method": "GET",
+      "params": {
+        "query": "Masukan query"
       }
     },
     "LK21 Search": {
