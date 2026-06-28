@@ -95,5 +95,20 @@
         "url": "Masukan URL Facebook"
       }
     }
+  },
+  {
+    "INFO": {
+      "api info": {
+      "status": true,
+      "path": "api/info/api",
+      "description": "Mengambil info api.",
+      "type": "json",
+      "endpoint": "/api/info/api",
+      "method": "GET",
+      "params": {
+        
+      }
+      }
+    }
   }
 }
