@@ -44,7 +44,17 @@
       "text": "Beri pertanyaan",
       "sessionId": "Masukan sessionId"
     }  
-   }
+   },
+ "Text To Image": {
+   "status": true,
+   "path": "api/ai/txt2img",
+   "type": "json",
+   "endpoint": "/api/ai/txt2img",
+   "method": "GET",
+   "params": {
+      "promt": "Ketik promt gambar"
+    }  
+ }
  },
 "DOWNLOAD": {
   "MediaFire Download": {
