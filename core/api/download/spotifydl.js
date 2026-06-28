@@ -31,8 +31,8 @@ class SpotifyDL {
     if (init?.download_url) return init.download_url;
     const taskId = init?.task_id || init?.id;
     if (!taskId) throw new Error("No Task ID received");
-    for (let i = 0; i < 60; i++) {
-      await new Promise(r => setTimeout(r, 3000));
+    for (let i = 0; i < 3; i++) {
+      await new Promise(r => setTimeout(r, 2000));
       const { data: status } = await this.client.get(`${this.api.task}/${taskId}`);
       if (status?.status === "finished" || status?.status === "completed") {
         return status?.result?.download_url || status?.download_url;
