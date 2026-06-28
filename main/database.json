@@ -107,6 +107,17 @@
       "params": {
         "url": "Masukan URL Facebook"
       }
+    },
+   "Spotify Download": {
+     "status": true,
+     "path": "api/download/spotify",
+     "description": "Download lagu dari Spotify menggunakan link track. Mendapatkan judul, artist, album, cover, dan link download MP3.",
+     "type": "json",
+     "endpoint": "/api/download/spotify",
+     "method": "GET",
+     "params": {
+    "url": "Masukan URL Spotify track"
+     }
     }
   },
   "INFO": {
