@@ -26,10 +26,10 @@
   "MAKER": {
   "Remove Background": {
     "status": true,
-    "path": "api/image/bgremove",
+    "path": "api/maker/removebg",
     "description": "Hapus background gambar secara otomatis menggunakan AI. Masukkan URL gambar dan dapatkan hasil tanpa background.",
     "type": "json",
-    "endpoint": "/api/image/bgremove",
+    "endpoint": "/api/maker/removebg",
     "method": "GET",
     "params": {
       "url": "Masukan url gambar"
