@@ -22,8 +22,7 @@ module.exports = async (req, res) => {
       url: `${req.headers["x-forwarded-proto"] || "https"}://${req.headers.host}`,
       endpoint: totalEndpoint,
       categories,
-      endpointList,
-      result: db
+      endpointList      
     });
 
   } catch (e) {
