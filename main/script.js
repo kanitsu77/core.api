@@ -4,13 +4,6 @@ let chatHistory = [];
 
 const catColors = ["#f472b6","#a78bfa","#60a5fa","#fb923c","#fbbf24","#4ade80","#38bdf8","#e879f9","#f87171","#34d399"];
 
-const mocks = {
-  json: {status:true,creator:"core.api",result:{title:"Example Result",data:"Response data akan muncul disini",timestamp:new Date().toISOString()}},
-  image: {status:true,creator:"core.api",result:"https://c.termai.cc/i149/G8LBUFy.jpg"},
-  video: {status:true,creator:"core.api",result:"https://c.termai.cc/v134/M6zwly.mp4"},
-  audio: {status:true,creator:"core.api",result:"https://c.termai.cc/a193/aNvYZ.mp3"}
-};
-
 const dlIcon = `<svg viewBox="0 0 24 24"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="3" x2="12" y2="21"/></svg>`;
 const openIcon = `<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
 
@@ -184,22 +177,27 @@ async function runApi(){
   const wrap = document.getElementById("resultWrap"), content = document.getElementById("resultContent"), rl = document.getElementById("rTypeLabel");
   rl.className = `tbadge ${type}`; rl.textContent = type;
   try {
-    const res = await fetch(url); const json = await res.json();
+    const res = await fetch(url);
+    const text = await res.text();
+    let json;
+    try { json = JSON.parse(text); } catch { json = text; }
+
     if(type === "json"){
       const box = document.createElement("div"); box.className = "json-box ok";
-      box.textContent = JSON.stringify(json, null, 2); content.appendChild(box);
+      box.textContent = typeof json === "object" ? JSON.stringify(json, null, 2) : json;
+      content.appendChild(box);
     } else if(type === "image"){
       const u = json?.result || json?.url || json?.data?.url || "";
       if(u){ const w = document.createElement("div"); w.className = "img-result"; w.innerHTML = `<img src="${u}" loading="lazy"/><div class="media-bar"><div class="media-url"><a href="${u}" target="_blank">${u}</a></div><a href="${u}" download target="_blank" class="dl-btn">${dlIcon} Download</a><a href="${u}" target="_blank" class="dl-btn">${openIcon}</a></div>`; content.appendChild(w); }
-      else { const box = document.createElement("div"); box.className = "json-box ok"; box.textContent = JSON.stringify(json, null, 2); content.appendChild(box); }
+      else { const box = document.createElement("div"); box.className = "json-box ok"; box.textContent = typeof json === "object" ? JSON.stringify(json, null, 2) : json; content.appendChild(box); }
     } else if(type === "video"){
       const u = json?.result || json?.url || json?.data?.url || "";
       if(u){ const w = document.createElement("div"); w.className = "video-result"; w.innerHTML = `<video controls src="${u}"></video><div class="media-bar"><div class="media-url"><a href="${u}" target="_blank">${u}</a></div><a href="${u}" download target="_blank" class="dl-btn">${dlIcon} Download</a><a href="${u}" target="_blank" class="dl-btn">${openIcon}</a></div>`; content.appendChild(w); }
-      else { const box = document.createElement("div"); box.className = "json-box ok"; box.textContent = JSON.stringify(json, null, 2); content.appendChild(box); }
+      else { const box = document.createElement("div"); box.className = "json-box ok"; box.textContent = typeof json === "object" ? JSON.stringify(json, null, 2) : json; content.appendChild(box); }
     } else if(type === "audio"){
       const u = json?.result || json?.url || json?.data?.url || "";
       if(u){ const w = document.createElement("div"); w.className = "audio-result"; w.innerHTML = `<audio controls src="${u}"></audio><div class="audio-actions"><div class="audio-url"><a href="${u}" target="_blank">${u}</a></div><a href="${u}" download target="_blank" class="dl-btn">${dlIcon} Download</a></div>`; content.appendChild(w); }
-      else { const box = document.createElement("div"); box.className = "json-box ok"; box.textContent = JSON.stringify(json, null, 2); content.appendChild(box); }
+      else { const box = document.createElement("div"); box.className = "json-box ok"; box.textContent = typeof json === "object" ? JSON.stringify(json, null, 2) : json; content.appendChild(box); }
     }
   } catch(e){
     const box = document.createElement("div"); box.className = "json-box err"; box.textContent = "Error: " + e.message; content.appendChild(box);
@@ -233,16 +231,8 @@ function buildStatsData(){
   cats.forEach((c,i)=>catColorMap[c]=catColors[i%catColors.length]);
   const allApis = [];
   for(const [cat, apis] of Object.entries(dat)) for(const [name, api] of Object.entries(apis)) allApis.push({name, cat, status:api.status});
-  const topEndpoints = allApis.slice(0,7).map((ep,i)=>({
-    name:ep.name, cat:ep.cat,
-    hits:Math.round(2500-i*280+Math.random()*200),
-    color:catColorMap[ep.cat]||catColors[i%catColors.length]
-  }));
-  const perKategori = cats.map((cat,i)=>({
-    name:cat,
-    val:Math.round(100/cats.length + (i===0?3:i===1?2:i===2?1:-1)),
-    color:catColorMap[cat]
-  }));
+  const topEndpoints = allApis.slice(0,7).map((ep,i)=>({ name:ep.name, cat:ep.cat, hits:Math.round(2500-i*280+Math.random()*200), color:catColorMap[ep.cat]||catColors[i%catColors.length] }));
+  const perKategori = cats.map((cat,i)=>({ name:cat, val:Math.round(100/cats.length+(i===0?3:i===1?2:i===2?1:-1)), color:catColorMap[cat] }));
   const sum = perKategori.reduce((a,b)=>a+b.val,0);
   if(perKategori.length) perKategori[0].val += 100-sum;
   const responseTime = allApis.slice(0,6).map(ep=>({ name:ep.name, ms:Math.round(80+Math.random()*400) }));
