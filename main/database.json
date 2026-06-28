@@ -110,10 +110,10 @@
     },
    "Spotify Download": {
      "status": true,
-     "path": "api/download/spotify",
+     "path": "api/download/spotifydl",
      "description": "Download lagu dari Spotify menggunakan link track. Mendapatkan judul, artist, album, cover, dan link download MP3.",
      "type": "json",
-     "endpoint": "/api/download/spotify",
+     "endpoint": "/api/download/spotifydl",
      "method": "GET",
      "params": {
     "url": "Masukan URL Spotify track"
