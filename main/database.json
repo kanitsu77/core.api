@@ -52,7 +52,7 @@
    "endpoint": "/api/ai/txt2img",
    "method": "GET",
    "params": {
-      "promt": "Ketik promt gambar"
+      "prompt": "Ketik promt gambar"
     }  
  }
  },
