@@ -23,6 +23,19 @@
       }
     }
   },
+  "MAKER": {
+  "Remove Background": {
+    "status": true,
+    "path": "api/image/bgremove",
+    "description": "Hapus background gambar secara otomatis menggunakan AI. Masukkan URL gambar dan dapatkan hasil tanpa background.",
+    "type": "json",
+    "endpoint": "/api/image/bgremove",
+    "method": "GET",
+    "params": {
+      "url": "Masukan url gambar"
+    }
+  }
+  },
   "STALK": {
     "Instagram Stalk": {
       "status": true,
