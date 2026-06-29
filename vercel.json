@@ -1,17 +1,23 @@
 {
   "version": 2,
   "builds": [
-    { "src": "core/api/ai/*.js", "use": "@vercel/node" },
-    { "src": "core/api/download/*.js", "use": "@vercel/node" },
-    { "src": "core/api/search/*.js", "use": "@vercel/node" },
-    { "src": "core/api/stalk/*.js", "use": "@vercel/node" },
-    { "src": "core/api/maker/*.js", "use": "@vercel/node" },
-    { "src": "core/api/info/*.js", "use": "@vercel/node" },
-    { "src": "core/api/*.js", "use": "@vercel/node" },
-    { "src": "main/**", "use": "@vercel/static" }
+    {
+      "src": "core/api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "main/**",
+      "use": "@vercel/static"
+    }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/core/api/$1.js" },
-    { "src": "/(.*)", "dest": "/main/$1" }
+    {
+      "src": "/api/(.*)",
+      "dest": "/core/api/$1.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/main/$1"
+    }
   ]
 }
