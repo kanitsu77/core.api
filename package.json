@@ -8,7 +8,7 @@
     "deploy": "vercel --prod"
   },
   "dependencies": {
-    "node-fetch": "^3.3.2",
+    "node-fetch": "^2.7.0",
     "axios": "^1.13.2",
     "cheerio": "^1.2.0",
     "googleapis": "^140.0.0",
