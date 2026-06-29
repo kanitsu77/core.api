@@ -6,7 +6,7 @@
       "use": "@vercel/node"
     },
     {
-      "src": "main/**",
+      "src": "main/index.html",
       "use": "@vercel/static"
     }
   ],
@@ -16,8 +16,12 @@
       "dest": "/core/api/$1.js"
     },
     {
-      "src": "/(.*)",
+      "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|json))",
       "dest": "/main/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/main/index.html"
     }
   ]
 }
