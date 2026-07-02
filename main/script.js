@@ -227,7 +227,8 @@ function showPage(id){
   closeSidebar();
 }
 let twLines=[],twIdx=0,twPos=0,twDeleting=false;
-
+let htRunning=false;
+async function runHeroTerminal(){
 const htLines=[
   ["$ boot core.api --env=production","c-cmd",0],
   ["","",80],
@@ -267,8 +268,7 @@ const htLines=[
   ["  Waiting for incoming requests...","c-warn",0],
 ];
 const htSleep=ms=>new Promise(r=>setTimeout(r,ms));
-let htRunning=false;
-async function runHeroTerminal(){
+
   if(htRunning)return;htRunning=true;
   const out=document.getElementById("htOutput");if(!out)return;
   out.innerHTML="";
