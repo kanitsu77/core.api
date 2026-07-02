@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>core.api</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<div class="sidebar-backdrop" id="sbBackdrop" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sb-head">
+    <div class="sb-logo"><span class="sb-logo-icon">⬡</span>core<span style="color:var(--accent)">.</span>api</div>
+    <button class="sb-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-item active" onclick="showPage('home')" id="nav-home"><span class="sb-item-icon">⬡</span><span class="sb-item-label">Endpoints</span></div>
+    <div class="sb-item" onclick="showPage('changelog')" id="nav-changelog"><span class="sb-item-icon">◉</span><span class="sb-item-label">Changelog</span></div>
+    <div class="sb-divider"></div>
+    <div class="sb-item" onclick="window.open('https://github.com','_blank')"><span class="sb-item-icon">⊕</span><span class="sb-item-label">GitHub</span></div>
+    <div class="sb-item" onclick="window.open('https://wa.me/628xxxxxxxxxx','_blank')"><span class="sb-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.117 1.528 5.845L.057 23.5l5.797-1.52A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.85 0-3.583-.5-5.075-1.375l-.363-.214-3.44.902.918-3.352-.236-.374A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg></span><span class="sb-item-label">WhatsApp</span></div>
+  </nav>
+  <div class="sb-footer"><div class="sb-version">core.api v1.0.0 · Vercel</div></div>
+</aside>
+<nav class="navbar">
+  <div class="nav-left">
+    <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+    <div class="nav-brand"><span style="color:var(--accent)">⬡</span> core<span class="nav-dot">.</span>api</div>
+  </div>
+  <div class="nav-pills">
+    <span class="pill" id="pTotal">— APIs</span>
+    <span class="pill on" id="pActive">— Active</span>
+  </div>
+</nav>
+<div id="page-home" class="page active">
+  <header class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-avatar"><img src="https://c.termai.cc/i161/ycfBE.jpg" alt="core.api"/></div>
+    <div class="eyebrow">REST API Documentation</div>
+    <h1 class="hero-title">core<span class="ac">.</span>api</h1>
+    <p class="hero-sub">Kumpulan API siap pakai. Downloader, AI, Tools, Search — semua dalam satu endpoint.</p>
+    <div class="hero-terminal">
+  <div class="ht-header">
+    <div class="ht-dots"><span class="ht-dot r"></span><span class="ht-dot y"></span><span class="ht-dot g"></span></div>
+    <span class="ht-title">terminal — core.api</span>
+    <span class="ht-live"><span class="ht-live-dot"></span>live</span>
+  </div>
+  <div class="ht-body">
+    <pre id="htOutput"></pre><span class="ht-cursor">█</span>
+  </div>
+</div>
+  </header>
+  <main class="container">
+    <div class="search-wrap"><input class="search-input" id="searchInput" placeholder="Search endpoint..." oninput="renderGrid()"/></div>
+    <div class="sec-head">
+      <div class="sec-label">Endpoints</div>
+      <div class="tabs" id="tabs"></div>
+    </div>
+    <div id="grid"></div>
+  </main>
+</div>
+<div id="page-changelog" class="page">
+  <div class="container" style="padding-top:32px">
+    <div style="font-size:1.1rem;font-weight:700;margin-bottom:4px">Changelog</div>
+    <div style="font-size:.82rem;color:var(--muted);margin-bottom:24px">Update terbaru core.api</div>
+    <div class="apikey-box">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-weight:600;font-size:.9rem">v1.0.0</span>
+        <span style="font-family:var(--mono);font-size:.65rem;color:var(--muted)">2026-06-25</span>
+      </div>
+      <div style="font-size:.8rem;color:var(--muted);line-height:2">✦ Initial release<br>✦ 10 endpoints tersedia<br>✦ Kategori: DOWNLOAD, SEARCH, AI, MAKER, INFO<br>✦ Try it out panel dengan output preview<br>✦ Live chat support</div>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="overlay" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="mhead">
+      <div><div class="meyebrow" id="mCat"></div><div class="mtitle" id="mTitle"></div></div>
+      <button class="mclose" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-inner">
+      <div class="mbody">
+        <p class="mdesc" id="mDesc"></p>
+        <div class="mmeta">
+          <span class="mtag tbadge" id="mType"></span>
+          <span class="mtag">GET</span>
+          <span class="mstatus" id="mStat"></span>
+        </div>
+        <div class="stitle">Parameters</div>
+        <div id="mParams"></div>
+        <div class="stitle">Try it out</div>
+        <div id="mInputs"></div>
+        <div class="code-tabs" id="codeTabs"></div>
+        <div style="position:relative">
+         <button class="code-copy" onclick="copyCode()">copy</button>
+      <div class="code-box" id="codeBox"><span id="codeContent"></.span></div>
+         </div>
+        <div class="ep-preview">
+          <div class="ep-line">GET <span id="epPreview"></span></div>
+          <button class="ep-copy-btn" onclick="copyUrl()">copy url</button>
+        </div>
+        <button class="status-btn" onclick="toggleStatus()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Status Codes
+        </button>
+        <div class="status-panel" id="statusPanel">
+          <div class="status-title">HTTP Status Codes</div>
+          <div class="status-grid" id="statusGrid"></div>
+        </div>
+        <button class="run-btn" id="runBtn" onclick="runApi()">
+          <div class="run-spinner" id="runSpinner"></div>
+          <span id="runLabel">▶  Run Request</span>
+        </button>
+        <div class="result-wrap" id="resultWrap">
+          <div class="result-label">
+            <div class="result-label-left">Output — <span class="tbadge" id="rTypeLabel"></span></div>
+            <div id="resultActions"></div>
+          </div>
+          <div id="resultContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="chat-window" id="chatWindow">
+  <div class="chat-head">
+    <div class="chat-avatar">⬡</div>
+    <div class="chat-info"><div class="chat-name">core.api Support</div><div class="chat-status">Online</div></div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-msgs" id="chatMsgs">
+    <div class="msg bot"><div class="msg-bubble">Halo! 👋 Tanya soal endpoint, cara pakai, atau error?</div><div class="msg-time">Sekarang</div></div>
+    <div class="chat-typing" id="chatTyping"><span></span><span></span><span></span></div>
+  </div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chatInput" placeholder="Ketik pesan..."/>
+    <button class="chat-send" onclick="sendChat()"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+  </div>
+</div>
+<button class="chat-fab" onclick="toggleChat()" title="Live Chat">
+  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+  <div class="chat-badge"></div>
+</button>
+<footer class="footer"><span>core.api</span> — Created By Nixx. ©2k26</footer>
+<script src="script.js"></script>
+</body>
+</html>
