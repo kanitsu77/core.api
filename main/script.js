@@ -57,33 +57,15 @@ function nowTime() {
   }
 })();
 
-function loadData(){
-  dat={
-    "SEARCH":{
-      "YouTube Search":{"status":true,"path":"api/search/ytsearch","description":"Cari video YouTube berdasarkan kata kunci dan dapatkan informasi lengkap seperti judul, durasi, thumbnail, dan link.","type":"json","endpoint":"/api/search/ytsearch","method":"GET","params":{"query":"Masukan query"}},
-      "LK21 Search":{"status":true,"path":"api/search/lk21","description":"Cari film atau series di LK21 berdasarkan judul dan dapatkan informasi seperti genre, tahun rilis, dan link streaming.","type":"json","endpoint":"/api/search/lk21","method":"GET","params":{"query":"Masukan query"}},
-      "YouTube Play Music":{"status":true,"path":"api/search/ytplay","description":"Cari & download audio YouTube dari query pencarian.","type":"json","endpoint":"/api/search/ytplay","method":"GET","params":{"query":"Masukan query"}}
-    },
-    "MAKER":{
-      "Remove Background":{"status":true,"path":"api/maker/removebg","description":"Hapus background gambar secara otomatis menggunakan AI. Masukkan URL gambar dan dapatkan hasil tanpa background.","type":"json","endpoint":"/api/maker/removebg","method":"GET","params":{"url":"Masukan url gambar"}}
-    },
-    "STALK":{
-      "Instagram Stalk":{"status":true,"path":"api/stalk/igstalk","description":"Lihat informasi profil akun Instagram secara publik, termasuk bio, jumlah followers, following, dan postingan.","type":"json","endpoint":"/api/stalk/igstalk","method":"GET","params":{"username":"Masukan username"}}
-    },
-    "AI":{
-      "Chat GPT":{"status":true,"path":"api/ai/gpt","description":"Berinteraksi dengan AI ChatGPT untuk menjawab pertanyaan, membuat teks, atau percakapan umum. Gunakan sessionId untuk melanjutkan sesi chat sebelumnya.","type":"json","endpoint":"/api/ai/gpt","method":"GET","params":{"text":"Beri pertanyaan","sessionId":"Masukan sessionId"}},
-      "Text To Image":{"status":true,"path":"api/ai/txt2img","description":"Buat gambar secara otomatis dari deskripsi teks menggunakan AI. Masukkan prompt sedetail mungkin untuk hasil yang lebih akurat.","type":"json","endpoint":"/api/ai/txt2img","method":"GET","params":{"prompt":"Ketik promt gambar"}}
-    },
-    "DOWNLOAD":{
-      "MediaFire Download":{"status":true,"path":"api/download/mediafire","description":"Unduh file dari MediaFire menggunakan link langsung dan dapatkan direct download URL tanpa iklan.","type":"json","endpoint":"/api/download/mediafire","method":"GET","params":{"url":"Masukan url mediafire"}},
-      "Youtube MP4 Download":{"status":true,"path":"api/download/ytmp4","description":"Unduh video YouTube dalam format MP4. Masukkan URL video YouTube dan dapatkan link download langsung.","type":"json","endpoint":"/api/download/ytmp4","method":"GET","params":{"url":"Masukan url youtube"}},
-      "Facebook Download":{"status":true,"path":"api/download/facebook","description":"Unduh video dari Facebook menggunakan link postingan. Mendukung video publik dalam kualitas HD maupun SD.","type":"json","endpoint":"/api/download/facebook","method":"GET","params":{"url":"Masukan URL Facebook"}},
-      "Spotify Download":{"status":true,"path":"api/download/spotifydl","description":"Download lagu dari Spotify menggunakan link track. Mendapatkan judul, artist, album, cover, dan link download MP3.","type":"json","endpoint":"/api/download/spotifydl","method":"GET","params":{"url":"Masukan URL Spotify track"}}
-    },
-    "INFO":{
-      "API Info":{"status":true,"path":"api/info/api","description":"Mengambil informasi lengkap semua endpoint yang tersedia beserta kategori dan jumlahnya.","type":"json","endpoint":"/api/info/api","method":"GET","params":{}}
-    }
-  };
+async function loadData(){
+  try {
+    const res = await fetch("/api/list");
+    const json = await res.json();
+    if(json.status && json.data) dat = json.data;
+    else throw new Error("bad response");
+  } catch(e){
+    console.warn("fetch /api/list failed:", e.message);
+  }
   afterLoad();
 }
 
@@ -687,7 +669,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const res = await fetch(base() + "/api/laporan", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ tipe: activeType, nama, pesan })
+          body: JSON.stringify({ type: activeType, name: nama, message: pesan })
         });
 
         if (res.ok) {
