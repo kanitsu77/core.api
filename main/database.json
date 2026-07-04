@@ -21,6 +21,17 @@
       "params": {
         "query": "Masukan query"
       }
+    },
+  "YouTube Play Music": {
+      "status": true,
+      "path": "api/search/ytplay",
+      "description": "Cari & download video YouTube dari query pencarian",
+      "type": "json",
+      "endpoint": "/api/search/ytplay",
+      "method": "GET",
+      "params": {
+        "query": "Masukan query"
+      }
     }
   },
   "MAKER": {
