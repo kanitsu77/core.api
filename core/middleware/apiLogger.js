@@ -1,13 +1,14 @@
 const axios = require("axios");
+const UAParser = require("ua-parser-js");
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
-async function sendLog(data) {
+async function sendLog(message) {
   try {
     await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
       chat_id: TELEGRAM_CHAT_ID,
-      text: data,
+      text: message,
       parse_mode: "Markdown"
     });
   } catch (e) {
@@ -17,18 +18,28 @@ async function sendLog(data) {
 
 function apiLogger(req, res, next) {
   if (req.path.startsWith("/api") && req.path !== "/api/laporan") {
-    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-    const userAgent = req.headers["user-agent"] || "unknown";
-    const method = req.method;
-    const endpoint = req.originalUrl;
-    const time = new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" });
+    const ua = new UAParser(req.headers["user-agent"]).getResult();
+    const ip = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown").replace("::ffff:", "");
+    const time = new Date().toLocaleString("id-ID", {
+      timeZone: "Asia/Jakarta",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+    const queryString = Object.keys(req.query).length
+      ? Object.entries(req.query).map(([k, v]) => `${k}=${v}`).join(", ")
+      : "-";
 
     const message = `📡 *Endpoint Used*\n\n` +
-      `🔗 Endpoint: \`${endpoint}\`\n` +
-      `🌐 IP: \`${ip}\`\n` +
-      `📱 Method: \`${method}\`\n` +
-      `🕒 Waktu: ${time}\n` +
-      `🧭 User-Agent: \`${userAgent}\``;
+      `🔗 *Endpoint:* \`${req.path}\`\n` +
+      `🔍 *Query:* ${queryString}\n` +
+      `🌐 *IP:* \`${ip}\`\n` +
+      `📱 *Method:* ${req.method}\n` +
+      `📲 *Device:* ${ua.os.name || "Unknown"} ${ua.os.version || ""} · ${ua.browser.name || "Unknown"}\n` +
+      `🕒 *Waktu:* ${time} WIB`;
 
     sendLog(message);
   }
