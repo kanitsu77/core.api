@@ -7,6 +7,7 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const EXCLUDED_PATHS = [
   "/api/laporan",
   "/api/list",
+  "/api/stats",
   "/favicon.ico"
 ];
 
