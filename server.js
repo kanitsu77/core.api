@@ -54,6 +54,10 @@ function loadRoutes(dir, prefix = "") {
 console.log("\n⬡ core.api — Loading routes...\n");
 loadRoutes(path.join(__dirname, "core", "api"));
 
+app.get("/stats.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "main", "stats.html"));
+});
+
 app.get("/report", (req, res) => {
   res.sendFile(path.join(__dirname, "main", "report.html"));
 });
