@@ -2,6 +2,8 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 require("dotenv").config();
+const apiLogger = require("./core/middleware/apiLogger");
+app.use(apiLogger);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -10,6 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "main")));
 app.use("/src", express.static(path.join(__dirname, "src")));
+app.use(apiLogger)
 
 function wrapHandler(handler) {
   return async (req, res) => {
