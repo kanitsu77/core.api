@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Laporan — core.api</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+<header class="rp-hero">
+  <div class="rp-glow"></div>
+  <div class="rp-eyebrow">core.api feedback</div>
+  <h1 class="rp-hero-title">Laporan</h1>
+  <p class="rp-hero-sub">Temukan bug? Punya ide endpoint atau saran tampilan? Kabarin kami di sini.</p>
+</header>
+<div class="rp-wrap">
+  <a href="/" class="rp-back">← Kembali ke core.api</a>
+   <div class="rp-card">
+    <form id="rpForm">
+      <div class="rp-field">
+        <label class="rp-label">Jenis Laporan</label>
+         <div class="rp-type-grid" id="rpTypeGrid">
+          <div class="rp-type-grid" id="rpTypeGrid">
+  <div class="rp-type-btn active" data-type="🐞 Bug">
+    <svg class="rp-type-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="8" y="6" width="8" height="12" rx="4"/>
+      <path d="M8 10H4M8 14H4M16 10h4M16 14h4M12 6V3M9 6l-1-2M15 6l1-2"/>
+    </svg>
+    <span class="rp-type-label">Bug</span>
+  </div>
+
+  <div class="rp-type-btn" data-type="🧩 Saran Endpoint">
+    <svg class="rp-type-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 9a2 2 0 0 1 2-2h2a2 2 0 0 0 2-2V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1a2 2 0 0 0 2 2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1a2 2 0 0 0-2 2v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-1a2 2 0 0 0-2-2H6a2 2 0 0 1-2-2V9z"/>
+    </svg>
+    <span class="rp-type-label">Endpoint</span>
+  </div>
+
+  <div class="rp-type-btn" data-type="🎨 Saran Tampilan">
+    <svg class="rp-type-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2a10 10 0 1 0 0 20 2 2 0 0 0 2-2 2 2 0 0 1 2-2h1a3 3 0 0 0 3-3c0-6-3.5-13-8-13z"/>
+      <circle cx="7.5" cy="10.5" r="1"/>
+      <circle cx="11.5" cy="7.5" r="1"/>
+      <circle cx="16" cy="10" r="1"/>
+      <circle cx="8" cy="15" r="1"/>
+    </svg>
+    <span class="rp-type-label">Tampilan</span>
+  </div>
+</div>
+       </div>
+       <div class="rp-field">
+        <label class="rp-label">Nama (opsional)</label>
+        <input class="rp-input" id="rpName" placeholder="Anonim"/>
+      </div>
+
+      <div class="rp-field">
+        <label class="rp-label">Pesan</label>
+        <textarea class="rp-textarea" id="rpMessage" placeholder="Jelaskan laporan/saran kamu..."></textarea>
+      </div>
+
+      <button type="submit" class="rp-submit" id="rpSubmit">
+        <div class="rp-spinner" id="rpSpinner"></div>
+        <span id="rpSubmitLabel">▶  Kirim Laporan</span>
+      </button>
+      <div class="rp-msg" id="rpMsg"></div>
+    </form>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

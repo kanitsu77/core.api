@@ -1,7 +1,18 @@
-let dat={},activeApi=null,activeFilter="ALL",chatOpen=false,activeCodeTab="curl",statusShown=false,chatHistory=[],lastResultJson="";
+let dat = {},
+    activeApi = null,
+    activeFilter = "ALL",
+    chatOpen = false,
+    activeCodeTab = "curl",
+    statusShown = false,
+    chatHistory = [],
+    lastResultJson = "";
+
 const dlIcon=`<svg viewBox="0 0 24 24"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="3" x2="12" y2="21"/></svg>`;
+
 const openIcon=`<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
-const copyIcon=`<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;
+
+const copyIcon=`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;
+
 const STATUS_CODES=[
   {code:200,label:"OK",desc:"Request berhasil, data tersedia.",cls:"s2",icon:"🟢"},
   {code:201,label:"Created",desc:"Data berhasil dibuat.",cls:"s2",icon:"🟢"},
@@ -25,8 +36,16 @@ const STATUS_CODES=[
   {code:503,label:"Service Unavailable",desc:"Server sedang tidak tersedia.",cls:"s5",icon:"⚫"},
   {code:504,label:"Gateway Timeout",desc:"Server upstream tidak merespons tepat waktu.",cls:"s5",icon:"⚫"}
 ];
-function base(){return window.location.origin;}
-function nowTime(){return new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});}
+
+function base() {
+  return window.location.origin;
+}
+function nowTime() { 
+  return new Date().toLocaleTimeString("id-ID", {
+  hour:"2-digit",minute:"2-digit"
+  }
+ );
+}
 (()=>{
   const c=document.getElementById("stars");
   for(let i=0;i<60;i++){
@@ -36,275 +55,959 @@ function nowTime(){return new Date().toLocaleTimeString("id-ID",{hour:"2-digit",
     c.appendChild(s);
   }
 })();
-async function loadData(){
-  try {
-    const res = await fetch("/api/list");
-    const json = await res.json();
-    if(json.status && json.data) dat = json.data;
-    else throw new Error("bad response");
-  } catch(e){
-    console.warn("fetch /api/list failed:", e.message);
-  }
+
+function loadData(){
+  dat={
+    "SEARCH":{
+      "YouTube Search":{"status":true,"path":"api/search/ytsearch","description":"Cari video YouTube berdasarkan kata kunci dan dapatkan informasi lengkap seperti judul, durasi, thumbnail, dan link.","type":"json","endpoint":"/api/search/ytsearch","method":"GET","params":{"query":"Masukan query"}},
+      "LK21 Search":{"status":true,"path":"api/search/lk21","description":"Cari film atau series di LK21 berdasarkan judul dan dapatkan informasi seperti genre, tahun rilis, dan link streaming.","type":"json","endpoint":"/api/search/lk21","method":"GET","params":{"query":"Masukan query"}}
+    },
+    "MAKER":{
+      "Remove Background":{"status":true,"path":"api/maker/removebg","description":"Hapus background gambar secara otomatis menggunakan AI. Masukkan URL gambar dan dapatkan hasil tanpa background.","type":"json","endpoint":"/api/maker/removebg","method":"GET","params":{"url":"Masukan url gambar"}}
+    },
+    "STALK":{
+      "Instagram Stalk":{"status":true,"path":"api/stalk/igstalk","description":"Lihat informasi profil akun Instagram secara publik, termasuk bio, jumlah followers, following, dan postingan.","type":"json","endpoint":"/api/stalk/igstalk","method":"GET","params":{"username":"Masukan username"}}
+    },
+    "AI":{
+      "Chat GPT":{"status":true,"path":"api/ai/gpt","description":"Berinteraksi dengan AI ChatGPT untuk menjawab pertanyaan, membuat teks, atau percakapan umum. Gunakan sessionId untuk melanjutkan sesi chat sebelumnya.","type":"json","endpoint":"/api/ai/gpt","method":"GET","params":{"text":"Beri pertanyaan","sessionId":"Masukan sessionId"}},
+      "Text To Image":{"status":true,"path":"api/ai/txt2img","description":"Buat gambar secara otomatis dari deskripsi teks menggunakan AI. Masukkan prompt sedetail mungkin untuk hasil yang lebih akurat.","type":"json","endpoint":"/api/ai/txt2img","method":"GET","params":{"prompt":"Ketik promt gambar"}}
+    },
+    "DOWNLOAD":{
+      "MediaFire Download":{"status":true,"path":"api/download/mediafire","description":"Unduh file dari MediaFire menggunakan link langsung dan dapatkan direct download URL tanpa iklan.","type":"json","endpoint":"/api/download/mediafire","method":"GET","params":{"url":"Masukan url mediafire"}},
+      "Youtube MP4 Download":{"status":true,"path":"api/download/ytmp4","description":"Unduh video YouTube dalam format MP4. Masukkan URL video YouTube dan dapatkan link download langsung.","type":"json","endpoint":"/api/download/ytmp4","method":"GET","params":{"url":"Masukan url youtube"}},
+      "Facebook Download":{"status":true,"path":"api/download/facebook","description":"Unduh video dari Facebook menggunakan link postingan. Mendukung video publik dalam kualitas HD maupun SD.","type":"json","endpoint":"/api/download/facebook","method":"GET","params":{"url":"Masukan URL Facebook"}},
+      "Spotify Download":{"status":true,"path":"api/download/spotifydl","description":"Download lagu dari Spotify menggunakan link track. Mendapatkan judul, artist, album, cover, dan link download MP3.","type":"json","endpoint":"/api/download/spotifydl","method":"GET","params":{"url":"Masukan URL Spotify track"}}
+    },
+    "INFO":{
+      "API Info":{"status":true,"path":"api/info/api","description":"Mengambil informasi lengkap semua endpoint yang tersedia beserta kategori dan jumlahnya.","type":"json","endpoint":"/api/info/api","method":"GET","params":{}}
+    }
+  };
   afterLoad();
 }
 
-function afterLoad(){initNavStats();initTabs();renderGrid();initHeroUrl();runHeroTerminal();}
-function initNavStats(){
-  let total=0,active=0;
-  for(const cat of Object.values(dat))for(const api of Object.values(cat)){total++;if(api.status)active++;}
-  document.getElementById("pTotal").textContent=total+" APIs";
-  document.getElementById("pActive").textContent=active+" Active";
+function afterLoad() {
+  initNavStats();
+  initTabs();
+  renderGrid();
+  initHeroUrl();
+  runHeroTerminal();
 }
-function initHeroUrl(){const el=document.getElementById("heroUrl");if(el)el.textContent=base()+"/api/info/api";}
-function copyEp(btn){navigator.clipboard.writeText(base()+"/api/info/api").then(()=>{btn.textContent="copied!";setTimeout(()=>btn.textContent="copy",1500);});}
-function initTabs(){
-  const wrap=document.getElementById("tabs");wrap.innerHTML="";
-  ["ALL",...Object.keys(dat)].forEach(cat=>{
-    const b=document.createElement("button");
-    b.className="tab"+(cat==="ALL"?" active":"");b.dataset.cat=cat;b.textContent=cat;
-    b.onclick=()=>{activeFilter=cat;document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.cat===cat));renderGrid();};
+
+function initNavStats() {
+  let total = 0,
+      active = 0;
+
+  for (const cat of Object.values(dat)) {
+    for (const api of Object.values(cat)) {
+      total++;
+      if (api.status) active++;
+    }
+  }
+
+  document.getElementById("pTotal").textContent = total + " APIs";
+  document.getElementById("pActive").textContent = active + " Active";
+}
+
+function initHeroUrl() {
+  const el = document.getElementById("heroUrl");
+  if (el) el.textContent = base() + "/api/info/api";
+}
+
+function copyEp(btn) {
+  navigator.clipboard.writeText(base() + "/api/info/api").then(() => {
+    btn.textContent = "copied!";
+    setTimeout(() => btn.textContent = "copy", 1500);
+  });
+}
+
+function initTabs() {
+  const wrap = document.getElementById("tabs");
+  wrap.innerHTML = "";
+
+  ["ALL", ...Object.keys(dat)].forEach(cat => {
+    const b = document.createElement("button");
+
+    b.className = "tab" + (cat === "ALL" ? " active" : "");
+    b.dataset.cat = cat;
+    b.textContent = cat;
+
+    b.onclick = () => {
+      activeFilter = cat;
+
+      document.querySelectorAll(".tab").forEach(t =>
+        t.classList.toggle("active", t.dataset.cat === cat)
+      );
+
+      renderGrid();
+    };
+
     wrap.appendChild(b);
   });
 }
-function renderGrid(){
-  const grid=document.getElementById("grid");grid.innerHTML="";
-  const q=(document.getElementById("searchInput")?.value||"").toLowerCase();
-  let idx=0;
-  for(const [cat,apis] of Object.entries(dat)){
-    if(activeFilter!=="ALL"&&cat!==activeFilter)continue;
-    const filtered=Object.entries(apis).filter(([name,api])=>!q||name.toLowerCase().includes(q)||api.description.toLowerCase().includes(q)||cat.toLowerCase().includes(q));
-    if(!filtered.length)continue;
-    const group=document.createElement("div");group.className="cat-group";
-    if(activeFilter==="ALL"){const title=document.createElement("div");title.className="cat-group-title";title.textContent=cat;group.appendChild(title);}
-    const gg=document.createElement("div");gg.className="cat-group-grid";
-    for(const [name,api] of filtered){
-      const pc=Object.keys(api.params).length;
-      const card=document.createElement("div");card.className="card";
-      card.style.setProperty("--delay",(idx*0.045+.05)+"s");
-      card.innerHTML=`<div class="card-top"><span class="cat-badge">${cat}</span><span class="sdot ${api.status?"on":"off"}"></span></div><div class="card-name">${name}</div><div class="card-desc">${api.description}</div><div class="card-foot"><span class="tbadge ${api.type}">${api.type}</span><span class="pcount">${pc>0?pc+" param"+(pc>1?"s":""):"no params"}</span></div>`;
-      card.onclick=()=>openModal(cat,name,api);
-      gg.appendChild(card);idx++;
+
+function renderGrid() {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  const q = (
+    document.getElementById("searchInput")?.value || ""
+  ).toLowerCase();
+
+  let idx = 0;
+
+  for (const [cat, apis] of Object.entries(dat)) {
+    if (activeFilter !== "ALL" && cat !== activeFilter) continue;
+
+    const filtered = Object.entries(apis).filter(([name, api]) =>
+      !q ||
+      name.toLowerCase().includes(q) ||
+      api.description.toLowerCase().includes(q) ||
+      cat.toLowerCase().includes(q)
+    );
+
+    if (!filtered.length) continue;
+
+    const group = document.createElement("div");
+    group.className = "cat-group";
+
+    if (activeFilter === "ALL") {
+      const title = document.createElement("div");
+      title.className = "cat-group-title";
+      title.textContent = cat;
+      group.appendChild(title);
     }
-    group.appendChild(gg);grid.appendChild(group);
+
+    const gg = document.createElement("div");
+    gg.className = "cat-group-grid";
+
+    for (const [name, api] of filtered) {
+      const pc = Object.keys(api.params).length;
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.style.setProperty("--delay", (idx * 0.045 + 0.05) + "s");
+
+      card.innerHTML = `
+<div class="card-top">
+  <span class="cat-badge">${cat}</span>
+  <span class="sdot ${api.status ? "on" : "off"}"></span>
+</div>
+<div class="card-name">${name}</div>
+<div class="card-desc">${api.description}</div>
+<div class="card-foot">
+  <span class="tbadge ${api.type}">${api.type}</span>
+  <span class="pcount">${pc > 0 ? pc + " param" + (pc > 1 ? "s" : "") : "no params"}</span>
+</div>`;
+
+      card.onclick = () => openModal(cat, name, api);
+
+      gg.appendChild(card);
+      idx++;
+    }
+
+    group.appendChild(gg);
+    grid.appendChild(group);
   }
-  if(!grid.children.length)grid.innerHTML=`<div class="empty-search">Tidak ada endpoint ditemukan untuk "<span>${q}</span>"</div>`;
+
+  if (!grid.children.length) {
+    grid.innerHTML = `<div class="empty-search">Tidak ada endpoint ditemukan untuk "<span>${q}</span>"</div>`;
+  }
 }
-function buildUrlRaw(api){
-  const keys=Object.keys(api.params);
-  const url=base()+"/"+api.path;
-  if(!keys.length)return url;
-  const filled={};
-  keys.forEach(k=>{const v=document.getElementById("inp_"+k)?.value;if(v)filled[k]=v;});
-  if(!Object.keys(filled).length)return url;
-  return url+"?"+keys.map(k=>filled[k]?`${k}=${encodeURIComponent(filled[k])}`:`${k}=`).join("&");
+
+function buildUrlRaw(api) {
+  const keys = Object.keys(api.params);
+  const url = base() + "/" + api.path;
+
+  if (!keys.length) return url;
+
+  const filled = {};
+
+  keys.forEach(k => {
+    const v = document.getElementById("inp_" + k)?.value;
+    if (v) filled[k] = v;
+  });
+
+  if (!Object.keys(filled).length) return url;
+
+  return (
+    url +
+    "?" +
+    keys
+      .map(k =>
+        filled[k]
+          ? `${k}=${encodeURIComponent(filled[k])}`
+          : `${k}=`
+      )
+      .join("&")
+  );
 }
-function buildUrlHtml(api){
-  const keys=Object.keys(api.params);
-  let html=`<span class="ep-base">${base()}/</span><span class="ep-name">${api.path}</span>`;
-  if(!keys.length)return html;
-  html+=`<span class="ep-q">?</span>`;
-  html+=keys.map((k,i)=>{const val=document.getElementById("inp_"+k)?.value||"";return(i>0?`<span class="ep-q">&amp;</span>`:"")+`<span class="ep-key">${k}</span><span class="ep-q">=</span>`+(val?`<span class="ep-val">${encodeURIComponent(val)}</span>`:"");}).join("");
+
+function buildUrlHtml(api) {
+  const keys = Object.keys(api.params);
+
+  let html =
+    `<span class="ep-base">${base()}/</span>` +
+    `<span class="ep-name">${api.path}</span>`;
+
+  if (!keys.length) return html;
+
+  html += `<span class="ep-q">?</span>`;
+
+  html += keys.map((k, i) => {
+    const val = document.getElementById("inp_" + k)?.value || "";
+
+    return (
+      (i > 0 ? `<span class="ep-q">&amp;</span>` : "") +
+      `<span class="ep-key">${k}</span>` +
+      `<span class="ep-q">=</span>` +
+      (val
+        ? `<span class="ep-val">${encodeURIComponent(val)}</span>`
+        : "")
+    );
+  }).join("");
+
   return html;
 }
+
 function buildCodeSnippet(api,lang){
   const url=buildUrlRaw(api);
   if(lang==="curl")return`curl -X GET \\\n  "${url}" \\\n  -H "Accept: application/json"`;
   if(lang==="js")return`const res = await fetch(\n  "${url}"\n);\nconst data = await res.json();\nconsole.log(data);`;
+  if(lang==="ts")return`const res: Response = await fetch(\n  "${url}"\n);\nconst data: unknown = await res.json();\nconsole.log(data);`;
   if(lang==="py")return`import requests\n\nurl = "${url}"\nres = requests.get(url)\ndata = res.json()\nprint(data)`;
   if(lang==="php")return`<?php\n$res = file_get_contents("${url}");\n$data = json_decode($res, true);\nprint_r($data);`;
   if(lang==="dart")return`import 'package:http/http.dart' as http;\nimport 'dart:convert';\n\nfinal res = await http.get(Uri.parse(\n  "${url}"\n));\nfinal data = jsonDecode(res.body);\nprint(data);`;
   if(lang==="go")return`package main\n\nimport (\n  "fmt"\n  "io"\n  "net/http"\n)\n\nfunc main() {\n  res, _ := http.Get(\n    "${url}",\n  )\n  defer res.Body.Close()\n  body, _ := io.ReadAll(res.Body)\n  fmt.Println(string(body))\n}`;
+  if(lang==="java")return`import java.net.http.*;\nimport java.net.URI;\n\nHttpClient client = HttpClient.newHttpClient();\nHttpRequest request = HttpRequest.newBuilder()\n  .uri(URI.create("${url}"))\n  .GET()\n  .build();\nHttpResponse<String> res = client.send(request, HttpResponse.BodyHandlers.ofString());\nSystem.out.println(res.body());`;
+  if(lang==="cpp")return`#include <iostream>\n#include <curl/curl.h>\n\nint main() {\n  CURL *curl = curl_easy_init();\n  if (curl) {\n    curl_easy_setopt(curl, CURLOPT_URL, "${url}");\n    curl_easy_perform(curl);\n    curl_easy_cleanup(curl);\n  }\n  return 0;\n}`;
   return "";
 }
 
-function renderCodeBox(){if(!activeApi)return;document.getElementById("codeContent").textContent=buildCodeSnippet(activeApi,activeCodeTab);}
-function setCodeTab(tab){activeCodeTab=tab;document.querySelectorAll(".code-tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===tab));renderCodeBox();}
+function renderCodeBox() {
+  if (!activeApi) return;
+
+  document.getElementById("codeContent").textContent =
+    buildCodeSnippet(activeApi, activeCodeTab);
+}
+
+function setCodeTab(tab) {
+  activeCodeTab = tab;
+
+  document.querySelectorAll(".code-tab").forEach(t =>
+    t.classList.toggle("active", t.dataset.tab === tab)
+  );
+
+  renderCodeBox();
+}
+
 function copyCode(){
   const text=document.getElementById("codeContent").textContent;
-  navigator.clipboard.writeText(text).then(()=>{const btn=document.querySelector(".code-copy");btn.textContent="copied!";setTimeout(()=>btn.textContent="copy",1500);});
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.querySelector(".code-copy");
+    btn.innerHTML=`${copyIcon} Copied!`;
+    setTimeout(()=>{
+      btn.innerHTML=`${copyIcon} Copy`;
+    },1500);
+  });
 }
+
 function copyUrl(){
-  navigator.clipboard.writeText(buildUrlRaw(activeApi)).then(()=>{const btn=document.querySelector(".ep-copy-btn");btn.textContent="copied!";setTimeout(()=>btn.textContent="copy url",1500);});
+  navigator.clipboard.writeText(buildUrlRaw(activeApi)).then(()=>{
+    const btn=document.querySelector(".ep-copy-btn");
+    btn.innerHTML=`${copyIcon} Copied!`;
+    setTimeout(()=>{
+      btn.innerHTML=`${copyIcon} Copy URL`;
+    },1500);
+  });
 }
-function toggleStatus(){statusShown=!statusShown;document.getElementById("statusPanel").classList.toggle("show",statusShown);}
-function renderStatusCodes(){
-  const grid=document.getElementById("statusGrid");grid.innerHTML="";
-  const table=document.createElement("table");table.className="status-table";
-  table.innerHTML=`<thead><tr><th>Status</th><th>Arti</th></tr></thead>`;
-  const tbody=document.createElement("tbody");
-  STATUS_CODES.forEach(s=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<td><span class="status-code ${s.cls}">${s.icon} ${s.code} ${s.label}</span></td><td class="status-desc">${s.desc}</td>`;
+
+function toggleStatus() {
+  statusShown = !statusShown;
+
+  document
+    .getElementById("statusPanel")
+    .classList.toggle("show", statusShown);
+}
+
+function renderStatusCodes() {
+  const grid = document.getElementById("statusGrid");
+  grid.innerHTML = "";
+
+  const table = document.createElement("table");
+  table.className = "status-table";
+
+  table.innerHTML = `
+<thead>
+  <tr>
+    <th>Status</th>
+    <th>Arti</th>
+  </tr>
+</thead>`;
+
+  const tbody = document.createElement("tbody");
+
+  STATUS_CODES.forEach(s => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+<td>
+  <span class="status-code ${s.cls}">
+    ${s.icon} ${s.code} ${s.label}
+  </span>
+</td>
+<td class="status-desc">${s.desc}</td>`;
+
     tbody.appendChild(tr);
   });
-  table.appendChild(tbody);grid.appendChild(table);
+
+  table.appendChild(tbody);
+  grid.appendChild(table);
 }
-function updatePreview(){if(!activeApi)return;document.getElementById("epPreview").innerHTML=buildUrlHtml(activeApi);renderCodeBox();}
-function clearResult(){document.getElementById("resultWrap").classList.remove("show");document.getElementById("resultContent").innerHTML="";document.getElementById("resultActions").innerHTML="";lastResultJson="";}
-function openModal(cat,name,api){
-  activeApi={cat,name,...api};statusShown=false;
-  document.getElementById("statusPanel").classList.remove("show");
-  document.getElementById("mCat").textContent=cat;
-  document.getElementById("mTitle").textContent=name;
-  document.getElementById("mDesc").textContent=api.description;
-  const mt=document.getElementById("mType");mt.className=`mtag tbadge ${api.type}`;mt.textContent=api.type;
-  const st=document.getElementById("mStat");st.textContent=api.status?"● Active":"● Inactive";st.className="mstatus "+(api.status?"on":"off");
-  const paramsEl=document.getElementById("mParams");paramsEl.innerHTML="";
-  const keys=Object.keys(api.params);
-  if(!keys.length)paramsEl.innerHTML=`<div class="no-params">— tidak ada parameter</div>`;
-  else keys.forEach(k=>{const row=document.createElement("div");row.className="param-row";row.innerHTML=`<span class="pk">${k}</span><span class="pv">${api.params[k]}</span>`;paramsEl.appendChild(row);});
-  const inputsEl=document.getElementById("mInputs");inputsEl.innerHTML="";
-  keys.forEach(k=>{const row=document.createElement("div");row.className="input-row";row.innerHTML=`<label class="input-label">${k}</label><input class="tinput" id="inp_${k}" placeholder="${api.params[k]}" oninput="updatePreview()"/>`;inputsEl.appendChild(row);});
-  const tabsEl=document.getElementById("codeTabs");tabsEl.innerHTML="";
-  ["curl","js","py","php","dart","go"].forEach(t=>{const b=document.createElement("button");b.className="code-tab"+(t===activeCodeTab?" active":"");b.dataset.tab=t;b.innerHTML=t==="curl"
+
+function updatePreview() {
+  if (!activeApi) return;
+
+  document.getElementById("epPreview").innerHTML =
+    buildUrlHtml(activeApi);
+
+  renderCodeBox();
+}
+
+function clearResult() {
+  document.getElementById("resultWrap").classList.remove("show");
+  document.getElementById("resultContent").innerHTML = "";
+  document.getElementById("resultActions").innerHTML = "";
+  lastResultJson = "";
+}
+
+function openModal(cat, name, api) {
+  activeApi = { cat, name, ...api };
+  statusShown = false;
+
+  document
+    .getElementById("statusPanel")
+    .classList.remove("show");
+
+  document.getElementById("mCat").textContent = cat;
+  document.getElementById("mTitle").textContent = name;
+  document.getElementById("mDesc").textContent = api.description;
+
+  const mt = document.getElementById("mType");
+  mt.className = `mtag tbadge ${api.type}`;
+  mt.textContent = api.type;
+
+  const st = document.getElementById("mStat");
+  st.textContent = api.status ? "● Active" : "● Inactive";
+  st.className = "mstatus " + (api.status ? "on" : "off");
+
+  const paramsEl = document.getElementById("mParams");
+  paramsEl.innerHTML = "";
+
+  const keys = Object.keys(api.params);
+
+  if (!keys.length) {
+    paramsEl.innerHTML = `
+<div class="no-params">
+  — tidak ada parameter
+</div>`;
+  } else {
+    keys.forEach(k => {
+      const row = document.createElement("div");
+
+      row.className = "param-row";
+      row.innerHTML = `
+<span class="pk">${k}</span>
+<span class="pv">${api.params[k]}</span>`;
+
+      paramsEl.appendChild(row);
+    });
+  }
+
+  const inputsEl = document.getElementById("mInputs");
+  inputsEl.innerHTML = "";
+
+  keys.forEach(k => {
+    const row = document.createElement("div");
+
+    row.className = "input-row";
+    row.innerHTML = `
+<label class="input-label">${k}</label>
+<input
+  class="tinput"
+  id="inp_${k}"
+  placeholder="${api.params[k]}"
+  oninput="updatePreview()"
+/>`;
+
+    inputsEl.appendChild(row);
+  });
+
+  const tabsEl = document.getElementById("codeTabs");
+  tabsEl.innerHTML = "";
+
+  ["curl","js","ts","py","php","dart","go","java","cpp"].forEach(t=>{
+  const b=document.createElement("button");
+  b.className="code-tab"+(t===activeCodeTab?" active":"");
+  b.dataset.tab=t;
+  b.innerHTML=t==="curl"
   ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg> cURL`
   : t==="js"
   ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="var(--amber)"><rect width="24" height="24" rx="3"/><text x="4" y="18" font-size="14" fill="#000" font-weight="bold">JS</text></svg> JavaScript`
+  : t==="ts"
+  ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="#3178C6"><rect width="24" height="24" rx="3"/><text x="4" y="18" font-size="13" fill="#fff" font-weight="bold">TS</text></svg> TypeScript`
   : t==="py"
   ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M11.9 2C9.3 2 7.5 3.2 7.5 4.8V6.5h4.5v.5H5.8C4.2 7 3 8.5 3 10.5c0 2.1 1.2 3.5 2.8 3.5H7v-1.7c0-1.8 1.5-3.3 3.3-3.3h4.4c1.5 0 2.8-1.2 2.8-2.8V4.8C17.5 3.2 15.5 2 11.9 2zm-2.4 1.8c.5 0 .9.4.9.9s-.4.9-.9.9-.9-.4-.9-.9.4-.9.9-.9z" fill="#3776AB"/><path d="M12.1 22c2.6 0 4.4-1.2 4.4-2.8v-1.7h-4.5v-.5h6.2c1.6 0 2.8-1.5 2.8-3.5 0-2.1-1.2-3.5-2.8-3.5H17v1.7c0 1.8-1.5 3.3-3.3 3.3H9.3c-1.5 0-2.8 1.2-2.8 2.8v2.2C6.5 20.8 8.5 22 12.1 22zm2.4-1.8c-.5 0-.9-.4-.9-.9s.4-.9.9-.9.9.4.9.9-.4.9-.9.9z" fill="#FFD43B"/></svg> Python`
   : t==="php"
   ? `<svg width="11" height="11" viewBox="0 0 128 128"><path d="M64 0C28.7 0 0 28.7 0 64s28.7 64 64 64 64-28.7 64-64S99.3 0 64 0z" fill="#8993be"/><path d="M32 48h12l4 20 10-20h12l-16 32H42z" fill="#fff"/><path d="M76 48h18c6 0 10 4 10 10 0 10-8 16-18 16h-6l-2 6H66zm10 6l-4 14h4c4 0 8-2 8-8 0-4-2-6-8-6z" fill="#fff"/></svg> PHP`
   : t==="dart"
   ? `<svg width="11" height="11" viewBox="0 0 24 24"><path d="M4.11 5.45L5.45 4.1s.6-.6 1.5-.6h7.3l3.85 3.85-9.7 9.7-4.29-4.29s-.6-.6-.6-1.5V5.96s0-.9.6-1.51z" fill="#01FFFF" opacity=".8"/><path d="M18.1 7.35l1.35 1.35s.6.6.6 1.5v5.59s0 .9-.6 1.5l-1.35 1.35-5-5z" fill="#01FFFF" opacity=".6"/><path d="M5.45 19.9l-1.34-1.35s-.6-.6-.6-1.5v-.75l4.85-4.85 5 5z" fill="#00B4AB"/><path d="M14.25 3.5H6.95s-.9 0-1.5.6L4.1 5.45l9.7 9.7 5-5z" fill="#00B4AB"/></svg> Dart`
-  : `<svg width="11" height="11" viewBox="0 0 24 24"><path d="M2 12l4.5-8.5h11L22 12l-4.5 8.5h-11z" fill="none" stroke="#00ACD7" stroke-width="1.5"/><text x="7" y="16" font-size="7" fill="#00ACD7" font-weight="bold">Go</text></svg> Go`;
-b.onclick=()=>setCodeTab(t);tabsEl.appendChild(b);});
-  renderStatusCodes();updatePreview();clearResult();
-  document.querySelector(".modal-inner").scrollTop=0;
-  document.getElementById("overlay").classList.add("open");
+  : t==="go"
+  ? `<svg width="11" height="11" viewBox="0 0 24 24"><path d="M2 12l4.5-8.5h11L22 12l-4.5 8.5h-11z" fill="none" stroke="#00ACD7" stroke-width="1.5"/><text x="7" y="16" font-size="7" fill="#00ACD7" font-weight="bold">Go</text></svg> Go`
+  : t==="java"
+  ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="#f89820"><path d="M8 21s-1 1 1 1h6c2 0 1-1 1-1s1.3-1 0-2c0 0-3 .8-8 0-1-.2-1 1 0 2zm.5-2.5c-1-2 .5-3.5.5-3.5s1 1 3 1 3-1 3-1 1.5 1.5.5 3.5c0 0-1.5.5-3.5.5s-3.5-.5-4-.5zM12 2s3 3-1 6c-3 2.4-1 4-1 4s-4-2-2-5c1.5-2 4-3 4-5z"/></svg> Java`
+  : `<svg width="11" height="11" viewBox="0 0 24 24" fill="#00599C"><circle cx="12" cy="12" r="11"/><text x="4.5" y="16" font-size="9" fill="#fff" font-weight="bold">C++</text></svg> C++`;
+  b.onclick=()=>setCodeTab(t);tabsEl.appendChild(b);
+});
+
+  renderStatusCodes();
+  updatePreview();
+  clearResult();
+
+  document.querySelector(".modal-inner").scrollTop = 0;
+
+  document
+    .getElementById("overlay")
+    .classList.add("open");
 }
 
-function closeModal(){document.getElementById("overlay").classList.remove("open");activeApi=null;}
-async function runApi(){
-  if(!activeApi)return;
-  const btn=document.getElementById("runBtn"),spinner=document.getElementById("runSpinner"),label=document.getElementById("runLabel");
-  btn.disabled=true;spinner.style.display="block";label.textContent="Loading...";
-  clearResult();
-  const url=buildUrlRaw(activeApi),type=activeApi.type;
-  const wrap=document.getElementById("resultWrap"),content=document.getElementById("resultContent"),rl=document.getElementById("rTypeLabel"),actions=document.getElementById("resultActions");
-  rl.className=`tbadge ${type}`;rl.textContent=type;
-  try{
-    const res=await fetch(url);
-    const text=await res.text();
-    let json;try{json=JSON.parse(text);}catch{json=text;}
-    if(type==="json"){
-      lastResultJson=typeof json==="object"?JSON.stringify(json,null,2):json;
-      const box=document.createElement("div");box.className="json-box";box.textContent=lastResultJson;content.appendChild(box);
-      actions.innerHTML=`<button class="result-action-btn" onclick="copyResult()">${copyIcon} Copy</button>`;
-    }else if(type==="image"){
-      const u=json?.result?.url||json?.result||json?.url||json?.data?.url||"";
-      if(u){const w=document.createElement("div");w.className="img-result";w.innerHTML=`<img src="${u}" loading="lazy"/><div class="media-bar"><div class="media-url"><a href="${u}" target="_blank">${u}</a></div><a href="${u}" download target="_blank" class="dl-btn">${dlIcon} Download</a><a href="${u}" target="_blank" class="dl-btn">${openIcon}</a></div>`;content.appendChild(w);actions.innerHTML=`<a href="${u}" download target="_blank" class="result-action-btn">${dlIcon} Download</a>`;}
-      else{const box=document.createElement("div");box.className="json-box";box.textContent=typeof json==="object"?JSON.stringify(json,null,2):json;content.appendChild(box);}
-    }else if(type==="video"){
-      const u=json?.result?.url||json?.result||json?.url||json?.data?.url||"";
-      if(u){const w=document.createElement("div");w.className="video-result";w.innerHTML=`<video controls src="${u}"></video><div class="media-bar"><div class="media-url"><a href="${u}" target="_blank">${u}</a></div><a href="${u}" download target="_blank" class="dl-btn">${dlIcon} Download</a><a href="${u}" target="_blank" class="dl-btn">${openIcon}</a></div>`;content.appendChild(w);actions.innerHTML=`<a href="${u}" download target="_blank" class="result-action-btn">${dlIcon} Download</a>`;}
-      else{const box=document.createElement("div");box.className="json-box";box.textContent=typeof json==="object"?JSON.stringify(json,null,2):json;content.appendChild(box);}
-    }else if(type==="audio"){
-      const u=json?.result?.url||json?.result||json?.url||json?.data?.url||"";
-      if(u){const w=document.createElement("div");w.className="audio-result";w.innerHTML=`<audio controls src="${u}"></audio><div class="audio-actions"><div class="audio-url"><a href="${u}" target="_blank">${u}</a></div><a href="${u}" download target="_blank" class="dl-btn">${dlIcon} Download</a></div>`;content.appendChild(w);actions.innerHTML=`<a href="${u}" download target="_blank" class="result-action-btn">${dlIcon} Download</a>`;}
-      else{const box=document.createElement("div");box.className="json-box";box.textContent=typeof json==="object"?JSON.stringify(json,null,2):json;content.appendChild(box);}
-    }
-  }catch(e){const box=document.createElement("div");box.className="json-box err";box.textContent="Error: "+e.message;content.appendChild(box);}
-  wrap.classList.add("show");
-  btn.disabled=false;spinner.style.display="none";label.textContent="▶  Run Request";
-  setTimeout(()=>document.querySelector(".modal-inner").scrollTo({top:99999,behavior:"smooth"}),80);
+function closeModal() {
+  document.getElementById("overlay").classList.remove("open");
+  activeApi = null;
 }
+
+async function runApi() {
+  if (!activeApi) return;
+
+  const btn = document.getElementById("runBtn");
+  const spinner = document.getElementById("runSpinner");
+  const label = document.getElementById("runLabel");
+
+  btn.disabled = true;
+  spinner.style.display = "block";
+  label.textContent = "Loading...";
+
+  clearResult();
+
+  const url = buildUrlRaw(activeApi);
+  const type = activeApi.type;
+
+  const wrap = document.getElementById("resultWrap");
+  const content = document.getElementById("resultContent");
+  const rl = document.getElementById("rTypeLabel");
+  const actions = document.getElementById("resultActions");
+
+  rl.className = `tbadge ${type}`;
+  rl.textContent = type;
+
+  try {
+    const res = await fetch(url);
+    const text = await res.text();
+
+    let json;
+
+    try {
+      json = JSON.parse(text);
+    } catch {
+      json = text;
+    }
+
+    if (type === "json") {
+      lastResultJson =
+        typeof json === "object"
+          ? JSON.stringify(json, null, 2)
+          : json;
+
+      const box = document.createElement("div");
+      box.className = "json-box";
+      box.textContent = lastResultJson;
+
+      content.appendChild(box);
+
+      actions.innerHTML = `
+        <button class="result-action-btn" onclick="copyResult()">
+          ${copyIcon} Copy
+        </button>
+      `;
+
+    } else if (type === "image") {
+      const u =
+        json?.result?.url ||
+        json?.result ||
+        json?.url ||
+        json?.data?.url ||
+        "";
+
+      if (u) {
+        const w = document.createElement("div");
+        w.className = "img-result";
+
+        w.innerHTML = `
+          <img src="${u}" loading="lazy"/>
+
+          <div class="media-bar">
+            <div class="media-url">
+              <a href="${u}" target="_blank">${u}</a>
+            </div>
+
+            <a href="${u}" download target="_blank" class="dl-btn">
+              ${dlIcon} Download
+            </a>
+
+            <a href="${u}" target="_blank" class="dl-btn">
+              ${openIcon}
+            </a>
+          </div>
+        `;
+
+        content.appendChild(w);
+
+        actions.innerHTML = `
+          <a href="${u}" download target="_blank" class="result-action-btn">
+            ${dlIcon} Download
+          </a>
+        `;
+      } else {
+        const box = document.createElement("div");
+        box.className = "json-box";
+        box.textContent =
+          typeof json === "object"
+            ? JSON.stringify(json, null, 2)
+            : json;
+
+        content.appendChild(box);
+      }
+
+    } else if (type === "video") {
+      const u =
+        json?.result?.url ||
+        json?.result ||
+        json?.url ||
+        json?.data?.url ||
+        "";
+
+      if (u) {
+        const w = document.createElement("div");
+        w.className = "video-result";
+
+        w.innerHTML = `
+          <video controls src="${u}"></video>
+
+          <div class="media-bar">
+            <div class="media-url">
+              <a href="${u}" target="_blank">${u}</a>
+            </div>
+
+            <a href="${u}" download target="_blank" class="dl-btn">
+              ${dlIcon} Download
+            </a>
+
+            <a href="${u}" target="_blank" class="dl-btn">
+              ${openIcon}
+            </a>
+          </div>
+        `;
+
+        content.appendChild(w);
+
+        actions.innerHTML = `
+          <a href="${u}" download target="_blank" class="result-action-btn">
+            ${dlIcon} Download
+          </a>
+        `;
+      } else {
+        const box = document.createElement("div");
+        box.className = "json-box";
+        box.textContent =
+          typeof json === "object"
+            ? JSON.stringify(json, null, 2)
+            : json;
+
+        content.appendChild(box);
+      }
+
+    } else if (type === "audio") {
+      const u =
+        json?.result?.url ||
+        json?.result ||
+        json?.url ||
+        json?.data?.url ||
+        "";
+
+      if (u) {
+        const w = document.createElement("div");
+        w.className = "audio-result";
+
+        w.innerHTML = `
+          <audio controls src="${u}"></audio>
+
+          <div class="audio-actions">
+            <div class="audio-url">
+              <a href="${u}" target="_blank">${u}</a>
+            </div>
+
+            <a href="${u}" download target="_blank" class="dl-btn">
+              ${dlIcon} Download
+            </a>
+          </div>
+        `;
+
+        content.appendChild(w);
+
+        actions.innerHTML = `
+          <a href="${u}" download target="_blank" class="result-action-btn">
+            ${dlIcon} Download
+          </a>
+        `;
+      } else {
+        const box = document.createElement("div");
+        box.className = "json-box";
+        box.textContent =
+          typeof json === "object"
+            ? JSON.stringify(json, null, 2)
+            : json;
+
+        content.appendChild(box);
+      }
+    }
+
+  } catch (e) {
+    const box = document.createElement("div");
+    box.className = "json-box err";
+    box.textContent = "Error: " + e.message;
+
+    content.appendChild(box);
+  }
+
+  wrap.classList.add("show");
+
+  btn.disabled = false;
+  spinner.style.display = "none";
+  label.textContent = "▶  Run Request";
+
+  setTimeout(() => {
+    document
+      .querySelector(".modal-inner")
+      .scrollTo({
+        top: 99999,
+        behavior: "smooth"
+      });
+  }, 80);
+}
+
 function copyResult(){
   navigator.clipboard.writeText(lastResultJson).then(()=>{
     const btn=document.querySelector("#resultActions .result-action-btn");
-    if(btn){btn.innerHTML=`${copyIcon} Copied!`;setTimeout(()=>btn.innerHTML=`${copyIcon} Copy`,1500);}
+    if(btn){
+      btn.innerHTML=`${copyIcon} Copied!`;
+      setTimeout(()=>btn.innerHTML=`${copyIcon} Copy`,1500);
+    }
   });
 }
+
 function toggleSidebar(){
-  const sb=document.getElementById("sidebar"),bd=document.getElementById("sbBackdrop"),btn=document.getElementById("menuBtn");
-  const open=sb.classList.toggle("open");bd.classList.toggle("show",open);btn.classList.toggle("open",open);
+  const sb=document.getElementById("sidebar"),
+        bd=document.getElementById("sbBackdrop"),
+        btn=document.getElementById("menuBtn");
+
+  const open=sb.classList.toggle("open");
+
+  bd.classList.toggle("show",open);
+  btn.classList.toggle("open",open);
 }
-function closeSidebar(){document.getElementById("sidebar").classList.remove("open");document.getElementById("sbBackdrop").classList.remove("show");document.getElementById("menuBtn").classList.remove("open");}
+
+function closeSidebar(){
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sbBackdrop").classList.remove("show");
+  document.getElementById("menuBtn").classList.remove("open");
+}
+
 function showPage(id){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById("page-"+id).classList.add("active");
+
   document.querySelectorAll(".sb-item").forEach(i=>i.classList.remove("active"));
   document.getElementById("nav-"+id)?.classList.add("active");
+
   closeSidebar();
 }
-let twLines=[],twIdx=0,twPos=0,twDeleting=false;
-let htRunning=false;
-async function runHeroTerminal(){
-const htLines=[
-  ["$ boot core.api --env=production","c-cmd",0],
-  ["","",80],
-  ["  Initializing boot sequence...","c-muted",60],
-  ["","",40],
-  ["  ✔ Loading configuration","c-ok",120],
-  ["  ✔ Connecting to database","c-ok",120],
-  ["  ✔ Initializing API modules","c-ok",120],
-  ["  ✔ Loading route handlers","c-ok",120],
-  ["  ✔ Starting HTTP server","c-ok",120],
-  ["  ✔ Verifying environment","c-ok",120],
-  ["  ✔ Server started successfully","c-ok",200],
-  ["","",60],
-  ["  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━","c-muted",0],
-  ["","",40],
-  ["  ⬡  core.api","c-logo",0],
-  ["","",30],
-  [`  Version   :  v1.0.0`,"c-info",60],
-  [`  Status    :  ONLINE`,"c-ok",60],
-  [`  Runtime   :  Node.js · Vercel`,"c-info",60],
-  [`  Uptime    :  99.7%`,"c-ok",60],
-  [`  Latency   :  ~142ms avg`,"c-warn",60],
-  [`  Endpoints :  ${Object.values(dat).reduce((a,c)=>a+Object.keys(c).length,0)} active`,"c-ok",60],
-  [`  Categories:  ${Object.keys(dat).join(", ")}`,"c-info",60],
-  ["","",40],
-  ["  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━","c-muted",0],
-  ["","",40],
-  ...Object.entries(dat).map(([cat,apis])=>[
-    `  ${cat.padEnd(10)}·  ${Object.keys(apis).join(", ")}`,
-    "c-accent",80
-  ]),
-  ["","",40],
-  ["  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━","c-muted",0],
-  ["","",40],
-  [`  Base URL  :  ${window.location.origin}`,"c-info",60],
-  ["","",40],
-  ["  Waiting for incoming requests...","c-warn",0],
+
+let twLines=[],
+    twIdx=0,
+    twPos=0,
+    twDeleting=false;
+
+const terminalScenes = [
+  [
+    ["$ npm install", "c-cmd", 0],
+    ["", "", 80],
+    ["  Resolving packages...", "c-muted", 80],
+    ["  ✔ package.json", "c-ok", 80],
+    ["  ✔ Installing dependencies...", "c-ok", 100],
+    ["  ✔ Packages installed successfully.", "c-ok", 300],
+  ],
+
+  [
+    ["$ npm run start", "c-cmd", 0],
+    ["", "", 80],
+    ["  > core-api@1.0.0 start", "c-info", 80],
+    ["  > node server.js", "c-info", 100],
+    ["", "", 60],
+    ["  ✔ Loading routes", "c-ok", 80],
+    ["  ✔ Initializing modules", "c-ok", 80],
+    ["  ✔ Web interface ready", "c-ok", 80],
+    ["  ✔ Server listening...", "c-ok", 300],
+  ],
+
+  [
+    ["$ cat info.js", "c-cmd", 0],
+    ["", "", 80],
+    ["  Name      : Core API", "c-info", 60],
+    ["  Version   : v1.0.0", "c-info", 60],
+    ["  Owner     : Mahpud", "c-info", 60],
+    [`  Base URL  : ${window.location.origin}`, "c-accent", 60],
+    ["  Status    : Online", "c-ok", 300],
+  ],
+
+  [
+    ["$ ls api/", "c-cmd", 0],
+    ["", "", 80],
+    ["  ai/", "c-accent", 40],
+    ["  downloader/", "c-accent", 40],
+    ["  tools/", "c-accent", 40],
+    ["  search/", "c-accent", 40],
+    ["  maker/", "c-accent", 40],
+    ["  random/", "c-accent", 300],
+  ],
+
+  [
+    ["$ curl /api/info", "c-cmd", 0],
+    ["", "", 80],
+    ['  {', "c-muted", 40],
+    ['    "status": true,', "c-ok", 40],
+    ['    "message": "Core API Online"', "c-info", 40],
+    ['  }', "c-muted", 300],
+  ]
 ];
-const htSleep=ms=>new Promise(r=>setTimeout(r,ms));
 
-  if(htRunning)return;htRunning=true;
-  const out=document.getElementById("htOutput");if(!out)return;
-  out.innerHTML="";
-  for(const [text,cls,delay] of htLines){
-    if(text===""){out.appendChild(document.createTextNode("\n"));}
-    else{
-      const span=document.createElement("span");if(cls)span.className=cls;
-      out.appendChild(span);
-      for(let i=0;i<text.length;i++){span.textContent+=text[i];await htSleep(text[i]===" "?5:12+Math.random()*8);}
+const htSleep = ms => new Promise(r => setTimeout(r, ms));
+let htRunning = false;
+let currentScene = 0;
+
+async function runHeroTerminal() {
+  if (htRunning) return;
+
+  htRunning = true;
+
+  const out = document.getElementById("htOutput");
+  if (!out) return;
+
+  while (true) {
+    out.innerHTML = "";
+
+    const lines = terminalScenes[currentScene];
+
+    for (const [text, cls, delay] of lines) {
+      if (text === "") {
+        out.appendChild(document.createTextNode("\n"));
+        await htSleep(250);
+        continue;
+      }
+
+      const wrap = document.createElement("span");
+      if (cls) wrap.className = cls;
+
+      const cursor = document.createElement("span");
+      cursor.className = "ht-cursor";
+      cursor.textContent = "▋";
+
+      out.appendChild(wrap);
+      out.appendChild(cursor);
+
+      for (let i = 0; i < text.length; i++) {
+        wrap.textContent += text[i];
+
+        if (cursor.parentNode) {
+          out.appendChild(cursor);
+        }
+
+        await htSleep(
+          text[i] === " "
+            ? 18
+            : 30 + Math.random() * 30
+        );
+      }
+
+      cursor.remove();
+
       out.appendChild(document.createTextNode("\n"));
+
+      await htSleep(delay || 350);
     }
-    if(delay>0)await htSleep(delay);
+
+    await htSleep(3500);
+
+    currentScene++;
+
+    if (currentScene >= terminalScenes.length) {
+      currentScene = 0;
+    }
   }
-  htRunning=false;
 }
 
-function toggleChat(){chatOpen=!chatOpen;document.getElementById("chatWindow").classList.toggle("open",chatOpen);if(chatOpen)document.getElementById("chatInput").focus();}
-async function sendChat(){
-  const input=document.getElementById("chatInput");
-  const msg=input.value.trim();if(!msg)return;
-  appendMsg("user",msg);input.value="";
-  chatHistory.push({role:"user",content:msg});
-  const typing=document.getElementById("chatTyping");typing.style.display="flex";scrollChat();
-  try{
-    const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:chatHistory})});
-    const json=await res.json();typing.style.display="none";
-    const reply=json?.result||json?.message||"Maaf, tidak ada respons.";
-    chatHistory.push({role:"assistant",content:reply});appendMsg("bot",reply);
-  }catch(e){typing.style.display="none";appendMsg("bot","Gagal menghubungi server.");}
+function toggleChat() {
+  chatOpen = !chatOpen;
+  document.getElementById("chatWindow").classList.toggle("open", chatOpen);
+
+  if (chatOpen) {
+    document.getElementById("chatInput").focus();
+  }
 }
-function appendMsg(role,text){
-  const msgs=document.getElementById("chatMsgs"),typing=document.getElementById("chatTyping");
-  const div=document.createElement("div");div.className="msg "+role;
-  div.innerHTML=`<div class="msg-bubble">${text}</div><div class="msg-time">${nowTime()}</div>`;
-  msgs.insertBefore(div,typing);scrollChat();
+
+async function sendChat() {
+  const input = document.getElementById("chatInput");
+  const msg = input.value.trim();
+
+  if (!msg) return;
+
+  appendMsg("user", msg);
+  input.value = "";
+
+  chatHistory.push({
+    role: "user",
+    content: msg
+  });
+
+  const typing = document.getElementById("chatTyping");
+  typing.style.display = "flex";
+  scrollChat();
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        messages: chatHistory
+      })
+    });
+
+    const json = await res.json();
+
+    typing.style.display = "none";
+
+    const reply =
+      json?.result ||
+      json?.message ||
+      "Maaf, tidak ada respons.";
+
+    chatHistory.push({
+      role: "assistant",
+      content: reply
+    });
+
+    appendMsg("bot", reply);
+
+  } catch (e) {
+    typing.style.display = "none";
+    appendMsg("bot", "Gagal menghubungi server.");
+  }
 }
-function scrollChat(){const msgs=document.getElementById("chatMsgs");msgs.scrollTop=msgs.scrollHeight;}
-document.getElementById("chatInput")?.addEventListener("keydown",e=>{if(e.key==="Enter")sendChat();});
+
+function appendMsg(role, text) {
+  const msgs = document.getElementById("chatMsgs");
+  const typing = document.getElementById("chatTyping");
+
+  const div = document.createElement("div");
+  div.className = "msg " + role;
+
+  div.innerHTML = `
+    <div class="msg-bubble">${text}</div>
+    <div class="msg-time">${nowTime()}</div>
+  `;
+
+  msgs.insertBefore(div, typing);
+  scrollChat();
+}
+
+function scrollChat() {
+  const msgs = document.getElementById("chatMsgs");
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+document.getElementById("chatInput")?.addEventListener("keydown", e => {
+  if (e.key === "Enter") sendChat();
+});
+
+let selectedType = "🐞 Bug";
+
+document.querySelectorAll(".rp-type-btn").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".rp-type-btn").forEach((item) => item.classList.remove("active"));
+    button.classList.add("active");
+    selectedType = button.dataset.type;
+  });
+});
+
+document.getElementById("rpForm")?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const name = document.getElementById("rpName").value.trim();
+  const message = document.getElementById("rpMessage").value.trim();
+
+  const msgEl = document.getElementById("rpMsg");
+  const submitBtn = document.getElementById("rpSubmit");
+  const spinner = document.getElementById("rpSpinner");
+  const submitLabel = document.getElementById("rpSubmitLabel");
+
+  if (!message) {
+    msgEl.textContent = "Pesan tidak boleh kosong.";
+    msgEl.className = "rp-msg err";
+    msgEl.style.display = "block";
+    return;
+  }
+
+  submitBtn.disabled = true;
+  spinner.style.display = "block";
+  submitLabel.textContent = "Mengirim...";
+  msgEl.style.display = "none";
+
+  try {
+    const response = await fetch("/api/laporan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: selectedType, name, message })
+    });
+
+    const json = await response.json();
+
+    if (json.status) {
+      msgEl.textContent = "✔ Laporan berhasil dikirim. Terima kasih!";
+      msgEl.className = "rp-msg ok";
+      document.getElementById("rpForm").reset();
+    } else {
+      msgEl.textContent = `✕ Gagal: ${json.error || "unknown error"}`;
+      msgEl.className = "rp-msg err";
+    }
+  } catch (error) {
+    msgEl.textContent = "✕ Gagal mengirim laporan.";
+    msgEl.className = "rp-msg err";
+  }
+
+  msgEl.style.display = "block";
+  submitBtn.disabled = false;
+  spinner.style.display = "none";
+  submitLabel.textContent = "▶ Kirim Laporan";
+});
+
 loadData();
