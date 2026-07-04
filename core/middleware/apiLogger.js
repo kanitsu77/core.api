@@ -4,6 +4,12 @@ const UAParser = require("ua-parser-js");
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
+const EXCLUDED_PATHS = [
+  "/api/laporan",
+  "/api/list",
+  "/favicon.ico"
+];
+
 async function sendLog(message) {
   try {
     await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -17,7 +23,11 @@ async function sendLog(message) {
 }
 
 function apiLogger(req, res, next) {
-  if (req.path.startsWith("/api") && req.path !== "/api/laporan") {
+  const isApiRequest = req.path.startsWith("/api/");
+  const isExcluded = EXCLUDED_PATHS.some(path => req.path === path);
+  const isStaticAsset = /\.(css|js|png|jpg|jpeg|svg|ico|woff|woff2|ttf|map)$/.test(req.path);
+
+  if (isApiRequest && !isExcluded && !isStaticAsset) {
     const ua = new UAParser(req.headers["user-agent"]).getResult();
     const ip = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown").replace("::ffff:", "");
     const time = new Date().toLocaleString("id-ID", {
@@ -43,6 +53,7 @@ function apiLogger(req, res, next) {
 
     sendLog(message);
   }
+
   next();
 }
 
