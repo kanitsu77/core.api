@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "main")));
+app.use("/src", express.static(path.join(__dirname, "src")));
 
 function wrapHandler(handler) {
   return async (req, res) => {
@@ -49,6 +50,12 @@ function loadRoutes(dir, prefix = "") {
 
 console.log("\n⬡ core.api — Loading routes...\n");
 loadRoutes(path.join(__dirname, "core", "api"));
+
+app.get("/report", (req, res) => {
+  res.sendFile(path.join(__dirname, "main", "report.html"));
+});
+
+app.post("/api/laporan", require("./api/report").post);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "main", "index.html"));
