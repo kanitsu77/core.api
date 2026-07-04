@@ -3,7 +3,6 @@ const path = require("path");
 const fs = require("fs");
 require("dotenv").config();
 const apiLogger = require("./core/middleware/apiLogger");
-app.use(apiLogger);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
