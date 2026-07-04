@@ -55,7 +55,7 @@ app.get("/report", (req, res) => {
   res.sendFile(path.join(__dirname, "main", "report.html"));
 });
 
-app.post("/api/laporan", require("./api/report").post);
+app.post("/api/laporan", require("./core/api/report").post);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "main", "index.html"));
