@@ -34,12 +34,12 @@ module.exports = async (req, res) => {
       views: v.views
     }));
 
-    return res.json({
+    return res.end(JSON.stringify({
       status: true,
       creator: "Nixx",
       total: results.length,
       result: results
-    });
+    }));
 
   } catch (e) {
     return res.status(500).json({
