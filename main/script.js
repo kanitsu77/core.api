@@ -1,0 +1,1115 @@
+let dat = {},
+    activeApi = null,
+    activeFilter = "ALL",
+    chatOpen = false,
+    activeCodeTab = "curl",
+    statusShown = false,
+    chatHistory = [],
+    lastResultJson = "",
+    statsInterval = null,
+    currentPeriod = "today",
+    currentData = null;
+
+const COLORS = ['#7c6af7', '#a78bfa', '#4ade80', '#fbbf24', '#60a5fa', '#f472b6'];
+
+const dlIcon=`<svg viewBox="0 0 24 24"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="3" x2="12" y2="21"/></svg>`;
+
+const openIcon=`<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+
+const copyIcon=`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;
+
+const STATUS_CODES=[
+  {code:200,label:"OK",desc:"Request berhasil, data tersedia.",cls:"s2",icon:"🟢"},
+  {code:201,label:"Created",desc:"Data berhasil dibuat.",cls:"s2",icon:"🟢"},
+  {code:204,label:"No Content",desc:"Berhasil namun tanpa data response.",cls:"s2",icon:"🟢"},
+  {code:301,label:"Moved Permanently",desc:"Resource dipindah permanen ke URL baru.",cls:"s3",icon:"🟡"},
+  {code:302,label:"Found",desc:"Redirect sementara ke URL lain.",cls:"s3",icon:"🟡"},
+  {code:400,label:"Bad Request",desc:"Parameter kurang atau tidak valid.",cls:"s4",icon:"🔴"},
+  {code:401,label:"Unauthorized",desc:"API key tidak valid atau tidak dikirim.",cls:"s4",icon:"🔴"},
+  {code:403,label:"Forbidden",desc:"Akses ditolak untuk resource ini.",cls:"s4",icon:"🔴"},
+  {code:404,label:"Not Found",desc:"Endpoint tidak ditemukan di server.",cls:"s4",icon:"🔴"},
+  {code:405,label:"Method Not Allowed",desc:"Method HTTP tidak diizinkan.",cls:"s4",icon:"🔴"},
+  {code:408,label:"Request Timeout",desc:"Server tidak merespons dalam waktu yang ditentukan.",cls:"s4",icon:"🔴"},
+  {code:409,label:"Conflict",desc:"Konflik dengan state resource saat ini.",cls:"s4",icon:"🔴"},
+  {code:413,label:"Payload Too Large",desc:"Body request melebihi batas ukuran.",cls:"s4",icon:"🔴"},
+  {code:415,label:"Unsupported Media Type",desc:"Format content-type tidak didukung.",cls:"s4",icon:"🔴"},
+  {code:422,label:"Unprocessable Content",desc:"Data valid tapi tidak bisa diproses.",cls:"s4",icon:"🔴"},
+  {code:429,label:"Too Many Requests",desc:"Rate limit tercapai, coba lagi nanti.",cls:"s4",icon:"🔴"},
+  {code:500,label:"Internal Server Error",desc:"Terjadi kesalahan di sisi server.",cls:"s5",icon:"⚫"},
+  {code:501,label:"Not Implemented",desc:"Fitur belum diimplementasi di server.",cls:"s5",icon:"⚫"},
+  {code:502,label:"Bad Gateway",desc:"Server upstream memberikan respons tidak valid.",cls:"s5",icon:"⚫"},
+  {code:503,label:"Service Unavailable",desc:"Server sedang tidak tersedia.",cls:"s5",icon:"⚫"},
+  {code:504,label:"Gateway Timeout",desc:"Server upstream tidak merespons tepat waktu.",cls:"s5",icon:"⚫"}
+];
+
+const FAKE_DATA = {
+  today: {
+    runtime: '4h 32m 18s',
+    total: 1284, totalDelta: '+12.4% dari kemarin',
+    peak: '/api/search/ytplay', peakCount: '312 requests',
+    unique: 187, uniqueDelta: '+8 IP baru',
+    peakHour: '20:00 - 21:00',
+    respTime: '284ms', respDelta: '-18ms lebih cepat',
+    errorRate: '3.2%', errorDelta: '41 error dari 1284',
+    timeline: { labels: ['00','03','06','09','12','15','18','21'], data: [12, 8, 5, 42, 78, 95, 140, 190] },
+    ranking: [
+      { name: 'YouTube Play Music', path: '/api/search/ytplay', count: 312, trending: true, resp: '410ms', err: '4.1%' },
+      { name: 'YouTube Search', path: '/api/search/ytsearch', count: 241, trending: false, resp: '190ms', err: '1.2%' },
+      { name: 'Chat GPT', path: '/api/ai/gpt', count: 198, trending: true, resp: '520ms', err: '2.8%' },
+      { name: 'Instagram Stalk', path: '/api/stalk/igstalk', count: 156, trending: false, resp: '340ms', err: '5.6%' },
+      { name: 'Remove Background', path: '/api/maker/removebg', count: 89, trending: false, resp: '890ms', err: '6.2%' }
+    ],
+    categories: [
+      { name: 'SEARCH', value: 42 }, { name: 'AI', value: 28 }, { name: 'DOWNLOAD', value: 18 },
+      { name: 'STALK', value: 8 }, { name: 'MAKER', value: 4 }
+    ],
+    errorBreakdown: [
+      { code: '400 Bad Request', count: 18 }, { code: '404 Not Found', count: 9 },
+      { code: '422 Unprocessable', count: 8 }, { code: '500 Server Error', count: 6 }
+    ],
+    devices: [
+      { name: 'Android', pct: 44, color: '#4ade80' }, { name: 'Windows', pct: 30, color: '#60a5fa' },
+      { name: 'iOS', pct: 18, color: '#a78bfa' }, { name: 'macOS', pct: 8, color: '#fbbf24' }
+    ],
+    heatmapSeed: 1
+  },
+  week: {
+    runtime: '3d 11h 6m',
+    total: 8934, totalDelta: '+22.1% dari minggu lalu',
+    peak: '/api/search/ytplay', peakCount: '2,140 requests',
+    unique: 642, uniqueDelta: '+94 IP baru',
+    peakHour: 'Sabtu, 20:00',
+    respTime: '312ms', respDelta: '+6ms dari minggu lalu',
+    errorRate: '2.8%', errorDelta: '250 error dari 8934',
+    timeline: { labels: ['Sen','Sel','Rab','Kam','Jum','Sab','Min'], data: [980, 1120, 1050, 1340, 1560, 1890, 1994] },
+    ranking: [
+      { name: 'YouTube Play Music', path: '/api/search/ytplay', count: 2140, trending: true, resp: '395ms', err: '3.4%' },
+      { name: 'YouTube Search', path: '/api/search/ytsearch', count: 1820, trending: false, resp: '185ms', err: '1.1%' },
+      { name: 'Chat GPT', path: '/api/ai/gpt', count: 1490, trending: true, resp: '505ms', err: '2.5%' },
+      { name: 'Instagram Stalk', path: '/api/stalk/igstalk', count: 1120, trending: false, resp: '330ms', err: '4.9%' },
+      { name: 'Spotify Download', path: '/api/download/spotifydl', count: 745, trending: false, resp: '610ms', err: '5.1%' }
+    ],
+    categories: [
+      { name: 'SEARCH', value: 38 }, { name: 'AI', value: 25 }, { name: 'DOWNLOAD', value: 22 },
+      { name: 'STALK', value: 10 }, { name: 'MAKER', value: 5 }
+    ],
+    errorBreakdown: [
+      { code: '400 Bad Request', count: 102 }, { code: '404 Not Found', count: 58 },
+      { code: '422 Unprocessable', count: 51 }, { code: '500 Server Error', count: 39 }
+    ],
+    devices: [
+      { name: 'Android', pct: 41, color: '#4ade80' }, { name: 'Windows', pct: 33, color: '#60a5fa' },
+      { name: 'iOS', pct: 17, color: '#a78bfa' }, { name: 'macOS', pct: 9, color: '#fbbf24' }
+    ],
+    heatmapSeed: 2
+  },
+  month: {
+    runtime: '18d 4h 50m',
+    total: 34210, totalDelta: '+15.8% dari bulan lalu',
+    peak: '/api/search/ytsearch', peakCount: '8,904 requests',
+    unique: 2340, uniqueDelta: '+412 IP baru',
+    peakHour: 'Minggu, 19:00',
+    respTime: '298ms', respDelta: '-9ms lebih cepat',
+    errorRate: '3.0%', errorDelta: '1026 error dari 34210',
+    timeline: { labels: ['W1','W2','W3','W4'], data: [7200, 8100, 8900, 10010] },
+    ranking: [
+      { name: 'YouTube Search', path: '/api/search/ytsearch', count: 8904, trending: false, resp: '188ms', err: '1.3%' },
+      { name: 'YouTube Play Music', path: '/api/search/ytplay', count: 7650, trending: true, resp: '402ms', err: '3.6%' },
+      { name: 'Chat GPT', path: '/api/ai/gpt', count: 6120, trending: true, resp: '511ms', err: '2.6%' },
+      { name: 'Instagram Stalk', path: '/api/stalk/igstalk', count: 4980, trending: false, resp: '335ms', err: '5.0%' },
+      { name: 'Spotify Download', path: '/api/download/spotifydl', count: 3210, trending: false, resp: '598ms', err: '4.8%' }
+    ],
+    categories: [
+      { name: 'SEARCH', value: 40 }, { name: 'AI', value: 24 }, { name: 'DOWNLOAD', value: 20 },
+      { name: 'STALK', value: 11 }, { name: 'MAKER', value: 5 }
+    ],
+    errorBreakdown: [
+      { code: '400 Bad Request', count: 410 }, { code: '404 Not Found', count: 230 },
+      { code: '422 Unprocessable', count: 210 }, { code: '500 Server Error', count: 176 }
+    ],
+    devices: [
+      { name: 'Android', pct: 43, color: '#4ade80' }, { name: 'Windows', pct: 31, color: '#60a5fa' },
+      { name: 'iOS', pct: 17, color: '#a78bfa' }, { name: 'macOS', pct: 9, color: '#fbbf24' }
+    ],
+    heatmapSeed: 3
+  }
+};
+
+let trafficChart = null, categoryChart = null, compareChart = null, errorRing = null;
+
+function base() {
+  return window.location.origin;
+}
+function nowTime() {
+  return new Date().toLocaleTimeString("id-ID", { hour:"2-digit",minute:"2-digit" });
+}
+function seededRandom(seed) {
+  let s = seed;
+  return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+}
+
+(()=>{
+  const c=document.getElementById("stars");
+  for(let i=0;i<60;i++){
+    const s=document.createElement("div");s.className="star";
+    const sz=Math.random()*1.8+.4;
+    s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;--d:${3+Math.random()*5}s;--o:${.06+Math.random()*.35};animation-delay:${Math.random()*6}s`;
+    c.appendChild(s);
+  }
+})();
+
+async function loadData(){
+  try {
+    const res = await fetch("/api/list");
+    const json = await res.json();
+    if (json.status && json.data) dat = json.data;
+    else throw new Error("bad response");
+  } catch (e) {
+    console.warn("fetch /api/list failed:", e.message);
+  }
+  afterLoad();
+}
+
+function afterLoad() {
+  initNavStats();
+  initTabs();
+  renderGrid();
+  initHeroUrl();
+  runHeroTerminal();
+}
+
+function initNavStats() {
+  let total = 0, active = 0;
+  for (const cat of Object.values(dat)) {
+    for (const api of Object.values(cat)) {
+      total++;
+      if (api.status) active++;
+    }
+  }
+  document.getElementById("pTotal").textContent = total + " APIs";
+  document.getElementById("pActive").textContent = active + " Active";
+}
+
+function initHeroUrl() {
+  const el = document.getElementById("heroUrl");
+  if (el) el.textContent = base() + "/api/info/api";
+}
+
+function copyEp(btn) {
+  navigator.clipboard.writeText(base() + "/api/info/api").then(() => {
+    btn.textContent = "copied!";
+    setTimeout(() => btn.textContent = "copy", 1500);
+  });
+}
+
+function initTabs() {
+  const wrap = document.getElementById("tabs");
+  wrap.innerHTML = "";
+  ["ALL", ...Object.keys(dat)].forEach(cat => {
+    const b = document.createElement("button");
+    b.className = "tab" + (cat === "ALL" ? " active" : "");
+    b.dataset.cat = cat;
+    b.textContent = cat;
+    b.onclick = () => {
+      activeFilter = cat;
+      document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.cat === cat));
+      renderGrid();
+    };
+    wrap.appendChild(b);
+  });
+}
+
+function renderGrid() {
+  const grid = document.getElementById("grid");
+  if (!grid) return;
+  grid.innerHTML = "";
+  const q = (document.getElementById("searchInput")?.value || "").toLowerCase();
+  let idx = 0;
+
+  for (const [cat, apis] of Object.entries(dat)) {
+    if (activeFilter !== "ALL" && cat !== activeFilter) continue;
+    const filtered = Object.entries(apis).filter(([name, api]) =>
+      !q || name.toLowerCase().includes(q) || api.description.toLowerCase().includes(q) || cat.toLowerCase().includes(q)
+    );
+    if (!filtered.length) continue;
+
+    const group = document.createElement("div");
+    group.className = "cat-group";
+    if (activeFilter === "ALL") {
+      const title = document.createElement("div");
+      title.className = "cat-group-title";
+      title.textContent = cat;
+      group.appendChild(title);
+    }
+
+    const gg = document.createElement("div");
+    gg.className = "cat-group-grid";
+
+    for (const [name, api] of filtered) {
+      const pc = Object.keys(api.params).length;
+      const card = document.createElement("div");
+      card.className = "card";
+      card.style.setProperty("--delay", (idx * 0.045 + 0.05) + "s");
+      card.innerHTML = `
+<div class="card-top">
+  <span class="cat-badge">${cat}</span>
+  <span class="sdot ${api.status ? "on" : "off"}"></span>
+</div>
+<div class="card-name">${name}</div>
+<div class="card-desc">${api.description}</div>
+<div class="card-foot">
+  <span class="tbadge ${api.type}">${api.type}</span>
+  <span class="pcount">${pc > 0 ? pc + " param" + (pc > 1 ? "s" : "") : "no params"}</span>
+</div>`;
+      card.onclick = () => openModal(cat, name, api);
+      gg.appendChild(card);
+      idx++;
+    }
+    group.appendChild(gg);
+    grid.appendChild(group);
+  }
+
+  if (!grid.children.length) {
+    grid.innerHTML = `<div class="empty-search">Tidak ada endpoint ditemukan untuk "<span>${q}</span>"</div>`;
+  }
+}
+
+function buildUrlRaw(api) {
+  const keys = Object.keys(api.params);
+  const url = base() + "/" + api.path;
+  if (!keys.length) return url;
+  const filled = {};
+  keys.forEach(k => {
+    const v = document.getElementById("inp_" + k)?.value;
+    if (v) filled[k] = v;
+  });
+  if (!Object.keys(filled).length) return url;
+  return url + "?" + keys.map(k => filled[k] ? `${k}=${encodeURIComponent(filled[k])}` : `${k}=`).join("&");
+}
+
+function buildUrlHtml(api) {
+  const keys = Object.keys(api.params);
+  let html = `<span class="ep-base">${base()}/</span><span class="ep-name">${api.path}</span>`;
+  if (!keys.length) return html;
+  html += `<span class="ep-q">?</span>`;
+  html += keys.map((k, i) => {
+    const val = document.getElementById("inp_" + k)?.value || "";
+    return (i > 0 ? `<span class="ep-q">&amp;</span>` : "") +
+      `<span class="ep-key">${k}</span><span class="ep-q">=</span>` +
+      (val ? `<span class="ep-val">${encodeURIComponent(val)}</span>` : "");
+  }).join("");
+  return html;
+}
+
+function buildCodeSnippet(api,lang){
+  const url=buildUrlRaw(api);
+  if(lang==="curl")return`curl -X GET \\\n  "${url}" \\\n  -H "Accept: application/json"`;
+  if(lang==="js")return`const res = await fetch(\n  "${url}"\n);\nconst data = await res.json();\nconsole.log(data);`;
+  if(lang==="ts")return`const res: Response = await fetch(\n  "${url}"\n);\nconst data: unknown = await res.json();\nconsole.log(data);`;
+  if(lang==="py")return`import requests\n\nurl = "${url}"\nres = requests.get(url)\ndata = res.json()\nprint(data)`;
+  if(lang==="php")return`<?php\n$res = file_get_contents("${url}");\n$data = json_decode($res, true);\nprint_r($data);`;
+  if(lang==="dart")return`import 'package:http/http.dart' as http;\nimport 'dart:convert';\n\nfinal res = await http.get(Uri.parse(\n  "${url}"\n));\nfinal data = jsonDecode(res.body);\nprint(data);`;
+  if(lang==="go")return`package main\n\nimport (\n  "fmt"\n  "io"\n  "net/http"\n)\n\nfunc main() {\n  res, _ := http.Get(\n    "${url}",\n  )\n  defer res.Body.Close()\n  body, _ := io.ReadAll(res.Body)\n  fmt.Println(string(body))\n}`;
+  if(lang==="java")return`import java.net.http.*;\nimport java.net.URI;\n\nHttpClient client = HttpClient.newHttpClient();\nHttpRequest request = HttpRequest.newBuilder()\n  .uri(URI.create("${url}"))\n  .GET()\n  .build();\nHttpResponse<String> res = client.send(request, HttpResponse.BodyHandlers.ofString());\nSystem.out.println(res.body());`;
+  if(lang==="cpp")return`#include <iostream>\n#include <curl/curl.h>\n\nint main() {\n  CURL *curl = curl_easy_init();\n  if (curl) {\n    curl_easy_setopt(curl, CURLOPT_URL, "${url}");\n    curl_easy_perform(curl);\n    curl_easy_cleanup(curl);\n  }\n  return 0;\n}`;
+  return "";
+}
+
+function renderCodeBox() {
+  if (!activeApi) return;
+  document.getElementById("codeContent").textContent = buildCodeSnippet(activeApi, activeCodeTab);
+}
+
+function setCodeTab(tab) {
+  activeCodeTab = tab;
+  document.querySelectorAll(".code-tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
+  renderCodeBox();
+}
+
+function copyCode(){
+  const text=document.getElementById("codeContent").textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.querySelector(".code-copy");
+    btn.innerHTML=`${copyIcon} Copied!`;
+    setTimeout(()=>{ btn.innerHTML=`${copyIcon} Copy`; },1500);
+  });
+}
+
+function copyUrl(){
+  navigator.clipboard.writeText(buildUrlRaw(activeApi)).then(()=>{
+    const btn=document.querySelector(".ep-copy-btn");
+    btn.innerHTML=`${copyIcon} Copied!`;
+    setTimeout(()=>{ btn.innerHTML=`${copyIcon} Copy URL`; },1500);
+  });
+}
+
+function toggleStatus() {
+  statusShown = !statusShown;
+  const panel = document.getElementById("statusPanel");
+  const chevron = document.getElementById("statusChevron");
+
+  if (statusShown) {
+    panel.classList.add("show");
+    panel.style.maxHeight = panel.scrollHeight + "px";
+    chevron.style.transform = "rotate(180deg)";
+    panel.addEventListener("transitionend", function handler() {
+      if (statusShown) panel.style.maxHeight = "none";
+      panel.removeEventListener("transitionend", handler);
+    });
+  } else {
+    panel.style.maxHeight = panel.scrollHeight + "px";
+    requestAnimationFrame(() => {
+      panel.style.maxHeight = "0px";
+    });
+    chevron.style.transform = "rotate(0deg)";
+    panel.addEventListener("transitionend", function handler() {
+      if (!statusShown) panel.classList.remove("show");
+      panel.removeEventListener("transitionend", handler);
+    });
+  }
+}
+
+function renderStatusCodes() {
+  const grid = document.getElementById("statusGrid");
+  grid.innerHTML = "";
+  const table = document.createElement("table");
+  table.className = "status-table";
+  table.innerHTML = `<thead><tr><th>Status</th><th>Arti</th></tr></thead>`;
+  const tbody = document.createElement("tbody");
+  STATUS_CODES.forEach(s => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td><span class="status-code ${s.cls}">${s.icon} ${s.code} ${s.label}</span></td><td class="status-desc">${s.desc}</td>`;
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  grid.appendChild(table);
+}
+
+function updatePreview() {
+  if (!activeApi) return;
+  document.getElementById("epPreview").innerHTML = buildUrlHtml(activeApi);
+  renderCodeBox();
+}
+
+function clearResult() {
+  document.getElementById("resultWrap").classList.remove("show");
+  document.getElementById("resultContent").innerHTML = "";
+  document.getElementById("resultActions").innerHTML = "";
+  lastResultJson = "";
+}
+
+function openModal(cat, name, api) {
+  activeApi = { cat, name, ...api };
+  statusShown = false;
+  document.getElementById("statusPanel").classList.remove("show");
+  document.getElementById("mCat").textContent = cat;
+  document.getElementById("mTitle").textContent = name;
+  document.getElementById("mDesc").textContent = api.description;
+
+  const mt = document.getElementById("mType");
+  mt.className = `mtag tbadge ${api.type}`;
+  mt.textContent = api.type;
+
+  const st = document.getElementById("mStat");
+  st.textContent = api.status ? "● Active" : "● Inactive";
+  st.className = "mstatus " + (api.status ? "on" : "off");
+
+  const paramsEl = document.getElementById("mParams");
+  paramsEl.innerHTML = "";
+  const keys = Object.keys(api.params);
+
+  if (!keys.length) {
+    paramsEl.innerHTML = `<div class="no-params">— tidak ada parameter</div>`;
+  } else {
+    keys.forEach(k => {
+      const row = document.createElement("div");
+      row.className = "param-row";
+      row.innerHTML = `<span class="pk">${k}</span><span class="pv">${api.params[k]}</span>`;
+      paramsEl.appendChild(row);
+    });
+  }
+
+  const inputsEl = document.getElementById("mInputs");
+  inputsEl.innerHTML = "";
+  keys.forEach(k => {
+    const row = document.createElement("div");
+    row.className = "input-row";
+    row.innerHTML = `<label class="input-label">${k}</label><input class="tinput" id="inp_${k}" placeholder="${api.params[k]}" oninput="updatePreview()"/>`;
+    inputsEl.appendChild(row);
+  });
+
+  const tabsEl = document.getElementById("codeTabs");
+  tabsEl.innerHTML = "";
+  ["curl","js","ts","py","php","dart","go","java","cpp"].forEach(t=>{
+  const b=document.createElement("button");
+  b.className="code-tab"+(t===activeCodeTab?" active":"");
+  b.dataset.tab=t;
+  b.innerHTML=t==="curl"
+  ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg> cURL`
+  : t==="js"
+  ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="var(--amber)"><rect width="24" height="24" rx="3"/><text x="4" y="18" font-size="14" fill="#000" font-weight="bold">JS</text></svg> JavaScript`
+  : t==="ts"
+  ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="#3178C6"><rect width="24" height="24" rx="3"/><text x="4" y="18" font-size="13" fill="#fff" font-weight="bold">TS</text></svg> TypeScript`
+  : t==="py"
+  ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M11.9 2C9.3 2 7.5 3.2 7.5 4.8V6.5h4.5v.5H5.8C4.2 7 3 8.5 3 10.5c0 2.1 1.2 3.5 2.8 3.5H7v-1.7c0-1.8 1.5-3.3 3.3-3.3h4.4c1.5 0 2.8-1.2 2.8-2.8V4.8C17.5 3.2 15.5 2 11.9 2zm-2.4 1.8c.5 0 .9.4.9.9s-.4.9-.9.9-.9-.4-.9-.9.4-.9.9-.9z" fill="#3776AB"/><path d="M12.1 22c2.6 0 4.4-1.2 4.4-2.8v-1.7h-4.5v-.5h6.2c1.6 0 2.8-1.5 2.8-3.5 0-2.1-1.2-3.5-2.8-3.5H17v1.7c0 1.8-1.5 3.3-3.3 3.3H9.3c-1.5 0-2.8 1.2-2.8 2.8v2.2C6.5 20.8 8.5 22 12.1 22zm2.4-1.8c-.5 0-.9-.4-.9-.9s.4-.9.9-.9.9.4.9.9-.4.9-.9.9z" fill="#FFD43B"/></svg> Python`
+  : t==="php"
+  ? `<svg width="11" height="11" viewBox="0 0 128 128"><path d="M64 0C28.7 0 0 28.7 0 64s28.7 64 64 64 64-28.7 64-64S99.3 0 64 0z" fill="#8993be"/><path d="M32 48h12l4 20 10-20h12l-16 32H42z" fill="#fff"/><path d="M76 48h18c6 0 10 4 10 10 0 10-8 16-18 16h-6l-2 6H66zm10 6l-4 14h4c4 0 8-2 8-8 0-4-2-6-8-6z" fill="#fff"/></svg> PHP`
+  : t==="dart"
+  ? `<svg width="11" height="11" viewBox="0 0 24 24"><path d="M4.11 5.45L5.45 4.1s.6-.6 1.5-.6h7.3l3.85 3.85-9.7 9.7-4.29-4.29s-.6-.6-.6-1.5V5.96s0-.9.6-1.51z" fill="#01FFFF" opacity=".8"/><path d="M18.1 7.35l1.35 1.35s.6.6.6 1.5v5.59s0 .9-.6 1.5l-1.35 1.35-5-5z" fill="#01FFFF" opacity=".6"/><path d="M5.45 19.9l-1.34-1.35s-.6-.6-.6-1.5v-.75l4.85-4.85 5 5z" fill="#00B4AB"/><path d="M14.25 3.5H6.95s-.9 0-1.5.6L4.1 5.45l9.7 9.7 5-5z" fill="#00B4AB"/></svg> Dart`
+  : t==="go"
+  ? `<svg width="11" height="11" viewBox="0 0 24 24"><path d="M2 12l4.5-8.5h11L22 12l-4.5 8.5h-11z" fill="none" stroke="#00ACD7" stroke-width="1.5"/><text x="7" y="16" font-size="7" fill="#00ACD7" font-weight="bold">Go</text></svg> Go`
+  : t==="java"
+  ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="#f89820"><path d="M8 21s-1 1 1 1h6c2 0 1-1 1-1s1.3-1 0-2c0 0-3 .8-8 0-1-.2-1 1 0 2zm.5-2.5c-1-2 .5-3.5.5-3.5s1 1 3 1 3-1 3-1 1.5 1.5.5 3.5c0 0-1.5.5-3.5.5s-3.5-.5-4-.5zM12 2s3 3-1 6c-3 2.4-1 4-1 4s-4-2-2-5c1.5-2 4-3 4-5z"/></svg> Java`
+  : `<svg width="11" height="11" viewBox="0 0 24 24" fill="#00599C"><circle cx="12" cy="12" r="11"/><text x="4.5" y="16" font-size="9" fill="#fff" font-weight="bold">C++</text></svg> C++`;
+  b.onclick=()=>setCodeTab(t);tabsEl.appendChild(b);
+});
+
+  renderStatusCodes();
+  updatePreview();
+  clearResult();
+  document.querySelector(".modal-inner").scrollTop = 0;
+  document.getElementById("overlay").classList.add("open");
+}
+
+function closeModal() {
+  document.getElementById("overlay").classList.remove("open");
+}
+
+async function runApi() {
+  if (!activeApi) return;
+  const btn = document.getElementById("runBtn");
+  const spinner = document.getElementById("runSpinner");
+  const label = document.getElementById("runLabel");
+  btn.disabled = true;
+  spinner.style.display = "inline-block";
+  label.textContent = "Running...";
+
+  const wrap = document.getElementById("resultWrap");
+  const content = document.getElementById("resultContent");
+  const actions = document.getElementById("resultActions");
+  const typeLabel = document.getElementById("rTypeLabel");
+  wrap.classList.add("show");
+  typeLabel.textContent = activeApi.type;
+  actions.innerHTML = "";
+
+  try {
+    const url = buildUrlRaw(activeApi);
+    const res = await fetch(url);
+    const contentType = res.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      const json = await res.json();
+      lastResultJson = JSON.stringify(json, null, 2);
+      content.innerHTML = `<div class="json-box${json.status === false ? " err" : ""}">${lastResultJson}</div>`;
+    } else if (contentType.includes("image")) {
+      content.innerHTML = `<div class="img-result"><img src="${url}"/></div>`;
+    } else {
+      const text = await res.text();
+      content.innerHTML = `<div class="json-box">${text}</div>`;
+    }
+  } catch (e) {
+    content.innerHTML = `<div class="json-box err">Error: ${e.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    spinner.style.display = "none";
+    label.textContent = "▶  Run Request";
+  }
+}
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  document.getElementById("chatWindow").classList.toggle("open", chatOpen);
+}
+
+async function sendChat() {
+  const input = document.getElementById("chatInput");
+  const text = input.value.trim();
+  if (!text) return;
+  const msgs = document.getElementById("chatMsgs");
+  const typing = document.getElementById("chatTyping");
+
+  const userMsg = document.createElement("div");
+  userMsg.className = "msg user";
+  userMsg.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">${nowTime()}</div>`;
+  msgs.insertBefore(userMsg, typing);
+  input.value = "";
+  msgs.scrollTop = msgs.scrollHeight;
+  typing.style.display = "flex";
+
+  try {
+    const res = await fetch(base() + "/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text })
+    });
+    const json = await res.json();
+    typing.style.display = "none";
+    const botMsg = document.createElement("div");
+    botMsg.className = "msg bot";
+    botMsg.innerHTML = `<div class="msg-bubble">${json.result || "Maaf, terjadi kesalahan."}</div><div class="msg-time">${nowTime()}</div>`;
+    msgs.insertBefore(botMsg, typing);
+    msgs.scrollTop = msgs.scrollHeight;
+  } catch (e) {
+    typing.style.display = "none";
+    const botMsg = document.createElement("div");
+    botMsg.className = "msg bot";
+    botMsg.innerHTML = `<div class="msg-bubble">Gagal terhubung ke server.</div><div class="msg-time">${nowTime()}</div>`;
+    msgs.insertBefore(botMsg, typing);
+  }
+}
+
+function runHeroTerminal() {
+  const out = document.getElementById("htOutput");
+  if (!out) return;
+
+  const PARTS = [
+    [
+      { text: "$ pm2 start server.js --name core.api", type: "cmd" },
+      { text: "[PM2] Memuat file dari GitHub...", type: "out" },
+      { text: "[PM2] Starting core.api in fork mode", type: "out" },
+      { text: "[PM2] core.api online ✔", type: "ok" }
+    ],
+    [
+      { text: "$ npm install", type: "cmd" },
+      { text: "npm WARN deprecated ...", type: "out" },
+      { text: "added 142 modules in 3.2s", type: "out" },
+      { text: "✔ dependencies up to date", type: "ok" }
+    ],
+    [
+      { text: "$ cat information", type: "cmd" },
+      { text: "Name     : Core API", type: "out" },
+      { text: "Url      : core-api.my.id", type: "out" },
+      { text: "Creator  : Nixx", type: "out" },
+      { text: "Language : JavaScript", type: "out" },
+      { text: "Status   : ● Online", type: "ok" }
+    ]
+  ];
+
+  let partIndex = 0;
+  let lineIndex = 0;
+  let charIndex = 0;
+  let displayLines = [];
+
+  function renderLines() {
+    out.innerHTML = displayLines.map(l => {
+      if (l.type === "cmd") return `<span class="ht-line-cmd">${l.rendered}</span>`;
+      if (l.type === "ok") return `<span class="ht-line-ok">${l.rendered}</span>`;
+      return `<span class="ht-line-out">${l.rendered}</span>`;
+    }).join("\n");
+  }
+
+  function typeStep() {
+    const currentPart = PARTS[partIndex];
+
+    if (lineIndex >= currentPart.length) {
+      setTimeout(() => {
+        partIndex = (partIndex + 1) % PARTS.length;
+        lineIndex = 0;
+        charIndex = 0;
+        displayLines = [];
+        renderLines();
+        typeStep();
+      }, 1400);
+      return;
+    }
+
+    const current = currentPart[lineIndex];
+
+    if (charIndex === 0) {
+      displayLines.push({ type: current.type, rendered: "" });
+    }
+
+    const line = displayLines[displayLines.length - 1];
+
+    if (charIndex < current.text.length) {
+      line.rendered = current.text.slice(0, charIndex + 1);
+      charIndex++;
+      renderLines();
+      const speed = current.type === "cmd" ? 35 : 12;
+      setTimeout(typeStep, speed);
+    } else {
+      charIndex = 0;
+      lineIndex++;
+      const pauseAfter = current.type === "cmd" ? 150 : current.type === "ok" ? 500 : 80;
+      setTimeout(typeStep, pauseAfter);
+    }
+  }
+
+  typeStep();
+}
+
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("sbBackdrop").classList.toggle("show");
+  document.getElementById("menuBtn").classList.toggle("open");
+}
+
+function closeSidebar() {
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sbBackdrop").classList.remove("show");
+  document.getElementById("menuBtn").classList.remove("open");
+}
+
+function showPage(name) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  const target = document.getElementById("page-" + name);
+  if (target) target.classList.add("active");
+
+  document.querySelectorAll(".sb-item").forEach(i => i.classList.remove("active"));
+  const navItem = document.getElementById("nav-" + name);
+  if (navItem) navItem.classList.add("active");
+
+  if (name === "stats") {
+    renderPeriod(currentPeriod);
+  } else {
+    if (statsInterval) { clearInterval(statsInterval); statsInterval = null; }
+    if (sysStatsInterval) { clearInterval(sysStatsInterval); sysStatsInterval = null; }
+    stopRuntimeTicker();
+  }
+
+  closeSidebar();
+}
+
+/* ===== ACCORDION (chevron slide toggle) ===== */
+function toggleAcc(headEl) {
+  const item = headEl.parentElement;
+  const body = item.querySelector(".acc-body");
+  const isOpen = item.classList.contains("open");
+
+  if (isOpen) {
+    body.style.maxHeight = body.scrollHeight + "px";
+    requestAnimationFrame(() => {
+      body.style.maxHeight = "0px";
+    });
+    item.classList.remove("open");
+  } else {
+    item.classList.add("open");
+    body.style.maxHeight = body.scrollHeight + "px";
+    body.addEventListener("transitionend", function handler() {
+      if (item.classList.contains("open")) body.style.maxHeight = "none";
+      body.removeEventListener("transitionend", handler);
+    });
+  }
+}
+
+function initAccordions() {
+  document.querySelectorAll(".acc-item.open .acc-body").forEach(body => {
+    body.style.maxHeight = "none";
+  });
+  document.querySelectorAll(".acc-item:not(.open) .acc-body").forEach(body => {
+    body.style.maxHeight = "0px";
+  });
+}
+
+/* ===== MAIN TABS (Traffic Analytics / Stats API) ===== */
+document.addEventListener("click", (e) => {
+  const tab = e.target.closest(".main-tab");
+  if (!tab) return;
+  document.querySelectorAll(".main-tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".stats-view").forEach(v => v.classList.remove("active"));
+  tab.classList.add("active");
+  document.getElementById("view-" + tab.dataset.view).classList.add("active");
+  if (tab.dataset.view === "system") renderSystemStats();
+});
+
+document.addEventListener("click", (e) => {
+  const tab = e.target.closest(".period-tab");
+  if (!tab) return;
+  document.querySelectorAll(".period-tab").forEach(t => t.classList.remove("active"));
+  tab.classList.add("active");
+  currentPeriod = tab.dataset.period;
+  const searchEl = document.getElementById("rankSearch");
+  if (searchEl) searchEl.value = "";
+  renderPeriod(currentPeriod);
+});
+
+let sysStatsInterval = null;
+
+async function renderSystemStats() {
+  try {
+    const res = await fetch(base() + "/api/stats");
+    const json = await res.json();
+    const d = json.result;
+
+    document.getElementById("sysUptime").textContent = d.uptime;
+    document.getElementById("sysPlatform").textContent = d.platform;
+    document.getElementById("sysNode").textContent = d.node_version;
+    document.getElementById("sysCores").textContent = d.cpu_cores;
+    document.getElementById("sysArch").textContent = d.arch;
+    document.getElementById("sysMem").textContent = `${d.memory_used_mb} MB / ${d.memory_total_mb} MB (${d.memory_percent}%)`;
+    document.getElementById("sysMemBar").style.width = d.memory_percent + "%";
+    document.getElementById("sysCpu").textContent = d.cpu_model;
+  } catch (e) {
+    console.error("Gagal load /api/stats", e);
+  }
+
+  if (!sysStatsInterval) {
+    sysStatsInterval = setInterval(renderSystemStats, 5000);
+  }
+}
+
+let runtimeTickerInterval = null;
+let runtimeBaseSeconds = 0;
+let runtimeBaseTimestamp = 0;
+
+function formatRuntime(totalSeconds) {
+  const d = Math.floor(totalSeconds / 86400);
+  const h = Math.floor((totalSeconds % 86400) / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  return `${d}d ${h}h ${m}m ${s}s`;
+}
+
+function startRuntimeTicker(initialSeconds) {
+  runtimeBaseSeconds = initialSeconds || 0;
+  runtimeBaseTimestamp = Date.now();
+
+  if (runtimeTickerInterval) clearInterval(runtimeTickerInterval);
+
+  const tick = () => {
+    const elapsed = Math.floor((Date.now() - runtimeBaseTimestamp) / 1000);
+    const current = runtimeBaseSeconds + elapsed;
+    const el = document.getElementById("statRuntime");
+    if (el) el.textContent = formatRuntime(current);
+  };
+
+  tick();
+  runtimeTickerInterval = setInterval(tick, 1000);
+}
+
+function stopRuntimeTicker() {
+  if (runtimeTickerInterval) {
+    clearInterval(runtimeTickerInterval);
+    runtimeTickerInterval = null;
+  }
+}
+
+async function renderPeriod(period) {
+  currentPeriod = period;
+  let d;
+
+  try {
+    const res = await fetch(base() + "/api/analytics?period=" + period);
+    const json = await res.json();
+    d = json.result;
+  } catch (e) {
+    console.error("Gagal fetch /api/analytics, pakai data dummy sementara:", e);
+    d = FAKE_DATA[period];
+  }
+
+  if (!d || !document.getElementById("statRuntime")) return;
+  currentData = d;
+
+  startRuntimeTicker(d.runtime_seconds || 0);
+
+  document.getElementById("statTotal").textContent = d.total.toLocaleString('id-ID');
+  document.getElementById("statTotalDelta").textContent = d.totalDelta;
+  document.getElementById("statPeak").textContent = d.peak;
+  document.getElementById("statPeakCount").textContent = d.peakCount;
+  document.getElementById("statUnique").textContent = d.unique.toLocaleString('id-ID');
+  document.getElementById("statUniqueDelta").textContent = d.uniqueDelta;
+  document.getElementById("statPeakHour").textContent = d.peakHour;
+  document.getElementById("statRespTime").textContent = d.respTime;
+  document.getElementById("statRespDelta").textContent = d.respDelta;
+  document.getElementById("statErrorRate").textContent = d.errorRate;
+  document.getElementById("statErrorDelta").textContent = d.errorDelta;
+
+  renderRanking();
+
+  const ctx1 = document.getElementById("trafficChart")?.getContext("2d");
+  if (ctx1) {
+    if (trafficChart) trafficChart.destroy();
+    trafficChart = new Chart(ctx1, {
+      type: 'line',
+      data: { labels: d.timeline.labels, datasets: [{
+        data: d.timeline.data, borderColor: '#7c6af7', backgroundColor: 'rgba(124,106,247,.12)',
+        fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2
+      }]},
+      options: {
+        responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#6b6b80', font: { size: 10 } } },
+          y: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#6b6b80', font: { size: 10 } } }
+        }
+      }
+    });
+  }
+
+  const ctx2 = document.getElementById("categoryChart")?.getContext("2d");
+  if (ctx2) {
+    if (categoryChart) categoryChart.destroy();
+    categoryChart = new Chart(ctx2, {
+      type: 'doughnut',
+      data: { labels: d.categories.map(c => c.name), datasets: [{
+        data: d.categories.map(c => c.value), backgroundColor: COLORS, borderColor: '#0d0d14', borderWidth: 2
+      }]},
+      options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { display: false } } }
+    });
+  }
+
+  const legend = document.getElementById("categoryLegend");
+  if (legend) {
+    legend.innerHTML = d.categories.map((c, i) => `
+      <div class="legend-item"><span class="legend-dot" style="background:${COLORS[i % COLORS.length]}"></span><span>${c.name}</span><span class="legend-val">${c.value}%</span></div>
+    `).join('');
+  }
+
+  renderHeatmap(d.heatmap);
+  renderCompareOptions(d.ranking);
+  renderCompareChart();
+  renderErrorRing(d.errorRate, d.errorBreakdown);
+  renderDevices(d.devices);
+
+  requestAnimationFrame(() => {
+    document.querySelectorAll(".acc-item.open .acc-body").forEach(body => {
+      body.style.maxHeight = "none";
+    });
+  });
+}
+
+function renderRanking() {
+  const d = currentData;
+  if (!d) return;
+  const searchEl = document.getElementById("rankSearch");
+  const q = (searchEl?.value || "").toLowerCase();
+  const filtered = d.ranking.filter(r => !q || r.name.toLowerCase().includes(q) || r.path.toLowerCase().includes(q));
+  const maxCount = Math.max(...d.ranking.map(r => r.count), 1);
+
+  const rankList = document.getElementById("rankList");
+  if (!rankList) return;
+
+  if (!filtered.length) {
+    rankList.innerHTML = `<div style="text-align:center;color:var(--muted2);font-family:var(--mono);font-size:.72rem;padding:20px 0">Tidak ditemukan</div>`;
+    return;
+  }
+
+  rankList.innerHTML = filtered.map((r) => {
+    const i = d.ranking.indexOf(r);
+    return `
+    <div class="rank-item" onclick="openDetail(${i})">
+      <div class="rank-num ${i === 0 ? 'top' : ''}">${i + 1}</div>
+      <div class="rank-info">
+        <div class="rank-name-row">
+          <div class="rank-name">${r.name}</div>
+          ${r.trending ? '<span class="trending-badge">🔥 Trending</span>' : ''}
+        </div>
+        <div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${(r.count / maxCount * 100).toFixed(0)}%"></div></div>
+      </div>
+      <div class="rank-count">${r.count.toLocaleString('id-ID')}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderHeatmap(matrix) {
+  const grid = document.getElementById("heatmapGrid");
+  if (!grid) return;
+
+  const days = ['Sen','Sel','Rab','Kam','Jum','Sab','Min'];
+  let maxVal = 1;
+  if (matrix) {
+    for (const row of matrix) for (const v of row) if (v > maxVal) maxVal = v;
+  }
+
+  let html = `<div></div>`;
+  for (let h = 0; h < 24; h++) html += `<div class="heatmap-hour-label">${h % 3 === 0 ? h : ''}</div>`;
+
+  days.forEach((day, di) => {
+    html += `<div class="heatmap-day-label">${day}</div>`;
+    for (let h = 0; h < 24; h++) {
+      const val = matrix ? (matrix[di]?.[h] || 0) : 0;
+      const intensity = val / maxVal;
+      const alpha = 0.06 + intensity * 0.9;
+      html += `<div class="heatmap-cell" style="background:rgba(124,106,247,${alpha.toFixed(2)})" title="${day} ${h}:00 — ${val} req"></div>`;
+    }
+  });
+  grid.innerHTML = html;
+}
+
+function renderCompareOptions(ranking) {
+  const selA = document.getElementById("compareA");
+  const selB = document.getElementById("compareB");
+  if (!selA || !selB) return;
+  selA.innerHTML = ranking.map((r, i) => `<option value="${i}">${r.name}</option>`).join('');
+  selB.innerHTML = ranking.map((r, i) => `<option value="${i}" ${i===1?'selected':''}>${r.name}</option>`).join('');
+  selA.onchange = renderCompareChart;
+  selB.onchange = renderCompareChart;
+}
+
+function renderCompareChart() {
+  const d = currentData;
+  if (!d) return;
+  const selA = document.getElementById("compareA");
+  const selB = document.getElementById("compareB");
+  if (!selA || !selB) return;
+  const idxA = parseInt(selA.value || 0);
+  const idxB = parseInt(selB.value || 1);
+  const rA = d.ranking[idxA];
+  const rB = d.ranking[idxB];
+  if (!rA || !rB) return;
+
+  const labels = d.timeline.labels;
+  const timelineTotal = d.timeline.data.reduce((a, b) => a + b, 0) || 1;
+  const dataA = d.timeline.data.map(v => Math.round((v / timelineTotal) * rA.count));
+  const dataB = d.timeline.data.map(v => Math.round((v / timelineTotal) * rB.count));
+
+  const ctx = document.getElementById("compareChart")?.getContext("2d");
+  if (!ctx) return;
+  if (compareChart) compareChart.destroy();
+  compareChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: rA.name, data: dataA, borderColor: '#7c6af7', backgroundColor: 'transparent', tension:0.4, pointRadius:0, borderWidth:2 },
+      { label: rB.name, data: dataB, borderColor: '#4ade80', backgroundColor: 'transparent', tension:0.4, pointRadius:0, borderWidth:2 }
+    ]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: true, labels: { color: '#6b6b80', font: { size: 10 }, boxWidth: 10 } } },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#6b6b80', font: { size: 9 } } },
+        y: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#6b6b80', font: { size: 9 } } }
+      }
+    }
+  });
+}
+
+function renderErrorRing(errorRateStr, breakdown) {
+  const ctxEl = document.getElementById("errorRing");
+  if (!ctxEl) return;
+  const pct = parseFloat(errorRateStr);
+  const ctx = ctxEl.getContext("2d");
+  if (errorRing) errorRing.destroy();
+  errorRing = new Chart(ctx, {
+    type: 'doughnut',
+    data: { datasets: [{ data: [pct, 100 - pct], backgroundColor: ['#f87171', 'rgba(255,255,255,.06)'], borderWidth: 0 }] },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+  });
+  document.getElementById("errorRingValue").textContent = errorRateStr;
+
+  const breakdownEl = document.getElementById("errorBreakdown");
+  breakdownEl.innerHTML = breakdown.map(b => `<div class="error-breakdown-row"><span>${b.code}</span><span>${b.count}</span></div>`).join('');
+}
+
+function renderDevices(devices) {
+  const list = document.getElementById("deviceList");
+  if (!list) return;
+  const icons = { Android: '🤖', Windows: '🪟', iOS: '📱', macOS: '💻' };
+  list.innerHTML = devices.map(dv => `
+    <div class="device-row">
+      <div class="device-icon">${icons[dv.name] || '📟'}</div>
+      <div class="device-info">
+        <div class="device-name"><span>${dv.name}</span><span>${dv.pct}%</span></div>
+        <div class="device-bar-bg"><div class="device-bar-fill" style="width:${dv.pct}%;background:${dv.color}"></div></div>
+      </div>
+    </div>`).join('');
+}
+
+function openDetail(idx) {
+  const d = currentData;
+  if (!d) return;
+  const r = d.ranking[idx];
+  if (!r) return;
+  document.getElementById("modalName").textContent = r.name;
+  document.getElementById("modalPath").textContent = r.path;
+  document.getElementById("modalHits").textContent = r.count.toLocaleString('id-ID');
+  document.getElementById("modalResp").textContent = r.resp;
+  document.getElementById("modalErr").textContent = r.err;
+  document.getElementById("modalRank").textContent = '#' + (idx + 1);
+  document.getElementById("detailModal").classList.add("open");
+}
+
+function closeDetail(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById("detailModal").classList.remove("open");
+}
+
+async function exportStatsData() {
+  const isSystemView = document.getElementById("view-system")?.classList.contains("active");
+  let data, name;
+
+  if (isSystemView) {
+    try {
+      const res = await fetch(base() + "/api/stats");
+      const json = await res.json();
+      data = json.result;
+    } catch (e) {
+      data = { error: "Gagal mengambil data dari /api/stats" };
+    }
+    name = 'system-stats';
+  } else {
+    data = currentData;
+    name = `analytics-${currentPeriod}`;
+  }
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `core-api-${name}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadData();
+  initAccordions();
+
+  document.querySelectorAll(".rp-type-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".rp-type-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+    });
+  });
+
+  const rpForm = document.getElementById("rpForm");
+  if (rpForm) {
+    rpForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("rpSubmit");
+      const spinner = document.getElementById("rpSpinner");
+      const label = document.getElementById("rpSubmitLabel");
+      const msg = document.getElementById("rpMsg");
+
+      const activeType = document.querySelector(".rp-type-btn.active")?.dataset.type || "🐞 Bug";
+      const nama = document.getElementById("rpName").value || "Anonim";
+      const pesan = document.getElementById("rpMessage").value;
+
+      if (!pesan.trim()) {
+        msg.className = "rp-msg err";
+        msg.style.display = "block";
+        msg.textContent = "Pesan tidak boleh kosong.";
+        return;
+      }
+
+      btn.disabled = true;
+      spinner.style.display = "inline-block";
+      label.textContent = "Mengirim...";
+      msg.style.display = "none";
+
+      try {
+        const res = await fetch(base() + "/api/laporan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: activeType, name: nama, message: pesan })
+        });
+
+        if (res.ok) {
+          msg.className = "rp-msg ok";
+          msg.style.display = "block";
+          msg.textContent = "✔ Laporan berhasil dikirim, terima kasih!";
+          rpForm.reset();
+          document.querySelectorAll(".rp-type-btn").forEach(b => b.classList.remove("active"));
+          document.querySelector('.rp-type-btn[data-type="🐞 Bug"]').classList.add("active");
+        } else {
+          throw new Error("Gagal");
+        }
+      } catch (err) {
+        msg.className = "rp-msg err";
+        msg.style.display = "block";
+        msg.textContent = "✘ Gagal mengirim laporan. Coba lagi.";
+      } finally {
+        btn.disabled = false;
+        spinner.style.display = "none";
+        label.textContent = "▶  Kirim Laporan";
+      }
+    });
+  }
+});
