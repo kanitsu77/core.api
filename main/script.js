@@ -42,7 +42,98 @@ const STATUS_CODES=[
   {code:504,label:"Gateway Timeout",desc:"Server upstream tidak merespons tepat waktu.",cls:"s5",icon:"⚫"}
 ];
 
-      
+const FAKE_DATA = {
+  today: {
+    runtime: '4h 32m 18s',
+    total: 1284, totalDelta: '+12.4% dari kemarin',
+    peak: '/api/search/ytplay', peakCount: '312 requests',
+    unique: 187, uniqueDelta: '+8 IP baru',
+    peakHour: '20:00 - 21:00',
+    respTime: '284ms', respDelta: '-18ms lebih cepat',
+    errorRate: '3.2%', errorDelta: '41 error dari 1284',
+    timeline: { labels: ['00','03','06','09','12','15','18','21'], data: [12, 8, 5, 42, 78, 95, 140, 190] },
+    ranking: [
+      { name: 'YouTube Play Music', path: '/api/search/ytplay', count: 312, trending: true, resp: '410ms', err: '4.1%' },
+      { name: 'YouTube Search', path: '/api/search/ytsearch', count: 241, trending: false, resp: '190ms', err: '1.2%' },
+      { name: 'Chat GPT', path: '/api/ai/gpt', count: 198, trending: true, resp: '520ms', err: '2.8%' },
+      { name: 'Instagram Stalk', path: '/api/stalk/igstalk', count: 156, trending: false, resp: '340ms', err: '5.6%' },
+      { name: 'Remove Background', path: '/api/maker/removebg', count: 89, trending: false, resp: '890ms', err: '6.2%' }
+    ],
+    categories: [
+      { name: 'SEARCH', value: 42 }, { name: 'AI', value: 28 }, { name: 'DOWNLOAD', value: 18 },
+      { name: 'STALK', value: 8 }, { name: 'MAKER', value: 4 }
+    ],
+    errorBreakdown: [
+      { code: '400 Bad Request', count: 18 }, { code: '404 Not Found', count: 9 },
+      { code: '422 Unprocessable', count: 8 }, { code: '500 Server Error', count: 6 }
+    ],
+    devices: [
+      { name: 'Android', pct: 44, color: '#4ade80' }, { name: 'Windows', pct: 30, color: '#60a5fa' },
+      { name: 'iOS', pct: 18, color: '#a78bfa' }, { name: 'macOS', pct: 8, color: '#fbbf24' }
+    ],
+    heatmapSeed: 1
+  },
+  week: {
+    runtime: '3d 11h 6m',
+    total: 8934, totalDelta: '+22.1% dari minggu lalu',
+    peak: '/api/search/ytplay', peakCount: '2,140 requests',
+    unique: 642, uniqueDelta: '+94 IP baru',
+    peakHour: 'Sabtu, 20:00',
+    respTime: '312ms', respDelta: '+6ms dari minggu lalu',
+    errorRate: '2.8%', errorDelta: '250 error dari 8934',
+    timeline: { labels: ['Sen','Sel','Rab','Kam','Jum','Sab','Min'], data: [980, 1120, 1050, 1340, 1560, 1890, 1994] },
+    ranking: [
+      { name: 'YouTube Play Music', path: '/api/search/ytplay', count: 2140, trending: true, resp: '395ms', err: '3.4%' },
+      { name: 'YouTube Search', path: '/api/search/ytsearch', count: 1820, trending: false, resp: '185ms', err: '1.1%' },
+      { name: 'Chat GPT', path: '/api/ai/gpt', count: 1490, trending: true, resp: '505ms', err: '2.5%' },
+      { name: 'Instagram Stalk', path: '/api/stalk/igstalk', count: 1120, trending: false, resp: '330ms', err: '4.9%' },
+      { name: 'Spotify Download', path: '/api/download/spotifydl', count: 745, trending: false, resp: '610ms', err: '5.1%' }
+    ],
+    categories: [
+      { name: 'SEARCH', value: 38 }, { name: 'AI', value: 25 }, { name: 'DOWNLOAD', value: 22 },
+      { name: 'STALK', value: 10 }, { name: 'MAKER', value: 5 }
+    ],
+    errorBreakdown: [
+      { code: '400 Bad Request', count: 102 }, { code: '404 Not Found', count: 58 },
+      { code: '422 Unprocessable', count: 51 }, { code: '500 Server Error', count: 39 }
+    ],
+    devices: [
+      { name: 'Android', pct: 41, color: '#4ade80' }, { name: 'Windows', pct: 33, color: '#60a5fa' },
+      { name: 'iOS', pct: 17, color: '#a78bfa' }, { name: 'macOS', pct: 9, color: '#fbbf24' }
+    ],
+    heatmapSeed: 2
+  },
+  month: {
+    runtime: '18d 4h 50m',
+    total: 34210, totalDelta: '+15.8% dari bulan lalu',
+    peak: '/api/search/ytsearch', peakCount: '8,904 requests',
+    unique: 2340, uniqueDelta: '+412 IP baru',
+    peakHour: 'Minggu, 19:00',
+    respTime: '298ms', respDelta: '-9ms lebih cepat',
+    errorRate: '3.0%', errorDelta: '1026 error dari 34210',
+    timeline: { labels: ['W1','W2','W3','W4'], data: [7200, 8100, 8900, 10010] },
+    ranking: [
+      { name: 'YouTube Search', path: '/api/search/ytsearch', count: 8904, trending: false, resp: '188ms', err: '1.3%' },
+      { name: 'YouTube Play Music', path: '/api/search/ytplay', count: 7650, trending: true, resp: '402ms', err: '3.6%' },
+      { name: 'Chat GPT', path: '/api/ai/gpt', count: 6120, trending: true, resp: '511ms', err: '2.6%' },
+      { name: 'Instagram Stalk', path: '/api/stalk/igstalk', count: 4980, trending: false, resp: '335ms', err: '5.0%' },
+      { name: 'Spotify Download', path: '/api/download/spotifydl', count: 3210, trending: false, resp: '598ms', err: '4.8%' }
+    ],
+    categories: [
+      { name: 'SEARCH', value: 40 }, { name: 'AI', value: 24 }, { name: 'DOWNLOAD', value: 20 },
+      { name: 'STALK', value: 11 }, { name: 'MAKER', value: 5 }
+    ],
+    errorBreakdown: [
+      { code: '400 Bad Request', count: 410 }, { code: '404 Not Found', count: 230 },
+      { code: '422 Unprocessable', count: 210 }, { code: '500 Server Error', count: 176 }
+    ],
+    devices: [
+      { name: 'Android', pct: 43, color: '#4ade80' }, { name: 'Windows', pct: 31, color: '#60a5fa' },
+      { name: 'iOS', pct: 17, color: '#a78bfa' }, { name: 'macOS', pct: 9, color: '#fbbf24' }
+    ],
+    heatmapSeed: 3
+  }
+};
 
 let trafficChart = null, categoryChart = null, compareChart = null, errorRing = null;
 
@@ -254,7 +345,28 @@ function copyUrl(){
 
 function toggleStatus() {
   statusShown = !statusShown;
-  document.getElementById("statusPanel").classList.toggle("show", statusShown);
+  const panel = document.getElementById("statusPanel");
+  const chevron = document.getElementById("statusChevron");
+
+  if (statusShown) {
+    panel.classList.add("show");
+    panel.style.maxHeight = panel.scrollHeight + "px";
+    chevron.style.transform = "rotate(180deg)";
+    panel.addEventListener("transitionend", function handler() {
+      if (statusShown) panel.style.maxHeight = "none";
+      panel.removeEventListener("transitionend", handler);
+    });
+  } else {
+    panel.style.maxHeight = panel.scrollHeight + "px";
+    requestAnimationFrame(() => {
+      panel.style.maxHeight = "0px";
+    });
+    chevron.style.transform = "rotate(0deg)";
+    panel.addEventListener("transitionend", function handler() {
+      if (!statusShown) panel.classList.remove("show");
+      panel.removeEventListener("transitionend", handler);
+    });
+  }
 }
 
 function renderStatusCodes() {
@@ -448,19 +560,81 @@ async function sendChat() {
 function runHeroTerminal() {
   const out = document.getElementById("htOutput");
   if (!out) return;
-  const lines = [
-    "$ curl " + base() + "/api/info/api",
-    "> status: true",
-    "> creator: Nixx",
-    "> endpoints: ready"
+
+  const SCRIPT = [
+    { text: "$ pm2 start server.js --name core.api", type: "cmd" },
+    { text: "[PM2] Memuat file dari GitHub...", type: "out" },
+    { text: "[PM2] Starting core.api in fork mode", type: "out" },
+    { text: "[PM2] core.api online ✔", type: "ok" },
+    { text: "", type: "pause" },
+
+    { text: "$ npm install", type: "cmd" },
+    { text: "npm WARN deprecated ...", type: "out" },
+    { text: "added 142 modules in 3.2s", type: "out" },
+    { text: "✔ dependencies up to date", type: "ok" },
+    { text: "", type: "pause" },
+
+    { text: "$ cat information", type: "cmd" },
+    { text: "Name     : Core API", type: "out" },
+    { text: "Url      : core-api.my.id", type: "out" },
+    { text: "Creator  : Nixx", type: "out" },
+    { text: "Language : JavaScript", type: "out" },
+    { text: "Status   : ● Online", type: "ok" }
   ];
-  let i = 0;
-  out.textContent = "";
-  const interval = setInterval(() => {
-    if (i >= lines.length) { clearInterval(interval); return; }
-    out.textContent += lines[i] + "\n";
-    i++;
-  }, 500);
+
+  let stepIndex = 0;
+  let charIndex = 0;
+  let displayLines = [];
+
+  function renderLines() {
+    out.innerHTML = displayLines.map(l => {
+      if (l.type === "cmd") return `<span class="ht-line-cmd">${l.rendered}</span>`;
+      if (l.type === "ok") return `<span class="ht-line-ok">${l.rendered}</span>`;
+      return `<span class="ht-line-out">${l.rendered}</span>`;
+    }).join("\n");
+  }
+
+  function typeStep() {
+    if (stepIndex >= SCRIPT.length) {
+      setTimeout(() => {
+        displayLines = [];
+        stepIndex = 0;
+        charIndex = 0;
+        renderLines();
+        typeStep();
+      }, 1800);
+      return;
+    }
+
+    const current = SCRIPT[stepIndex];
+
+    if (current.type === "pause") {
+      stepIndex++;
+      setTimeout(typeStep, 350);
+      return;
+    }
+
+    if (charIndex === 0) {
+      displayLines.push({ type: current.type, rendered: "" });
+    }
+
+    const line = displayLines[displayLines.length - 1];
+
+    if (charIndex < current.text.length) {
+      line.rendered = current.text.slice(0, charIndex + 1);
+      charIndex++;
+      renderLines();
+      const speed = current.type === "cmd" ? 35 : 12;
+      setTimeout(typeStep, speed);
+    } else {
+      charIndex = 0;
+      stepIndex++;
+      const pauseAfter = current.type === "cmd" ? 150 : current.type === "ok" ? 500 : 80;
+      setTimeout(typeStep, pauseAfter);
+    }
+  }
+
+  typeStep();
 }
 
 function toggleSidebar() {
@@ -494,7 +668,7 @@ function showPage(name) {
   closeSidebar();
 }
 
-
+/* ===== ACCORDION (chevron slide toggle) ===== */
 function toggleAcc(headEl) {
   const item = headEl.parentElement;
   const body = item.querySelector(".acc-body");
@@ -525,7 +699,7 @@ function initAccordions() {
   });
 }
 
-
+/* ===== MAIN TABS (Traffic Analytics / Stats API) ===== */
 document.addEventListener("click", (e) => {
   const tab = e.target.closest(".main-tab");
   if (!tab) return;
