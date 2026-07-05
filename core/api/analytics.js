@@ -212,6 +212,7 @@ module.exports = async (req, res) => {
     result: {
       period,
       runtime: formatDuration(Date.now() - SERVER_START),
+      runtime_seconds: Math.floor((Date.now() - SERVER_START) / 1000),
       total,
       totalDelta: pctDelta(total, prevTotal) + " dari periode sebelumnya",
       peak: peak ? peak.path : "-",
