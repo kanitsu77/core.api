@@ -192,11 +192,11 @@ function initNavStats() {
 
 function initHeroUrl() {
   const el = document.getElementById("heroUrl");
-  if (el) el.textContent = base() + "/api/info/api";
+  if (el) el.textContent = base();
 }
 
 function copyEp(btn) {
-  navigator.clipboard.writeText(base() + "/api/info/api").then(() => {
+  navigator.clipboard.writeText(base()).then(() => {
     btn.textContent = "copied!";
     setTimeout(() => btn.textContent = "copy", 1500);
   });
