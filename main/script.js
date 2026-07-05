@@ -589,50 +589,54 @@ function runHeroTerminal() {
   let charIndex = 0;
   let displayLines = [];
 
-  function renderLines() {
-    out.innerHTML = displayLines.map(l => {
-      if (l.type === "cmd") return `<span class="ht-line-cmd">${l.rendered}</span>`;
-      if (l.type === "ok") return `<span class="ht-line-ok">${l.rendered}</span>`;
-      return `<span class="ht-line-out">${l.rendered}</span>`;
-    }).join("\n");
-  }
+  function renderLines(isTyping) {
+  const html = displayLines.map((l, i) => {
+    const isLast = i === displayLines.length - 1;
+    const cursor = (isLast && isTyping) ? '<span class="ht-typing-cursor">|</span>' : '';
+    if (l.type === "cmd") return `<span class="ht-line-cmd">${l.rendered}${cursor}</span>`;
+    if (l.type === "ok") return `<span class="ht-line-ok">${l.rendered}${cursor}</span>`;
+    return `<span class="ht-line-out">${l.rendered}${cursor}</span>`;
+  }).join("\n");
+  out.innerHTML = html;
+}
 
-  function typeStep() {
-    const currentPart = PARTS[partIndex];
+function typeStep() {
+  const currentPart = PARTS[partIndex];
 
-    if (lineIndex >= currentPart.length) {
-      setTimeout(() => {
-        partIndex = (partIndex + 1) % PARTS.length;
-        lineIndex = 0;
-        charIndex = 0;
-        displayLines = [];
-        renderLines();
-        typeStep();
-      }, 1400);
-      return;
-    }
-
-    const current = currentPart[lineIndex];
-
-    if (charIndex === 0) {
-      displayLines.push({ type: current.type, rendered: "" });
-    }
-
-    const line = displayLines[displayLines.length - 1];
-
-    if (charIndex < current.text.length) {
-      line.rendered = current.text.slice(0, charIndex + 1);
-      charIndex++;
-      renderLines();
-      const speed = current.type === "cmd" ? 35 : 12;
-      setTimeout(typeStep, speed);
-    } else {
+  if (lineIndex >= currentPart.length) {
+    setTimeout(() => {
+      partIndex = (partIndex + 1) % PARTS.length;
+      lineIndex = 0;
       charIndex = 0;
-      lineIndex++;
-      const pauseAfter = current.type === "cmd" ? 150 : current.type === "ok" ? 500 : 80;
-      setTimeout(typeStep, pauseAfter);
-    }
+      displayLines = [];
+      renderLines(false);
+      typeStep();
+    }, 1400);
+    return;
   }
+
+  const current = currentPart[lineIndex];
+
+  if (charIndex === 0) {
+    displayLines.push({ type: current.type, rendered: "" });
+  }
+
+  const line = displayLines[displayLines.length - 1];
+
+  if (charIndex < current.text.length) {
+    line.rendered = current.text.slice(0, charIndex + 1);
+    charIndex++;
+    renderLines(true);
+    const speed = current.type === "cmd" ? 70 : 32;
+    setTimeout(typeStep, speed);
+  } else {
+    charIndex = 0;
+    lineIndex++;
+    renderLines(false);
+    const pauseAfter = current.type === "cmd" ? 300 : current.type === "ok" ? 700 : 180;
+    setTimeout(typeStep, pauseAfter);
+  }
+}
 
   typeStep();
 }
