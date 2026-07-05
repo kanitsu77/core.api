@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 </head>
 <body>
 <div class="stars" id="stars"></div>
@@ -122,45 +123,222 @@
     </div>
   </div>
 </div>
+
 <div id="page-stats" class="page">
-  <div class="container" style="padding-top:32px;max-width:480px">
-    <div style="font-size:1.1rem;font-weight:700;margin-bottom:4px">Stats</div>
-    <div style="font-size:.82rem;color:var(--muted);margin-bottom:24px">Realtime status dan resource penggunaan server.</div>
-    <div class="rp-card">
-      <div class="stats-grid" id="statsGrid">
-        <div class="stats-box stats-full">
-          <div class="stats-label">Uptime</div>
-          <div class="stats-value big" id="statUptime">—</div>
+  <div class="container" style="padding-top:32px">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:24px">
+      <div>
+        <div style="font-size:1.1rem;font-weight:700;margin-bottom:4px">Stats</div>
+        <div style="font-size:.82rem;color:var(--muted)">Analytics traffic & status server core.api</div>
+      </div>
+      <button class="acc-export-btn" onclick="exportStatsData()">⬇ Export JSON</button>
+    </div>
+
+    <div class="main-tabs" id="mainTabs">
+      <div class="main-tab active" data-view="analytics">📊 Traffic Analytics</div>
+      <div class="main-tab" data-view="system">⬡ Stats API</div>
+    </div>
+
+    <div class="stats-view active" id="view-analytics">
+
+      <div class="period-tabs" id="periodTabs">
+        <div class="period-tab active" data-period="today">Hari Ini</div>
+        <div class="period-tab" data-period="week">Minggu Ini</div>
+        <div class="period-tab" data-period="month">Bulan Ini</div>
+      </div>
+
+      <div class="acc-item open">
+        <div class="acc-head" onclick="toggleAcc(this)">
+          <span class="acc-title">Overview</span>
+          <span class="acc-chevron">▾</span>
         </div>
-        <div class="stats-box">
-          <div class="stats-label">Platform</div>
-          <div class="stats-value" id="statPlatform">—</div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="stats-grid4">
+              <div class="stats-box">
+                <div class="stats-label">Runtime</div>
+                <div class="stats-value big" id="statRuntime">—</div>
+                <div class="stats-sub">sejak restart terakhir</div>
+              </div>
+              <div class="stats-box">
+                <div class="stats-label">Total Request</div>
+                <div class="stats-value" id="statTotal">—</div>
+                <div class="stats-sub up" id="statTotalDelta">—</div>
+              </div>
+              <div class="stats-box">
+                <div class="stats-label">Peak Endpoint</div>
+                <div class="stats-value small" id="statPeak">—</div>
+                <div class="stats-sub" id="statPeakCount">—</div>
+              </div>
+              <div class="stats-box">
+                <div class="stats-label">Unique IP</div>
+                <div class="stats-value" id="statUnique">—</div>
+                <div class="stats-sub up" id="statUniqueDelta">—</div>
+              </div>
+            </div>
+            <div class="stats-grid3">
+              <div class="stats-box">
+                <div class="stats-label">Avg Response Time</div>
+                <div class="stats-value" id="statRespTime" style="color:var(--green)">—</div>
+                <div class="stats-sub" id="statRespDelta">—</div>
+              </div>
+              <div class="stats-box">
+                <div class="stats-label">Error Rate</div>
+                <div class="stats-value" id="statErrorRate" style="color:var(--red)">—</div>
+                <div class="stats-sub" id="statErrorDelta">—</div>
+              </div>
+              <div class="stats-box">
+                <div class="stats-label">Jam Tersibuk</div>
+                <div class="stats-value" id="statPeakHour">—</div>
+                <div class="stats-sub">WIB</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="stats-box">
-          <div class="stats-label">Node Version</div>
-          <div class="stats-value" id="statNode">—</div>
+      </div>
+
+      <div class="acc-item open">
+        <div class="acc-head" onclick="toggleAcc(this)">
+          <span class="acc-title">Traffic Timeline</span>
+          <span class="acc-chevron">▾</span>
         </div>
-        <div class="stats-box">
-          <div class="stats-label">CPU Cores</div>
-          <div class="stats-value" id="statCores">—</div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="chart-box"><canvas id="trafficChart"></canvas></div>
+          </div>
         </div>
-        <div class="stats-box">
-          <div class="stats-label">Architecture</div>
-          <div class="stats-value" id="statArch">—</div>
+      </div>
+
+      <div class="acc-item open">
+        <div class="acc-head" onclick="toggleAcc(this)">
+          <span class="acc-title">Endpoint Terpopuler</span>
+          <span class="acc-chevron">▾</span>
         </div>
-        <div class="stats-box stats-full">
-          <div class="stats-label">Memory Usage</div>
-          <div class="stats-value" id="statMem">—</div>
-          <div class="stats-bar-bg"><div class="stats-bar-fill" id="statMemBar"></div></div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <input class="search-box" id="rankSearch" placeholder="Cari endpoint..." oninput="renderRanking()"/>
+            <div class="rank-list" id="rankList"></div>
+          </div>
         </div>
-        <div class="stats-box stats-full">
-          <div class="stats-label">CPU Model</div>
-          <div class="stats-value small" id="statCpu">—</div>
+      </div>
+
+      <div class="acc-item">
+        <div class="acc-head" onclick="toggleAcc(this)">
+          <span class="acc-title">Distribusi Kategori</span>
+          <span class="acc-chevron">▾</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="chart-box" style="height:180px"><canvas id="categoryChart"></canvas></div>
+            <div class="donut-legend" id="categoryLegend"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <div class="acc-head" onclick="toggleAcc(this)">
+          <span class="acc-title">Heatmap Aktivitas (7 Hari x 24 Jam)</span>
+          <span class="acc-chevron">▾</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="heatmap-wrap"><div class="heatmap-grid" id="heatmapGrid"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <div class="acc-head" onclick="toggleAcc(this)">
+          <span class="acc-title">Perbandingan Endpoint</span>
+          <span class="acc-chevron">▾</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="compare-select-row">
+              <select class="compare-select" id="compareA"></select>
+              <select class="compare-select" id="compareB"></select>
+            </div>
+            <div class="chart-box" style="height:180px"><canvas id="compareChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <div class="acc-head" onclick="toggleAcc(this)">
+          <span class="acc-title">Error Rate Detail</span>
+          <span class="acc-chevron">▾</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="error-rate-box">
+              <div class="error-ring"><canvas id="errorRing"></canvas><div class="error-ring-value" id="errorRingValue">—</div></div>
+              <div class="error-breakdown" id="errorBreakdown"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <div class="acc-head" onclick="toggleAcc(this)">
+          <span class="acc-title">Device Breakdown</span>
+          <span class="acc-chevron">▾</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="device-list" id="deviceList"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="stats-view" id="view-system">
+      <div class="acc-item open">
+        <div class="acc-head" onclick="toggleAcc(this)">
+          <span class="acc-title"><span class="sys-status-dot"></span>System Status</span>
+          <span class="acc-chevron">▾</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="sys-grid">
+              <div class="sys-box full">
+                <div class="sys-label">Uptime Server</div>
+                <div class="sys-value big" id="sysUptime">—</div>
+              </div>
+              <div class="sys-box">
+                <div class="sys-label">Platform</div>
+                <div class="sys-value" id="sysPlatform">—</div>
+              </div>
+              <div class="sys-box">
+                <div class="sys-label">Node Version</div>
+                <div class="sys-value" id="sysNode">—</div>
+              </div>
+              <div class="sys-box">
+                <div class="sys-label">CPU Cores</div>
+                <div class="sys-value" id="sysCores">—</div>
+              </div>
+              <div class="sys-box">
+                <div class="sys-label">Architecture</div>
+                <div class="sys-value" id="sysArch">—</div>
+              </div>
+              <div class="sys-box full">
+                <div class="sys-label">Memory Usage</div>
+                <div class="sys-value" id="sysMem">—</div>
+                <div class="sys-bar-bg"><div class="sys-bar-fill" id="sysMemBar" style="width:0%"></div></div>
+              </div>
+              <div class="sys-box full">
+                <div class="sys-label">CPU Model</div>
+                <div class="sys-value small" id="sysCpu">—</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
   </div>
 </div>
+
 <div class="overlay" id="overlay" onclick="closeModal()">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="mhead">
@@ -223,6 +401,25 @@
     </div>
   </div>
 </div>
+
+<div class="modal-overlay" id="detailModal" onclick="closeDetail(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="modalName">—</div>
+        <div class="modal-path" id="modalPath">—</div>
+      </div>
+      <button class="modal-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="modal-stat-grid">
+      <div class="modal-stat"><div class="modal-stat-label">Total Hits</div><div class="modal-stat-value" id="modalHits">—</div></div>
+      <div class="modal-stat"><div class="modal-stat-label">Avg Response</div><div class="modal-stat-value" id="modalResp">—</div></div>
+      <div class="modal-stat"><div class="modal-stat-label">Error Rate</div><div class="modal-stat-value" id="modalErr">—</div></div>
+      <div class="modal-stat"><div class="modal-stat-label">Rank</div><div class="modal-stat-value" id="modalRank">—</div></div>
+    </div>
+  </div>
+</div>
+
 <div class="chat-window" id="chatWindow">
   <div class="chat-head">
     <div class="chat-avatar">⬡</div>
