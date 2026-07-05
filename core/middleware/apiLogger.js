@@ -8,6 +8,7 @@ const EXCLUDED_PATHS = [
   "/api/laporan",
   "/api/list",
   "/api/stats",
+  "/api/analytics",
   "/favicon.ico"
 ];
 
