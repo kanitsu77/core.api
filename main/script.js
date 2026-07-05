@@ -564,25 +564,36 @@ function runHeroTerminal() {
   const PARTS = [
     [
       { text: "$ pm2 start server.js --name core.api", type: "cmd" },
-      { text: "[PM2] Memuat file dari GitHub...", type: "out" },
-      { text: "[PM2] Starting core.api in fork mode", type: "out" },
-      { text: "[PM2] core.api online ✔", type: "ok" }
+      { text: "[PM2] Starting core.api in fork_mode", type: "out" },
+      { text: "[PM2] Done.", type: "out" },
+      { text: "┌────┬─────────────┬─────────┬──────┐", type: "out" },
+      { text: "│ id │ name        │ status  │ cpu  │", type: "out" },
+      { text: "├────┼─────────────┼─────────┼──────┤", type: "out" },
+      { text: "│ 0  │ core.api    │ online  │ 0.3% │", type: "out" },
+      { text: "└────┴─────────────┴─────────┴──────┘", type: "out" },
+      { text: "✔ core.api is up and running", type: "ok" }
     ],
     [
-      { text: "$ npm install", type: "cmd" },
-      { text: "npm WARN deprecated ...", type: "out" },
-      { text: "added 142 modules in 3.2s", type: "out" },
-      { text: "✔ dependencies up to date", type: "ok" }
+      { text: "$ npm install --production", type: "cmd" },
+      { text: "⸰ resolving 142 packages...", type: "out" },
+      { text: "⸰ express@4.19.2", type: "out" },
+      { text: "⸰ axios@1.7.2", type: "out" },
+      { text: "⸰ ua-parser-js@1.0.38", type: "out" },
+      { text: "⸰ dotenv@16.4.5", type: "out" },
+      { text: "✔ 0 vulnerabilities found", type: "ok" }
     ],
     [
-      { text: "$ cat information", type: "cmd" },
-      { text: "Name     : Core API", type: "out" },
-      { text: "Url      : core-api.my.id", type: "out" },
-      { text: "Creator  : Nixx", type: "out" },
-      { text: "Language : JavaScript", type: "out" },
-      { text: "Status   : ● Online", type: "ok" }
+      { text: "$ curl -s core-api.my.id/api/info/api", type: "cmd" },
+      { text: "{", type: "out" },
+      { text: '  "creator": "Nixx",', type: "out" },
+      { text: '  "url": "core-api.my.id",', type: "out" },
+      { text: '  "runtime": "Node.js + Express",', type: "out" },
+      { text: '  "status": "operational"', type: "out" },
+      { text: "}", type: "out" },
+      { text: "✔ 200 OK — response time 42ms", type: "ok" }
     ]
   ];
+
 
   let partIndex = 0;
   let lineIndex = 0;
