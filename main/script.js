@@ -7,7 +7,8 @@ let dat = {},
     chatHistory = [],
     lastResultJson = "",
     statsInterval = null,
-    currentPeriod = "today";
+    currentPeriod = "today",
+    currentData = null;
 
 const COLORS = ['#7c6af7', '#a78bfa', '#4ade80', '#fbbf24', '#60a5fa', '#f472b6'];
 
@@ -41,109 +42,7 @@ const STATUS_CODES=[
   {code:504,label:"Gateway Timeout",desc:"Server upstream tidak merespons tepat waktu.",cls:"s5",icon:"⚫"}
 ];
 
-const FAKE_DATA = {
-  today: {
-    runtime: '4h 32m 18s',
-    total: 1284, totalDelta: '+12.4% dari kemarin',
-    peak: '/api/search/ytplay', peakCount: '312 requests',
-    unique: 187, uniqueDelta: '+8 IP baru',
-    peakHour: '20:00 - 21:00',
-    respTime: '284ms', respDelta: '-18ms lebih cepat',
-    errorRate: '3.2%', errorDelta: '41 error dari 1284',
-    timeline: { labels: ['00','03','06','09','12','15','18','21'], data: [12, 8, 5, 42, 78, 95, 140, 190] },
-    ranking: [
-      { name: 'YouTube Play Music', path: '/api/search/ytplay', count: 312, trending: true, resp: '410ms', err: '4.1%' },
-      { name: 'YouTube Search', path: '/api/search/ytsearch', count: 241, trending: false, resp: '190ms', err: '1.2%' },
-      { name: 'Chat GPT', path: '/api/ai/gpt', count: 198, trending: true, resp: '520ms', err: '2.8%' },
-      { name: 'Instagram Stalk', path: '/api/stalk/igstalk', count: 156, trending: false, resp: '340ms', err: '5.6%' },
-      { name: 'Remove Background', path: '/api/maker/removebg', count: 89, trending: false, resp: '890ms', err: '6.2%' }
-    ],
-    categories: [
-      { name: 'SEARCH', value: 42 }, { name: 'AI', value: 28 }, { name: 'DOWNLOAD', value: 18 },
-      { name: 'STALK', value: 8 }, { name: 'MAKER', value: 4 }
-    ],
-    errorBreakdown: [
-      { code: '400 Bad Request', count: 18 }, { code: '404 Not Found', count: 9 },
-      { code: '422 Unprocessable', count: 8 }, { code: '500 Server Error', count: 6 }
-    ],
-    devices: [
-      { name: 'Android', pct: 44, color: '#4ade80' }, { name: 'Windows', pct: 30, color: '#60a5fa' },
-      { name: 'iOS', pct: 18, color: '#a78bfa' }, { name: 'macOS', pct: 8, color: '#fbbf24' }
-    ],
-    heatmapSeed: 1
-  },
-  week: {
-    runtime: '3d 11h 6m',
-    total: 8934, totalDelta: '+22.1% dari minggu lalu',
-    peak: '/api/search/ytplay', peakCount: '2,140 requests',
-    unique: 642, uniqueDelta: '+94 IP baru',
-    peakHour: 'Sabtu, 20:00',
-    respTime: '312ms', respDelta: '+6ms dari minggu lalu',
-    errorRate: '2.8%', errorDelta: '250 error dari 8934',
-    timeline: { labels: ['Sen','Sel','Rab','Kam','Jum','Sab','Min'], data: [980, 1120, 1050, 1340, 1560, 1890, 1994] },
-    ranking: [
-      { name: 'YouTube Play Music', path: '/api/search/ytplay', count: 2140, trending: true, resp: '395ms', err: '3.4%' },
-      { name: 'YouTube Search', path: '/api/search/ytsearch', count: 1820, trending: false, resp: '185ms', err: '1.1%' },
-      { name: 'Chat GPT', path: '/api/ai/gpt', count: 1490, trending: true, resp: '505ms', err: '2.5%' },
-      { name: 'Instagram Stalk', path: '/api/stalk/igstalk', count: 1120, trending: false, resp: '330ms', err: '4.9%' },
-      { name: 'Spotify Download', path: '/api/download/spotifydl', count: 745, trending: false, resp: '610ms', err: '5.1%' }
-    ],
-    categories: [
-      { name: 'SEARCH', value: 38 }, { name: 'AI', value: 25 }, { name: 'DOWNLOAD', value: 22 },
-      { name: 'STALK', value: 10 }, { name: 'MAKER', value: 5 }
-    ],
-    errorBreakdown: [
-      { code: '400 Bad Request', count: 102 }, { code: '404 Not Found', count: 58 },
-      { code: '422 Unprocessable', count: 51 }, { code: '500 Server Error', count: 39 }
-    ],
-    devices: [
-      { name: 'Android', pct: 41, color: '#4ade80' }, { name: 'Windows', pct: 33, color: '#60a5fa' },
-      { name: 'iOS', pct: 17, color: '#a78bfa' }, { name: 'macOS', pct: 9, color: '#fbbf24' }
-    ],
-    heatmapSeed: 2
-  },
-  month: {
-    runtime: '18d 4h 50m',
-    total: 34210, totalDelta: '+15.8% dari bulan lalu',
-    peak: '/api/search/ytsearch', peakCount: '8,904 requests',
-    unique: 2340, uniqueDelta: '+412 IP baru',
-    peakHour: 'Minggu, 19:00',
-    respTime: '298ms', respDelta: '-9ms lebih cepat',
-    errorRate: '3.0%', errorDelta: '1026 error dari 34210',
-    timeline: { labels: ['W1','W2','W3','W4'], data: [7200, 8100, 8900, 10010] },
-    ranking: [
-      { name: 'YouTube Search', path: '/api/search/ytsearch', count: 8904, trending: false, resp: '188ms', err: '1.3%' },
-      { name: 'YouTube Play Music', path: '/api/search/ytplay', count: 7650, trending: true, resp: '402ms', err: '3.6%' },
-      { name: 'Chat GPT', path: '/api/ai/gpt', count: 6120, trending: true, resp: '511ms', err: '2.6%' },
-      { name: 'Instagram Stalk', path: '/api/stalk/igstalk', count: 4980, trending: false, resp: '335ms', err: '5.0%' },
-      { name: 'Spotify Download', path: '/api/download/spotifydl', count: 3210, trending: false, resp: '598ms', err: '4.8%' }
-    ],
-    categories: [
-      { name: 'SEARCH', value: 40 }, { name: 'AI', value: 24 }, { name: 'DOWNLOAD', value: 20 },
-      { name: 'STALK', value: 11 }, { name: 'MAKER', value: 5 }
-    ],
-    errorBreakdown: [
-      { code: '400 Bad Request', count: 410 }, { code: '404 Not Found', count: 230 },
-      { code: '422 Unprocessable', count: 210 }, { code: '500 Server Error', count: 176 }
-    ],
-    devices: [
-      { name: 'Android', pct: 43, color: '#4ade80' }, { name: 'Windows', pct: 31, color: '#60a5fa' },
-      { name: 'iOS', pct: 17, color: '#a78bfa' }, { name: 'macOS', pct: 9, color: '#fbbf24' }
-    ],
-    heatmapSeed: 3
-  }
-};
-
-const FAKE_SYSTEM = {
-  uptime: '4h 32m 18s',
-  platform: 'linux',
-  node: 'v20.14.0',
-  cores: 2,
-  arch: 'x64',
-  memUsed: 412.6,
-  memTotal: 1958.0,
-  cpuModel: 'Intel(R) Xeon(R) Platinum 8259CL CPU @ 2.50GHz'
-};
+      
 
 let trafficChart = null, categoryChart = null, compareChart = null, errorRing = null;
 
@@ -587,15 +486,15 @@ function showPage(name) {
 
   if (name === "stats") {
     renderPeriod(currentPeriod);
-  } else if (statsInterval) {
-    clearInterval(statsInterval);
-    statsInterval = null;
+  } else {
+    if (statsInterval) { clearInterval(statsInterval); statsInterval = null; }
+    if (sysStatsInterval) { clearInterval(sysStatsInterval); sysStatsInterval = null; }
   }
 
   closeSidebar();
 }
 
-/* ===== ACCORDION (chevron slide toggle) ===== */
+
 function toggleAcc(headEl) {
   const item = headEl.parentElement;
   const body = item.querySelector(".acc-body");
@@ -626,7 +525,7 @@ function initAccordions() {
   });
 }
 
-/* ===== MAIN TABS (Traffic Analytics / Stats API) ===== */
+
 document.addEventListener("click", (e) => {
   const tab = e.target.closest(".main-tab");
   if (!tab) return;
@@ -648,23 +547,46 @@ document.addEventListener("click", (e) => {
   renderPeriod(currentPeriod);
 });
 
-function renderSystemStats() {
-  const s = FAKE_SYSTEM;
-  document.getElementById("sysUptime").textContent = s.uptime;
-  document.getElementById("sysPlatform").textContent = s.platform;
-  document.getElementById("sysNode").textContent = s.node;
-  document.getElementById("sysCores").textContent = s.cores;
-  document.getElementById("sysArch").textContent = s.arch;
-  const pct = (s.memUsed / s.memTotal * 100).toFixed(1);
-  document.getElementById("sysMem").textContent = `${s.memUsed.toFixed(1)} MB / ${s.memTotal.toFixed(1)} MB (${pct}%)`;
-  document.getElementById("sysMemBar").style.width = pct + "%";
-  document.getElementById("sysCpu").textContent = s.cpuModel;
+let sysStatsInterval = null;
+
+async function renderSystemStats() {
+  try {
+    const res = await fetch(base() + "/api/stats");
+    const json = await res.json();
+    const d = json.result;
+
+    document.getElementById("sysUptime").textContent = d.uptime;
+    document.getElementById("sysPlatform").textContent = d.platform;
+    document.getElementById("sysNode").textContent = d.node_version;
+    document.getElementById("sysCores").textContent = d.cpu_cores;
+    document.getElementById("sysArch").textContent = d.arch;
+    document.getElementById("sysMem").textContent = `${d.memory_used_mb} MB / ${d.memory_total_mb} MB (${d.memory_percent}%)`;
+    document.getElementById("sysMemBar").style.width = d.memory_percent + "%";
+    document.getElementById("sysCpu").textContent = d.cpu_model;
+  } catch (e) {
+    console.error("Gagal load /api/stats", e);
+  }
+
+  if (!sysStatsInterval) {
+    sysStatsInterval = setInterval(renderSystemStats, 5000);
+  }
 }
 
-function renderPeriod(period) {
+async function renderPeriod(period) {
   currentPeriod = period;
-  const d = FAKE_DATA[period];
+  let d;
+
+  try {
+    const res = await fetch(base() + "/api/analytics?period=" + period);
+    const json = await res.json();
+    d = json.result;
+  } catch (e) {
+    console.error("Gagal fetch /api/analytics, pakai data dummy sementara:", e);
+    d = FAKE_DATA[period];
+  }
+
   if (!d || !document.getElementById("statRuntime")) return;
+  currentData = d;
 
   document.getElementById("statRuntime").textContent = d.runtime;
   document.getElementById("statTotal").textContent = d.total.toLocaleString('id-ID');
@@ -715,11 +637,11 @@ function renderPeriod(period) {
   const legend = document.getElementById("categoryLegend");
   if (legend) {
     legend.innerHTML = d.categories.map((c, i) => `
-      <div class="legend-item"><span class="legend-dot" style="background:${COLORS[i]}"></span><span>${c.name}</span><span class="legend-val">${c.value}%</span></div>
+      <div class="legend-item"><span class="legend-dot" style="background:${COLORS[i % COLORS.length]}"></span><span>${c.name}</span><span class="legend-val">${c.value}%</span></div>
     `).join('');
   }
 
-  renderHeatmap(d.heatmapSeed);
+  renderHeatmap(d.heatmap);
   renderCompareOptions(d.ranking);
   renderCompareChart();
   renderErrorRing(d.errorRate, d.errorBreakdown);
@@ -733,11 +655,12 @@ function renderPeriod(period) {
 }
 
 function renderRanking() {
-  const d = FAKE_DATA[currentPeriod];
+  const d = currentData;
+  if (!d) return;
   const searchEl = document.getElementById("rankSearch");
   const q = (searchEl?.value || "").toLowerCase();
   const filtered = d.ranking.filter(r => !q || r.name.toLowerCase().includes(q) || r.path.toLowerCase().includes(q));
-  const maxCount = Math.max(...d.ranking.map(r => r.count));
+  const maxCount = Math.max(...d.ranking.map(r => r.count), 1);
 
   const rankList = document.getElementById("rankList");
   if (!rankList) return;
@@ -764,24 +687,26 @@ function renderRanking() {
   }).join('');
 }
 
-function renderHeatmap(seed) {
+function renderHeatmap(matrix) {
   const grid = document.getElementById("heatmapGrid");
   if (!grid) return;
-  const rand = seededRandom(seed * 1000);
+
   const days = ['Sen','Sel','Rab','Kam','Jum','Sab','Min'];
+  let maxVal = 1;
+  if (matrix) {
+    for (const row of matrix) for (const v of row) if (v > maxVal) maxVal = v;
+  }
+
   let html = `<div></div>`;
   for (let h = 0; h < 24; h++) html += `<div class="heatmap-hour-label">${h % 3 === 0 ? h : ''}</div>`;
+
   days.forEach((day, di) => {
     html += `<div class="heatmap-day-label">${day}</div>`;
     for (let h = 0; h < 24; h++) {
-      let base = 0.15;
-      if (h >= 18 && h <= 22) base = 0.85;
-      else if (h >= 9 && h <= 17) base = 0.5;
-      else if (h >= 0 && h <= 5) base = 0.08;
-      if (di >= 5) base *= 1.2;
-      const intensity = Math.min(1, base + rand() * 0.25);
-      const alpha = 0.08 + intensity * 0.85;
-      html += `<div class="heatmap-cell" style="background:rgba(124,106,247,${alpha.toFixed(2)})" title="${day} ${h}:00 — ${Math.round(intensity*300)} req"></div>`;
+      const val = matrix ? (matrix[di]?.[h] || 0) : 0;
+      const intensity = val / maxVal;
+      const alpha = 0.06 + intensity * 0.9;
+      html += `<div class="heatmap-cell" style="background:rgba(124,106,247,${alpha.toFixed(2)})" title="${day} ${h}:00 — ${val} req"></div>`;
     }
   });
   grid.innerHTML = html;
@@ -798,7 +723,8 @@ function renderCompareOptions(ranking) {
 }
 
 function renderCompareChart() {
-  const d = FAKE_DATA[currentPeriod];
+  const d = currentData;
+  if (!d) return;
   const selA = document.getElementById("compareA");
   const selB = document.getElementById("compareB");
   if (!selA || !selB) return;
@@ -808,10 +734,10 @@ function renderCompareChart() {
   const rB = d.ranking[idxB];
   if (!rA || !rB) return;
 
-  const rand = seededRandom(idxA * 7 + idxB * 13 + 1);
   const labels = d.timeline.labels;
-  const dataA = labels.map(() => Math.round(rA.count / labels.length * (0.6 + rand())));
-  const dataB = labels.map(() => Math.round(rB.count / labels.length * (0.6 + rand())));
+  const timelineTotal = d.timeline.data.reduce((a, b) => a + b, 0) || 1;
+  const dataA = d.timeline.data.map(v => Math.round((v / timelineTotal) * rA.count));
+  const dataB = d.timeline.data.map(v => Math.round((v / timelineTotal) * rB.count));
 
   const ctx = document.getElementById("compareChart")?.getContext("2d");
   if (!ctx) return;
@@ -865,7 +791,8 @@ function renderDevices(devices) {
 }
 
 function openDetail(idx) {
-  const d = FAKE_DATA[currentPeriod];
+  const d = currentData;
+  if (!d) return;
   const r = d.ranking[idx];
   if (!r) return;
   document.getElementById("modalName").textContent = r.name;
@@ -882,10 +809,24 @@ function closeDetail(e) {
   document.getElementById("detailModal").classList.remove("open");
 }
 
-function exportStatsData() {
+async function exportStatsData() {
   const isSystemView = document.getElementById("view-system")?.classList.contains("active");
-  const data = isSystemView ? FAKE_SYSTEM : FAKE_DATA[currentPeriod];
-  const name = isSystemView ? 'system-stats' : `analytics-${currentPeriod}`;
+  let data, name;
+
+  if (isSystemView) {
+    try {
+      const res = await fetch(base() + "/api/stats");
+      const json = await res.json();
+      data = json.result;
+    } catch (e) {
+      data = { error: "Gagal mengambil data dari /api/stats" };
+    }
+    name = 'system-stats';
+  } else {
+    data = currentData;
+    name = `analytics-${currentPeriod}`;
+  }
+
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
