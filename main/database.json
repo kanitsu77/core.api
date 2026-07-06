@@ -164,6 +164,19 @@
     "params": {
       "url": "URL gambar"
     }
-}
+   },
+ "Web To APK": {
+   "status": true,
+   "path": "api/tools/web2apk",
+   "description": "Ubah website jadi APK Android. Masukkan URL website, nama aplikasi, dan URL icon.",
+   "type": "json",
+   "endpoint": "/api/tools/web2apk",
+   "method": "GET",
+   "params": {
+     "url": "Masukan URL website",
+     "appName": "Masukan nama aplikasi",
+     "icon": "Masukan URL icon aplikasi"
+   }
+  }
  }
 }
