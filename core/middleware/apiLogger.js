@@ -1,8 +1,12 @@
 const axios = require("axios");
 const UAParser = require("ua-parser-js");
+const fs = require("fs");
+const path = require("path");
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+
+const LOG_FILE = path.join(__dirname, "..", "..", "data", "requests.jsonl");
 
 const EXCLUDED_PATHS = [
   "/api/laporan",
@@ -12,6 +16,18 @@ const EXCLUDED_PATHS = [
   "/api/analytics",
   "/favicon.ico"
 ];
+
+function ensureLogDir() {
+  const dir = path.dirname(LOG_FILE);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+}
+
+function writeRequestLog(entry) {
+  ensureLogDir();
+  fs.appendFile(LOG_FILE, JSON.stringify(entry) + "\n", (err) => {
+    if (err) console.error("Gagal nulis log request:", err.message);
+  });
+}
 
 async function sendLog(message) {
   try {
@@ -26,13 +42,26 @@ async function sendLog(message) {
 }
 
 function apiLogger(req, res, next) {
+  const start = Date.now();
   const isApiRequest = req.path.startsWith("/api/");
-  const isExcluded = EXCLUDED_PATHS.some(path => req.path === path);
+  const isExcluded = EXCLUDED_PATHS.some(p => req.path === p);
   const isStaticAsset = /\.(css|js|png|jpg|jpeg|svg|ico|woff|woff2|ttf|map)$/.test(req.path);
 
   if (isApiRequest && !isExcluded && !isStaticAsset) {
     const ua = new UAParser(req.headers["user-agent"]).getResult();
     const ip = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown").replace("::ffff:", "");
+
+    res.on("finish", () => {
+      writeRequestLog({
+        ts: Date.now(),
+        path: req.path,
+        status: res.statusCode,
+        responseTimeMs: Date.now() - start,
+        ip,
+        ua: req.headers["user-agent"] || ""
+      });
+    });
+
     const time = new Date().toLocaleString("id-ID", {
       timeZone: "Asia/Jakarta",
       day: "numeric",
