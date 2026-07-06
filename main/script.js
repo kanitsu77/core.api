@@ -515,6 +515,8 @@ async function runApi() {
   }
 }
 
+let chatHistory = [];
+
 function toggleChat() {
   chatOpen = !chatOpen;
   document.getElementById("chatWindow").classList.toggle("open", chatOpen);
@@ -535,17 +537,23 @@ async function sendChat() {
   msgs.scrollTop = msgs.scrollHeight;
   typing.style.display = "flex";
 
+  chatHistory.push({ role: "user", content: text });
+
   try {
     const res = await fetch(base() + "/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text })
+      body: JSON.stringify({ messages: chatHistory })
     });
     const json = await res.json();
     typing.style.display = "none";
+
+    const reply = json.result || "Maaf, terjadi kesalahan.";
+    chatHistory.push({ role: "assistant", content: reply });
+
     const botMsg = document.createElement("div");
     botMsg.className = "msg bot";
-    botMsg.innerHTML = `<div class="msg-bubble">${json.result || "Maaf, terjadi kesalahan."}</div><div class="msg-time">${nowTime()}</div>`;
+    botMsg.innerHTML = `<div class="msg-bubble">${reply}</div><div class="msg-time">${nowTime()}</div>`;
     msgs.insertBefore(botMsg, typing);
     msgs.scrollTop = msgs.scrollHeight;
   } catch (e) {
