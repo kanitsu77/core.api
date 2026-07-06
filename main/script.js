@@ -515,8 +515,6 @@ async function runApi() {
   }
 }
 
-let chatHistory = [];
-
 function toggleChat() {
   chatOpen = !chatOpen;
   document.getElementById("chatWindow").classList.toggle("open", chatOpen);
