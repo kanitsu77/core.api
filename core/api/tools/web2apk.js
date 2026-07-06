@@ -227,7 +227,7 @@ module.exports = async (req, res) => {
           position: result.position,
           estimatedWaitTime: result.estimatedWaitTime,
           message: result.message,
-          checkStatusUrl: `/api/tools/web2apk/status?projectId=${projectId}`
+          checkStatusUrl: `/api/tools/status?projectId=${projectId}`
         }
       }, null, 2));
     } else {
