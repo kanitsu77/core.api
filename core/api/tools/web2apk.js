@@ -87,10 +87,19 @@ class Web2ApkService {
           ...form.getHeaders()
         },
         maxContentLength: Infinity,
-        maxBodyLength: Infinity
+        maxBodyLength: Infinity,
+        validateStatus: () => true
       });
 
       const data = response.data;
+
+      if (response.status !== 200 && response.status !== 201) {
+        throw new Error(`HTTP ${response.status}: ${typeof data === "string" ? data.substring(0, 200) : data?.message || JSON.stringify(data)}`);
+      }
+
+      if (typeof data === "string") {
+        throw new Error(`Server returned HTML/text instead of JSON: ${data.substring(0, 100)}`);
+      }
 
       if (data.queued) {
         return {
@@ -196,7 +205,17 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const iconRes = await axios.get(icon, { responseType: "arraybuffer" });
+    const iconRes = await axios.get(icon, { responseType: "arraybuffer", validateStatus: () => true });
+    
+    if (iconRes.status !== 200) {
+      res.statusCode = 400;
+      return res.end(JSON.stringify({
+        status: false,
+        creator: "Nixx",
+        error: `Gagal fetch icon: HTTP ${iconRes.status}`
+      }, null, 2));
+    }
+    
     const iconBuffer = Buffer.from(iconRes.data);
 
     const service = new Web2ApkService();
