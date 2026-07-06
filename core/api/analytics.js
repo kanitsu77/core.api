@@ -92,24 +92,26 @@ module.exports = async (req, res) => {
   }
 
   const mid = start + (end - start) / 2;
-  const ranking = Object.entries(byPath).map(([p, list]) => {
-    const info = meta[p] || { name: p, category: "OTHER" };
-    const errCount = list.filter(e => e.status >= 400).length;
-    const avgResp = list.reduce((a, b) => a + b.responseTimeMs, 0) / list.length;
-    const firstHalf = list.filter(e => e.ts < mid).length;
-    const secondHalf = list.filter(e => e.ts >= mid).length;
-    const trending = firstHalf > 0 ? (secondHalf / firstHalf) >= 1.5 : secondHalf >= 5;
+  const ranking = Object.entries(byPath)
+    .filter(([p]) => meta[p])
+    .map(([p, list]) => {
+      const info = meta[p];
+      const errCount = list.filter(e => e.status >= 400).length;
+      const avgResp = list.reduce((a, b) => a + b.responseTimeMs, 0) / list.length;
+      const firstHalf = list.filter(e => e.ts < mid).length;
+      const secondHalf = list.filter(e => e.ts >= mid).length;
+      const trending = firstHalf > 0 ? (secondHalf / firstHalf) >= 1.5 : secondHalf >= 5;
 
-    return {
-      name: info.name,
-      path: p,
-      category: info.category,
-      count: list.length,
-      trending,
-      resp: Math.round(avgResp) + "ms",
-      err: ((errCount / list.length) * 100).toFixed(1) + "%"
-    };
-  }).sort((a, b) => b.count - a.count);
+      return {
+        name: info.name,
+        path: p,
+        category: info.category,
+        count: list.length,
+        trending,
+        resp: Math.round(avgResp) + "ms",
+        err: ((errCount / list.length) * 100).toFixed(1) + "%"
+      };
+    }).sort((a, b) => b.count - a.count);
 
   const peak = ranking[0] || null;
 
