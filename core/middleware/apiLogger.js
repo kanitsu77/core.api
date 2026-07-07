@@ -7,6 +7,7 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 const LOG_FILE = path.join(__dirname, "..", "..", "data", "requests.jsonl");
+const DB_FILE = path.join(__dirname, "..", "..", "main", "database.json");
 
 const EXCLUDED_PATHS = [
   "/api/laporan",
@@ -14,8 +15,32 @@ const EXCLUDED_PATHS = [
   "/api/stats",
   "/api/chat",
   "/api/analytics",
+  "/api/notifications",
   "/favicon.ico"
 ];
+
+let registeredPaths = null;
+let registeredPathsLoadedAt = 0;
+const CACHE_TTL = 60000;
+
+function loadRegisteredPaths() {
+  const now = Date.now();
+  if (registeredPaths && now - registeredPathsLoadedAt < CACHE_TTL) {
+    return registeredPaths;
+  }
+  const set = new Set();
+  try {
+    const db = JSON.parse(fs.readFileSync(DB_FILE, "utf8"));
+    for (const apis of Object.values(db)) {
+      for (const api of Object.values(apis)) {
+        set.add("/" + api.path);
+      }
+    }
+  } catch (e) {}
+  registeredPaths = set;
+  registeredPathsLoadedAt = now;
+  return set;
+}
 
 function ensureLogDir() {
   const dir = path.dirname(LOG_FILE);
@@ -46,6 +71,7 @@ function apiLogger(req, res, next) {
   const isApiRequest = req.path.startsWith("/api/");
   const isExcluded = EXCLUDED_PATHS.some(p => req.path === p);
   const isStaticAsset = /\.(css|js|png|jpg|jpeg|svg|ico|woff|woff2|ttf|map)$/.test(req.path);
+  const isRegistered = loadRegisteredPaths().has(req.path);
 
   if (isApiRequest && !isExcluded && !isStaticAsset) {
     const ua = new UAParser(req.headers["user-agent"]).getResult();
@@ -62,28 +88,36 @@ function apiLogger(req, res, next) {
       });
     });
 
-    const time = new Date().toLocaleString("id-ID", {
-      timeZone: "Asia/Jakarta",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
+    if (isRegistered) {
+      const time = new Date().toLocaleString("id-ID", {
+        timeZone: "Asia/Jakarta",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
 
-    const queryString = Object.keys(req.query).length
-      ? Object.entries(req.query).map(([k, v]) => `${k}=${v}`).join(", ")
-      : "-";
+      const queryString = Object.keys(req.query).length
+        ? Object.entries(req.query).map(([k, v]) => `${k}: ${v}`).join("\n▫️ ")
+        : "-";
 
-    const message = `📡 *Endpoint Used*\n\n` +
-      `🔗 *Endpoint:* \`${req.path}\`\n` +
-      `🔍 *Query:* ${queryString}\n` +
-      `🌐 *IP:* \`${ip}\`\n` +
-      `📱 *Method:* ${req.method}\n` +
-      `📲 *Device:* ${ua.os.name || "Unknown"} ${ua.os.version || ""} · ${ua.browser.name || "Unknown"}\n` +
-      `🕒 *Waktu:* ${time} WIB`;
+      const deviceInfo = `${ua.os.name || "Unknown"} ${ua.os.version || ""}`.trim();
+      const browserInfo = ua.browser.name ? `${ua.browser.name} ${ua.browser.version || ""}`.trim() : "Unknown";
 
-    sendLog(message);
+      const message =
+        `🔔 *NEW REQUEST*\n` +
+        `━━━━━━━━━━━━━━━━━━\n` +
+        `📍 *Endpoint*\n\`${req.path}\`\n\n` +
+        `⚙️ *Method:* \`${req.method}\`\n\n` +
+        `🔎 *Query Params*\n${queryString === "-" ? "▫️ -" : "▫️ " + queryString}\n\n` +
+        `🌐 *IP Address*\n\`${ip}\`\n\n` +
+        `💻 *Device*\n▫️ OS: ${deviceInfo}\n▫️ Browser: ${browserInfo}\n\n` +
+        `🕒 *Time*\n${time} WIB\n` +
+        `━━━━━━━━━━━━━━━━━━`;
+
+      sendLog(message);
+    }
   }
 
   next();
