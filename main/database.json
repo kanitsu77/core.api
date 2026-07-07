@@ -166,7 +166,7 @@
     }
    },
  "Web To APK": {
-   "status": true,
+   "status": false,
    "path": "api/tools/web2apk",
    "description": "Ubah website jadi APK Android. Masukkan URL website, nama aplikasi, dan URL icon.",
    "type": "json",
