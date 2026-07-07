@@ -248,12 +248,15 @@ function renderGrid() {
     for (const [name, api] of filtered) {
       const pc = Object.keys(api.params).length;
       const card = document.createElement("div");
-      card.className = "card" + (api.status ? "" : " inactive");
-      card.style.setProperty("--delay", (idx * 0.045 + 0.05) + "s");
-      card.innerHTML = `
+card.className = "card" + (api.status ? "" : " inactive");
+card.style.setProperty("--delay", (idx * 0.045 + 0.05) + "s");
+card.innerHTML = `
 <div class="card-top">
   <span class="cat-badge">${cat}</span>
-  <span class="sdot ${api.status ? "on" : "off"}"></span>
+  ${api.status
+    ? `<span class="sdot on"></span>`
+    : `<span class="offline-badge"><span class="offline-dot"></span>Offline</span>`
+  }
 </div>
 <div class="card-name">${name}</div>
 <div class="card-desc">${api.description}</div>
@@ -261,7 +264,7 @@ function renderGrid() {
   <span class="tbadge ${api.type}">${api.type}</span>
   <span class="pcount">${pc > 0 ? pc + " param" + (pc > 1 ? "s" : "") : "no params"}</span>
 </div>`;
-      card.onclick = api.status ? () => openModal(cat, name, api) : null;
+card.onclick = api.status ? () => openModal(cat, name, api) : null;
       if (!api.status) card.style.cursor = "default";
       gg.appendChild(card);
       idx++;
