@@ -248,7 +248,7 @@ function renderGrid() {
     for (const [name, api] of filtered) {
       const pc = Object.keys(api.params).length;
       const card = document.createElement("div");
-      card.className = "card";
+      card.className = "card" + (api.status ? "" : " inactive");
       card.style.setProperty("--delay", (idx * 0.045 + 0.05) + "s");
       card.innerHTML = `
 <div class="card-top">
