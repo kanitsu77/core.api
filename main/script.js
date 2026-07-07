@@ -261,7 +261,8 @@ function renderGrid() {
   <span class="tbadge ${api.type}">${api.type}</span>
   <span class="pcount">${pc > 0 ? pc + " param" + (pc > 1 ? "s" : "") : "no params"}</span>
 </div>`;
-      card.onclick = () => openModal(cat, name, api);
+      card.onclick = api.status ? () => openModal(cat, name, api) : null;
+      if (!api.status) card.style.cursor = "default";
       gg.appendChild(card);
       idx++;
     }
