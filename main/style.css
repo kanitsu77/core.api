@@ -532,6 +532,35 @@ tabs {
   margin-bottom: 8px;
 }
 
+.card.inactive {
+  opacity: .5;
+  cursor: default;
+  pointer-events: none;
+}
+
+.offline-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--muted2);
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+
+.offline-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted2);
+  flex-shrink: 0;
+}
+
 .cat-badge {
   font-family: var(--mono);
   font-size: .58rem;
@@ -1462,11 +1491,4 @@ card.inactive {
   filter: grayscale(.7);
   cursor: default;
   pointer-events: none;
-}
-
-.card.inactive .card-name::after {
-  content: " (Nonaktif)";
-  font-size: .65rem;
-  color: var(--red);
-  font-weight: 400;
 }
