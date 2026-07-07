@@ -156,10 +156,10 @@
    },
   "Image To Prompt": {
     "status": true,
-    "path": "api/ai/img2promt",
+    "path": "api/tools/img2promt",
     "description": "Ubah gambar menjadi prompt AI secara otomatis. Kirim URL gambar dan AI akan menghasilkan deskripsi prompt yang detail dalam bahasa Inggris, cocok untuk digunakan pada generator gambar seperti Flux, Midjourney, atau Stable Diffusion.",
     "type": "json",
-    "endpoint": "/api/ai/img2prompt",
+    "endpoint": "/api/tools/img2prompt",
     "method": "GET",
     "params": {
       "url": "URL gambar"
