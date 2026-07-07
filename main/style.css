@@ -412,7 +412,7 @@ body {
 
 .sec-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 10px;
@@ -427,7 +427,12 @@ body {
   color: var(--muted);
 }
 
-.tabs { display: flex; gap: 5px; flex-wrap: wrap; }
+tabs {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  width: 100%;
+}
 
 .tab {
   font-family: var(--mono);
@@ -1452,3 +1457,16 @@ body {
   .sys-grid{grid-template-columns:1fr}
 }
 .ht-typing-cursor{color:var(--accent2);animation:blink .5s step-end infinite}
+card.inactive {
+  opacity: .4;
+  filter: grayscale(.7);
+  cursor: default;
+  pointer-events: none;
+}
+
+.card.inactive .card-name::after {
+  content: " (Nonaktif)";
+  font-size: .65rem;
+  color: var(--red);
+  font-weight: 400;
+}
