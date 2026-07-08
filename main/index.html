@@ -21,11 +21,12 @@
     <div class="sb-item active" onclick="showPage('home')" id="nav-home"><span class="sb-item-icon">⬡</span><span class="sb-item-label">Endpoints</span></div>
     <div class="sb-item" onclick="showPage('laporan')" id="nav-laporan"><span class="sb-item-icon">◉</span><span class="sb-item-label">Laporan</span></div>
     <div class="sb-item" onclick="showPage('stats')" id="nav-stats"><span class="sb-item-icon">▣</span><span class="sb-item-label">Stats</span></div>
+    <div class="sb-item" onclick="showPage('thanks')" id="nav-thanks"><span class="sb-item-icon">♥</span><span class="sb-item-label">Thanks To</span></div>
     <div class="sb-divider"></div>
     <div class="sb-item" onclick="window.open('https://github.com/Nixx-Core','_blank')"><span class="sb-item-icon">⊕</span><span class="sb-item-label">GitHub</span></div>
     <div class="sb-item" onclick="window.open('https://whatsapp.com/channel/0029VbCIBAh002T45gbGJw2h','_blank')"><span class="sb-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.117 1.528 5.845L.057 23.5l5.797-1.52A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.85 0-3.583-.5-5.075-1.375l-.363-.214-3.44.902.918-3.352-.236-.374A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg></span><span class="sb-item-label">WhatsApp</span></div>
   </nav>
-  <div class="sb-footer"><div class="sb-version">core.api v1.0.0 · Vercel</div></div>
+  <div class="sb-footer"><div class="sb-version">core.api v1.0.0 · VPS</div></div>
 </aside>
 <nav class="navbar">
   <div class="nav-left">
@@ -35,8 +36,24 @@
   <div class="nav-pills">
     <span class="pill" id="pTotal">— APIs</span>
     <span class="pill on" id="pActive">— Active</span>
+    <button class="notif-btn" onclick="toggleNotif()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span class="notif-badge" id="notifBadge" style="display:none">0</span>
+    </button>
   </div>
 </nav>
+
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-head">
+    <span>Notifikasi</span>
+    <button class="notif-close" onclick="toggleNotif()">✕</button>
+  </div>
+  <div class="notif-list" id="notifList"></div>
+</div>
+
 <div id="page-home" class="page active">
   <header class="hero">
     <div class="hero-glow"></div>
@@ -336,6 +353,49 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<div id="page-thanks" class="page">
+  <div class="container" style="padding-top:32px;max-width:480px">
+    <div style="font-size:1.1rem;font-weight:700;margin-bottom:4px">Thanks To</div>
+    <div style="font-size:.82rem;color:var(--muted);margin-bottom:24px">Orang & layanan yang bikin core.api bisa berjalan.</div>
+
+    <div class="thanks-group">
+      <div class="thanks-group-title">Infrastruktur</div>
+      <div class="thanks-card">
+        <div class="thanks-avatar">🚀</div>
+        <div class="thanks-info"><div class="thanks-name">Walzz Store</div><div class="thanks-role">Penyedia VPS untuk menjalankan web</div></div>
+        
+      </div>
+      <div class="thanks-card">
+        <div class="thanks-avatar">🌐</div>
+        <div class="thanks-info"><div class="thanks-name">IDwebhost</div><div class="thanks-role">Deployed domain</div></div>
+      </div>
+      <div class="thanks-card">
+        <div class="thanks-avatar">🌐</div>
+        <div class="thanks-info"><div class="thanks-name">Cloudflare</div><div class="thanks-role">DNS, proxy & SSL gratis</div></div>
+      </div>
+    </div>
+
+    <div class="thanks-group">
+      <div class="thanks-group-title">Layanan AI & API</div>
+      <div class="thanks-card">
+        <div class="thanks-avatar">⚡</div>
+        <div class="thanks-info"><div class="thanks-name">Groq</div><div class="thanks-role">Inference AI untuk fitur Chat</div></div>
+      </div>
+    </div>
+
+    <div class="thanks-group">
+      <div class="thanks-group-title">Tools & Library</div>
+      <div class="thanks-card">
+        <div class="thanks-avatar">🔗</div>
+        <div class="thanks-info"><div class="thanks-name">Source Scrape Oleh @azbry</div><div class="thanks-role">api.azbry.com. Dan penyedia scrape yang lainnya.</div></div>
+        <a class="thanks-link" href="https://api.azbry.com" target="_blank">Visit</a>
+      </div>
+    </div>
+
+    <div class="thanks-footer">Dibuat dengan ⬡ oleh <b>Nixx</b><br/>core.api © 2k26</div>
   </div>
 </div>
 
