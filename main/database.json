@@ -199,7 +199,7 @@
   "params": {
     "username": "Input Username, example: nixxjs",
     "message": "Input Message, example: Hola sir",
-    "Total": "Input Total, example: 10"
+    "total": "Input Total, example: 10"
    }
   }
  }
