@@ -32,7 +32,18 @@
       "params": {
         "query": "Masukan query"
       }
-    }
+    },
+  "Pinterest Search": {
+     "status": true,
+     "path": "api/search/pinterest",
+     "description": "Cari gambar di Pinterest berdasarkan kata kunci dan dapatkan gambar, judul, board, dan sumber pin.",
+     "type": "json",
+     "endpoint": "/api/search/pinterest",
+     "method": "GET",
+     "params": {
+       "query": "Masukan kata kunci pencarian"
+     }
+   }
   },
   "MAKER": {
   "Remove Background": {
