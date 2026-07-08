@@ -98,7 +98,7 @@ module.exports = async (req, res) => {
    return res.end(JSON.stringify({
      status: false,
      creator: "Nixx",
-     error: "Parameter 'username' harus di isi!
+     error: "Parameter 'username' harus di isi!"
    }, null, 2))
   }
   
@@ -107,7 +107,7 @@ module.exports = async (req, res) => {
    return res.end(JSON.stringify({
      status: false,
      creator: "Nixx",
-     error: "Parameter 'message' harus di isi!
+     error: "Parameter 'message' harus di isi!"
    }, null, 2))
   } 
   
@@ -116,7 +116,7 @@ module.exports = async (req, res) => {
    return res.end(JSON.stringify({
      status: false,
      creator: "Nixx",
-     error: "Parameter 'total' harus di isi!
+     error: "Parameter 'total' harus di isi!"
    }, null, 2))
   }
   
@@ -134,7 +134,7 @@ module.exports = async (req, res) => {
   res.end(JSON.stringify({
     status: false,
     creator: "Nixx",
-    error: e
+    error: String(e)
     }, null, 2))
   }
 }
