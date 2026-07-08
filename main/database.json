@@ -177,7 +177,7 @@
     }
    },
  "Web To APK": {
-   "status": false,
+   "status": true,
    "path": "api/tools/web2apk",
    "description": "Ubah website jadi APK Android. Masukkan URL website, nama aplikasi, dan URL icon.",
    "type": "json",
@@ -187,6 +187,19 @@
      "url": "Masukan URL website",
      "appName": "Masukan nama aplikasi",
      "icon": "Masukan URL icon aplikasi"
+   }
+  },
+"SPAM NGL": {
+  "status": true,
+  "path": "api/tools/spamngl",
+  "description": "Spamm Message to target",
+  "type": "json",
+  "endpoint": "api/tools/spamngl",
+  "method": "GET",
+  "params": {
+    "username": "Input Username, example: nixxjs",
+    "message": "Input Message, example: Hola sir",
+    "Total": "Input Total, example: 10"
    }
   }
  }
