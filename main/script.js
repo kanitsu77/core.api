@@ -257,6 +257,17 @@ function copyUrl(){
   });
 }
 
+function copyResult() {
+  navigator.clipboard.writeText(lastResultJson).then(() => {
+    const btn = document.querySelector("#resultActions .code-copy");
+    btn.innerHTML = `${copyIcon} Copied!`;
+
+    setTimeout(() => {
+      btn.innerHTML = `${copyIcon} Copy`;
+    }, 1500);
+  });
+}
+
 function toggleStatus() {
   statusShown = !statusShown;
   const panel = document.getElementById("statusPanel");
@@ -391,9 +402,11 @@ function closeModal() {
 
 async function runApi() {
   if (!activeApi) return;
+
   const btn = document.getElementById("runBtn");
   const spinner = document.getElementById("runSpinner");
   const label = document.getElementById("runLabel");
+
   btn.disabled = true;
   spinner.style.display = "inline-block";
   label.textContent = "Running...";
@@ -402,6 +415,7 @@ async function runApi() {
   const content = document.getElementById("resultContent");
   const actions = document.getElementById("resultActions");
   const typeLabel = document.getElementById("rTypeLabel");
+
   wrap.classList.add("show");
   typeLabel.textContent = activeApi.type;
   actions.innerHTML = "";
@@ -410,18 +424,62 @@ async function runApi() {
     const url = buildUrlRaw(activeApi);
     const res = await fetch(url);
     const contentType = res.headers.get("content-type") || "";
+
     if (contentType.includes("application/json")) {
       const json = await res.json();
       lastResultJson = JSON.stringify(json, null, 2);
-      content.innerHTML = `<div class="json-box${json.status === false ? " err" : ""}">${lastResultJson}</div>`;
-    } else if (contentType.includes("image")) {
-      content.innerHTML = `<div class="img-result"><img src="${url}"/></div>`;
+
+      actions.innerHTML = `
+        <button class="code-copy" onclick="copyResult()">
+          ${copyIcon} Copy
+        </button>
+      `;
+
+      content.innerHTML = `
+        <div class="json-box${json.status === false ? " err" : ""}">
+${lastResultJson}
+        </div>
+      `;
+
     } else {
-      const text = await res.text();
-      const escaped = text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-      content.innerHTML = `<div class="json-box err">${escaped}</div>`;
+      const blob = await res.blob();
+      const fileUrl = URL.createObjectURL(blob);
+
+      actions.innerHTML = `
+        <a href="${fileUrl}" download class="code-copy">
+          ${dlIcon} Download
+        </a>
+      `;
+
+      if (contentType.startsWith("image/")) {
+        content.innerHTML = `
+          <div class="img-result">
+            <img src="${fileUrl}">
+          </div>
+        `;
+      } else if (contentType.startsWith("video/")) {
+        content.innerHTML = `
+          <video controls style="width:100%;border-radius:10px">
+            <source src="${fileUrl}" type="${contentType}">
+          </video>
+        `;
+      } else if (contentType.startsWith("audio/")) {
+        content.innerHTML = `
+          <audio controls style="width:100%">
+            <source src="${fileUrl}" type="${contentType}">
+          </audio>
+        `;
+      } else {
+        content.innerHTML = `
+          <div class="json-box">
+            Response berhasil diterima.
+          </div>
+        `;
+      }
     }
+
   } catch (e) {
+    actions.innerHTML = "";
     content.innerHTML = `<div class="json-box err">Error: ${e.message}</div>`;
   } finally {
     btn.disabled = false;
