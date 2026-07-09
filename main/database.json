@@ -9,7 +9,7 @@
       "method": "GET",
       "params": {
         "query": "Masukan query"
-      }    
+      }
     },
     "LK21 Search": {
       "status": true,
@@ -22,10 +22,10 @@
         "query": "Masukan query"
       }
     },
-  "YouTube Play Music": {
+    "YouTube Play Music": {
       "status": true,
       "path": "api/search/ytplay",
-      "description": "Cari & download video YouTube dari query pencarian",
+      "description": "Cari & download video YouTube dari query pencarian.",
       "type": "json",
       "endpoint": "/api/search/ytplay",
       "method": "GET",
@@ -33,53 +33,53 @@
         "query": "Masukan query"
       }
     },
-  "Pinterest Search": {
-     "status": true,
-     "path": "api/search/pinterest",
-     "description": "Cari gambar di Pinterest berdasarkan kata kunci dan dapatkan gambar, judul, board, dan sumber pin.",
-     "type": "json",
-     "endpoint": "/api/search/pinterest",
-     "method": "GET",
-     "params": {
-       "query": "Masukan kata kunci pencarian"
-     }
-   },
-  "Spotify Lyrich Search": {
-     "status": true,
-     "path": "api/search/splyrich",
-     "description": "Mencari lyrich lagu di spotify.",
-     "type": "json",
-     "endpoint": "/api/search/splyrich",
-     "method": "GET",
-     "params": {
-       "title": "Masukan title/judul",
-       "artist": "Masukan nama artist"
-     }
-   }
+    "Pinterest Search": {
+      "status": true,
+      "path": "api/search/pinterest",
+      "description": "Cari gambar di Pinterest berdasarkan kata kunci dan dapatkan gambar, judul, board, dan sumber pin.",
+      "type": "json",
+      "endpoint": "/api/search/pinterest",
+      "method": "GET",
+      "params": {
+        "query": "Masukan kata kunci pencarian"
+      }
+    },
+    "Spotify Lyrics Search": {
+      "status": true,
+      "path": "api/search/splyrich",
+      "description": "Cari lirik lagu berdasarkan judul dan artist di Spotify.",
+      "type": "json",
+      "endpoint": "/api/search/splyrich",
+      "method": "GET",
+      "params": {
+        "title": "Masukan title/judul",
+        "artist": "Masukan nama artist"
+      }
+    }
   },
   "MAKER": {
-  "Remove Background": {
-    "status": true,
-    "path": "api/maker/removebg",
-    "description": "Hapus background gambar secara otomatis menggunakan AI. Masukkan URL gambar dan dapatkan hasil tanpa background.",
-    "type": "json",
-    "endpoint": "/api/maker/removebg",
-    "method": "GET",
-    "params": {
-      "url": "Masukan url gambar"
+    "Remove Background": {
+      "status": true,
+      "path": "api/maker/removebg",
+      "description": "Hapus background gambar secara otomatis menggunakan AI. Masukkan URL gambar dan dapatkan hasil tanpa background.",
+      "type": "json",
+      "endpoint": "/api/maker/removebg",
+      "method": "GET",
+      "params": {
+        "url": "Masukan url gambar"
+      }
+    },
+    "Brat Generator": {
+      "status": true,
+      "path": "api/maker/brat",
+      "description": "Buat gambar bergaya Brat (background polos dengan teks minimalis) dari teks yang kamu masukkan.",
+      "type": "image",
+      "endpoint": "/api/maker/brat",
+      "method": "GET",
+      "params": {
+        "text": "Masukan text"
+      }
     }
-  },
-  "Brat Tes": {
-    "status": true,
-    "path": "api/maker/brat",
-    "description": "Hapus background gambar secara otomatis menggunakan AI. Masukkan URL gambar dan dapatkan hasil tanpa background.",
-    "type": "image",
-    "endpoint": "/api/maker/brat",
-    "method": "GET",
-    "params": {
-       "text": "Masukan text"
-    }
-  }
   },
   "STALK": {
     "Instagram Stalk": {
@@ -93,7 +93,7 @@
         "username": "Masukan username"
       }
     },
-  "YouTube Stalk": {
+    "YouTube Stalk": {
       "status": true,
       "path": "api/stalk/ytstalk",
       "description": "Lihat informasi profil akun YouTube secara publik, termasuk bio, jumlah followers, following, dan postingan.",
@@ -129,18 +129,18 @@
         "prompt": "Ketik promt gambar"
       }
     },
-  "Nanobanana Image Editor": {
-     "status": true,
-     "path": "api/ai/nanobanana",
-     "description": "Edit gambar menggunakan AI berdasarkan deskripsi teks. Masukkan URL gambar dan prompt editan yang diinginkan.",
-     "type": "json",
-     "endpoint": "/api/ai/nanobanana",
-     "method": "GET",
-     "params": {
-       "url": "Masukan URL gambar",
-       "prompt": "Deskripsi editan yang diinginkan"
-     }
-   }
+    "Nanobanana Image Editor": {
+      "status": true,
+      "path": "api/ai/nanobanana",
+      "description": "Edit gambar menggunakan AI berdasarkan deskripsi teks. Masukkan URL gambar dan prompt editan yang diinginkan.",
+      "type": "json",
+      "endpoint": "/api/ai/nanobanana",
+      "method": "GET",
+      "params": {
+        "url": "Masukan URL gambar",
+        "prompt": "Deskripsi editan yang diinginkan"
+      }
+    }
   },
   "DOWNLOAD": {
     "MediaFire Download": {
@@ -176,16 +176,16 @@
         "url": "Masukan URL Facebook"
       }
     },
-   "Spotify Download": {
-     "status": true,
-     "path": "api/download/spotifydl",
-     "description": "Download lagu dari Spotify menggunakan link track. Mendapatkan judul, artist, album, cover, dan link download MP3.",
-     "type": "json",
-     "endpoint": "/api/download/spotifydl",
-     "method": "GET",
-     "params": {
-    "url": "Masukan URL Spotify track"
-     }
+    "Spotify Download": {
+      "status": true,
+      "path": "api/download/spotifydl",
+      "description": "Download lagu dari Spotify menggunakan link track. Mendapatkan judul, artist, album, cover, dan link download MP3.",
+      "type": "json",
+      "endpoint": "/api/download/spotifydl",
+      "method": "GET",
+      "params": {
+        "url": "Masukan URL Spotify track"
+      }
     }
   },
   "INFO": {
@@ -199,54 +199,41 @@
       "params": {}
     }
   },
- "TOOLS": {
-   "Screenshot Web": {
-     "status": true,
-     "path": "api/tools/ssweb",
-     "description": "Mengambil informasi website seperti judul, deskripsi, favicon, thumbnail, screenshot halaman penuh, metadata Open Graph, author, keyword, bahasa, dan informasi website lainnya dari sebuah URL.",
-     "type": "json",
-     "endpoint": "/api/tools/ssweb",
-     "method": "GET",
-     "params": {
+  "TOOLS": {
+    "Screenshot Web": {
+      "status": true,
+      "path": "api/tools/ssweb",
+      "description": "Mengambil informasi website seperti judul, deskripsi, favicon, thumbnail, screenshot halaman penuh, metadata Open Graph, author, keyword, bahasa, dan informasi website lainnya dari sebuah URL.",
+      "type": "json",
+      "endpoint": "/api/tools/ssweb",
+      "method": "GET",
+      "params": {
         "url": "URL website"
-     }
-   },
-  "Image To Prompt": {
-    "status": true,
-    "path": "api/tools/img2promt",
-    "description": "Ubah gambar menjadi prompt AI secara otomatis. Kirim URL gambar dan AI akan menghasilkan deskripsi prompt yang detail dalam bahasa Inggris, cocok untuk digunakan pada generator gambar seperti Flux, Midjourney, atau Stable Diffusion.",
-    "type": "json",
-    "endpoint": "/api/tools/img2prompt",
-    "method": "GET",
-    "params": {
-      "url": "URL gambar"
+      }
+    },
+    "Image To Prompt": {
+      "status": true,
+      "path": "api/tools/img2promt",
+      "description": "Ubah gambar menjadi prompt AI secara otomatis. Kirim URL gambar dan AI akan menghasilkan deskripsi prompt yang detail dalam bahasa Inggris, cocok untuk digunakan pada generator gambar seperti Flux, Midjourney, atau Stable Diffusion.",
+      "type": "json",
+      "endpoint": "/api/tools/img2prompt",
+      "method": "GET",
+      "params": {
+        "url": "URL gambar"
+      }
+    },
+    "Web To APK": {
+      "status": false,
+      "path": "api/tools/web2apk",
+      "description": "Ubah website jadi APK Android. Masukkan URL website, nama aplikasi, dan URL icon.",
+      "type": "json",
+      "endpoint": "/api/tools/web2apk",
+      "method": "GET",
+      "params": {
+        "url": "Masukan URL website",
+        "appName": "Masukan nama aplikasi",
+        "icon": "Masukan URL icon aplikasi"
+      }
     }
-   },
- "Web To APK": {
-   "status": false,
-   "path": "api/tools/web2apk",
-   "description": "Ubah website jadi APK Android. Masukkan URL website, nama aplikasi, dan URL icon.",
-   "type": "json",
-   "endpoint": "/api/tools/web2apk",
-   "method": "GET",
-   "params": {
-     "url": "Masukan URL website",
-     "appName": "Masukan nama aplikasi",
-     "icon": "Masukan URL icon aplikasi"
-   }
-  },
-"SPAM NGL": {
-  "status": true,
-  "path": "api/tools/spamngl",
-  "description": "Spamm Message to target",
-  "type": "json",
-  "endpoint": "api/tools/spamngl",
-  "method": "GET",
-  "params": {
-    "username": "Input Username, example: nixxjs",
-    "message": "Input Message, example: Hola sir",
-    "total": "Input Total, example: 10"
-   }
   }
- }
 }
