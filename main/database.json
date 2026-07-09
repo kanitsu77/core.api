@@ -56,19 +56,7 @@
     "params": {
       "url": "Masukan url gambar"
     }
-  },
-  "Nanobanana Image Editor": {
-    "status": true,
-    "path": "api/ai/nanobanana",
-    "description": "Edit gambar menggunakan AI berdasarkan deskripsi teks. Masukkan URL gambar dan prompt editan yang diinginkan.",
-    "type": "json",
-    "endpoint": "/api/ai/nanobanana",
-    "method": "GET",
-    "params": {
-      "url": "Masukan URL gambar",
-      "prompt": "Deskripsi editan yang diinginkan"
-    }
-   }
+  }
   },
   "STALK": {
     "Instagram Stalk": {
@@ -106,7 +94,19 @@
       "params": {
         "prompt": "Ketik promt gambar"
       }
-    }
+    },
+  "Nanobanana Image Editor": {
+     "status": true,
+     "path": "api/ai/nanobanana",
+     "description": "Edit gambar menggunakan AI berdasarkan deskripsi teks. Masukkan URL gambar dan prompt editan yang diinginkan.",
+     "type": "json",
+     "endpoint": "/api/ai/nanobanana",
+     "method": "GET",
+     "params": {
+       "url": "Masukan URL gambar",
+       "prompt": "Deskripsi editan yang diinginkan"
+     }
+   }
   },
   "DOWNLOAD": {
     "MediaFire Download": {
@@ -189,7 +189,7 @@
     }
    },
  "Web To APK": {
-   "status": true,
+   "status": false,
    "path": "api/tools/web2apk",
    "description": "Ubah website jadi APK Android. Masukkan URL website, nama aplikasi, dan URL icon.",
    "type": "json",
