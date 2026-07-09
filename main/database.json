@@ -61,7 +61,7 @@
     "status": true,
     "path": "api/maker/brat",
     "description": "Hapus background gambar secara otomatis menggunakan AI. Masukkan URL gambar dan dapatkan hasil tanpa background.",
-    "type": "json",
+    "type": "image",
     "endpoint": "/api/maker/brat",
     "method": "GET",
     "params": {
