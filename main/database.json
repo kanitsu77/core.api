@@ -43,6 +43,18 @@
      "params": {
        "query": "Masukan kata kunci pencarian"
      }
+   },
+  "Spotify Lyrich Search": {
+     "status": true,
+     "path": "api/search/splyrich",
+     "description": "Mencari lyrich lagu di spotify.",
+     "type": "json",
+     "endpoint": "/api/search/splyrich",
+     "method": "GET",
+     "params": {
+       "title": "Masukan title/judul",
+       "artist": "Masukan nama artist"
+     }
    }
   },
   "MAKER": {
