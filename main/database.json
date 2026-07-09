@@ -56,7 +56,19 @@
     "params": {
       "url": "Masukan url gambar"
     }
-  }
+  },
+  "Nanobanana Image Editor": {
+    "status": true,
+    "path": "api/ai/nanobanana",
+    "description": "Edit gambar menggunakan AI berdasarkan deskripsi teks. Masukkan URL gambar dan prompt editan yang diinginkan.",
+    "type": "json",
+    "endpoint": "/api/ai/nanobanana",
+    "method": "GET",
+    "params": {
+      "url": "Masukan URL gambar",
+      "prompt": "Deskripsi editan yang diinginkan"
+    }
+   }
   },
   "STALK": {
     "Instagram Stalk": {
