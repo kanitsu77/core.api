@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Error — core.api</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#050508;--surface:#0d0d14;--surface2:#12121c;
+  --border:rgba(255,255,255,.07);--text:#e8e8f0;--muted:#6b6b80;
+  --accent:#7c6af7;--accent2:#a78bfa;--aglow:rgba(124,106,247,.13);
+  --red:#f87171;--sans:'Space Grotesk',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--sans);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:24px;text-align:center;
+}
+.box{max-width:420px}
+.code{
+  font-family:var(--mono);font-size:4.5rem;font-weight:700;
+  background:linear-gradient(135deg,#fff 40%,var(--accent2));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  line-height:1;margin-bottom:16px;
+}
+.title{font-size:1.1rem;font-weight:700;margin-bottom:10px}
+.desc{color:var(--muted);font-size:.85rem;line-height:1.7;margin-bottom:24px}
+.path{
+  font-family:var(--mono);font-size:.72rem;color:var(--red);
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;padding:10px 14px;margin-bottom:24px;word-break:break-all;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:.78rem;font-weight:600;
+  color:var(--accent2);background:var(--aglow);
+  border:1px solid rgba(124,106,247,.4);border-radius:8px;
+  padding:11px 20px;text-decoration:none;transition:background .18s;
+}
+.btn:hover{background:rgba(124,106,247,.22)}
+.footer{margin-top:32px;font-family:var(--mono);font-size:.62rem;color:#4a4a5e}
+.footer span{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="code">404</div>
+  <div class="title">Endpoint Tidak Ditemukan</div>
+  <div class="desc">Endpoint yang kamu akses tidak terdaftar di core.api. Cek kembali path atau lihat daftar endpoint yang tersedia.</div>
+  <div class="path" id="errPath">—</div>
+  <a class="btn" href="/">⬡ Kembali ke Beranda</a>
+  <div class="footer"><span>core.api</span> — Created By Nixx. ©2k26</div>
+</div>
+<script>
+  document.getElementById("errPath").textContent = window.location.pathname + window.location.search;
+</script>
+</body>
+</html>
