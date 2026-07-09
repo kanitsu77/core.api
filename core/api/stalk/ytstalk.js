@@ -9,12 +9,12 @@ module.exports = async (req, res) => {
     return res.status(200).end()
   }
 
-  const { user } = req.query
+  const { username } = req.query
 
-  if (!user) {
+  if (!username) {
     return res.status(400).json({
       status: false,
-      message: "Parameter 'user' wajib diisi"
+      message: "Parameter 'username' wajib diisi"
     })
   }
 
@@ -22,16 +22,16 @@ module.exports = async (req, res) => {
     let url
 
   if (user.startsWith("http")) {
-      url = user
+      url = username
     } else if (
      user.startsWith("@") ||
      user.startsWith("channel/") ||
      user.startsWith("c/") ||
      user.startsWith("user/")
     ) {
-     url = "https://www.youtube.com/" + user
+     url = "https://www.youtube.com/" + username
     } else {
-      url = "https://www.youtube.com/@" + user
+      url = "https://www.youtube.com/@" + username
      }
 
     const { data: html } = await axios.get(url, {
