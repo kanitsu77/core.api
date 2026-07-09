@@ -24,10 +24,10 @@ module.exports = async (req, res) => {
   if (user.startsWith("http")) {
       url = username
     } else if (
-     user.startsWith("@") ||
-     user.startsWith("channel/") ||
-     user.startsWith("c/") ||
-     user.startsWith("user/")
+     username.startsWith("@") ||
+     username.startsWith("channel/") ||
+     username.startsWith("c/") ||
+     username.startsWith("user/")
     ) {
      url = "https://www.youtube.com/" + username
     } else {
