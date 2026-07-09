@@ -1,23 +1,29 @@
 const axios = require("axios");
 
 module.exports = async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Content-Type", "application/json");
+
+  const { title, artist } = req.query;
+
+  if (!title) {
+    res.statusCode = 400;
+    return res.end(JSON.stringify({
+      status: false,
+      creator: "Nixx",
+      error: "Parameter 'title' wajib diisi"
+    }, null, 2));
+  }
+  if (!artist) {
+    res.statusCode = 400;
+    return res.end(JSON.stringify({
+      status: false,
+      creator: "Nixx",
+      error: "Parameter 'artist' wajib diisi"
+    }, null, 2));
+  }
+
   try {
-    const { title, artist } = req.query;
-
-    if (!title) {
-      return res.status(400).json({
-        status: false,
-        message: "Parameter 'title' wajib diisi."
-      });
-    }
-
-    if (!artist) {
-      return res.status(400).json({
-        status: false,
-        message: "Parameter 'artist' wajib diisi."
-      });
-    }
-
     const { data } = await axios.get("https://lrclib.net/api/search", {
       params: {
         track_name: title,
@@ -26,16 +32,19 @@ module.exports = async (req, res) => {
     });
 
     if (!data.length) {
-      return res.status(404).json({
+      res.statusCode = 404;
+      return res.end(JSON.stringify({
         status: false,
-        message: "Lirik tidak ditemukan."
-      });
+        creator: "Nixx",
+        error: "Lirik tidak ditemukan"
+      }, null, 2));
     }
 
     const song = data[0];
 
-    return res.json({
+    res.end(JSON.stringify({
       status: true,
+      creator: "Nixx",
       result: {
         title: song.trackName,
         artist: song.artistName,
@@ -45,12 +54,13 @@ module.exports = async (req, res) => {
         plainLyrics: song.plainLyrics,
         syncedLyrics: song.syncedLyrics
       }
-    });
-
-  } catch (err) {
-    return res.status(500).json({
+    }, null, 2));
+  } catch (e) {
+    res.statusCode = 500;
+    res.end(JSON.stringify({
       status: false,
-      message: err.message
-    });
+      creator: "Nixx",
+      error: e.message
+    }, null, 2));
   }
 };
