@@ -1,6 +1,7 @@
 const { createCanvas, loadImage, GlobalFonts } = require('@napi-rs/canvas')
-const { fs, writeFileSync, existsSync, readFileSync } = require('fs')
+const { writeFileSync, existsSync, readFileSync } = require('fs')
 const path = require('path')
+const fs = require('fs')
 
 const FONT_URL = 'https://raw.githubusercontent.com/Ditzzx-vibecoder/Assets/main/Font/ARIALN.ttf'
 const EMOJI_JSON_URL = 'https://media.githubusercontent.com/media/Ditzzx-vibecoder/entahlah/main/emoji-apple.json'
