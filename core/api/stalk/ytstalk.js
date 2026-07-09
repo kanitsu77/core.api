@@ -21,18 +21,18 @@ module.exports = async (req, res) => {
   try {
     let url
 
-  if (user.startsWith("http")) {
-      url = username
-    } else if (
-     username.startsWith("@") ||
-     username.startsWith("channel/") ||
-     username.startsWith("c/") ||
-     username.startsWith("user/")
-    ) {
-     url = "https://www.youtube.com/" + username
-    } else {
-      url = "https://www.youtube.com/@" + username
-     }
+if (username.startsWith("http")) {
+  url = username
+} else if (
+  username.startsWith("@") ||
+  username.startsWith("channel/") ||
+  username.startsWith("c/") ||
+  username.startsWith("user/")
+) {
+  url = "https://www.youtube.com/" + username
+} else {
+  url = "https://www.youtube.com/@" + username
+}
 
     const { data: html } = await axios.get(url, {
       headers: {
