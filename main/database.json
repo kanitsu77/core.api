@@ -56,7 +56,7 @@
     "params": {
       "url": "Masukan url gambar"
     }
-  }
+  },
   "Brat Tes": {
     "status": true,
     "path": "api/maker/brat",
