@@ -259,14 +259,14 @@ function copyUrl(){
 
 function copyResult() {
   navigator.clipboard.writeText(lastResultJson).then(() => {
-    const btn = document.querySelector("#resultActions .code-copy");
+    const btn = document.querySelector("#resultActions .result-action-btn");
+    if (!btn) return;
+    const original = btn.innerHTML;
     btn.innerHTML = `${copyIcon} Copied!`;
-
-    setTimeout(() => {
-      btn.innerHTML = `${copyIcon} Copy`;
-    }, 1500);
+    setTimeout(() => { btn.innerHTML = original; }, 1500);
   });
 }
+
 
 function toggleStatus() {
   statusShown = !statusShown;
@@ -430,7 +430,7 @@ async function runApi() {
       lastResultJson = JSON.stringify(json, null, 2);
 
       actions.innerHTML = `
-        <button class="code-copy" onclick="copyResult()">
+        <button class="result-action-btn" onclick="copyResult()">
           ${copyIcon} Copy
         </button>
       `;
@@ -446,7 +446,7 @@ ${lastResultJson}
       const fileUrl = URL.createObjectURL(blob);
 
       actions.innerHTML = `
-        <a href="${fileUrl}" download class="code-copy">
+        <a href="${fileUrl}" download class="result-action-btn">
           ${dlIcon} Download
         </a>
       `;
