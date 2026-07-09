@@ -65,7 +65,7 @@
     "endpoint": "/api/maker/brat",
     "method": "GET",
     "params": {
-      
+       "text": "Masukan text"
     }
   }
   },
