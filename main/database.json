@@ -57,6 +57,17 @@
       "url": "Masukan url gambar"
     }
   }
+  "Brat Tes": {
+    "status": true,
+    "path": "api/maker/brat",
+    "description": "Hapus background gambar secara otomatis menggunakan AI. Masukkan URL gambar dan dapatkan hasil tanpa background.",
+    "type": "json",
+    "endpoint": "/api/maker/brat",
+    "method": "GET",
+    "params": {
+      
+    }
+  }
   },
   "STALK": {
     "Instagram Stalk": {
@@ -65,6 +76,17 @@
       "description": "Lihat informasi profil akun Instagram secara publik, termasuk bio, jumlah followers, following, dan postingan.",
       "type": "json",
       "endpoint": "/api/stalk/igstalk",
+      "method": "GET",
+      "params": {
+        "username": "Masukan username"
+      }
+    },
+  "YouTube Stalk": {
+      "status": true,
+      "path": "api/stalk/ytstalk",
+      "description": "Lihat informasi profil akun YouTube secara publik, termasuk bio, jumlah followers, following, dan postingan.",
+      "type": "json",
+      "endpoint": "/api/stalk/ytstalk",
       "method": "GET",
       "params": {
         "username": "Masukan username"
