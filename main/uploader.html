@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Uploader — core.api</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+<div class="up-wrap">
+  <a class="up-back" href="/">← Kembali</a>
+
+  <div class="up-title">File Uploader</div>
+  <div class="up-sub">Upload file kamu, dapatkan link download langsung. Simpel & cepat.</div>
+
+  <div class="up-badges">
+    <span class="up-badge">⏱ Expired 24 jam</span>
+    <span class="up-badge">📦 Maks 50MB</span>
+  </div>
+
+  <div class="up-dropzone" id="upDropzone">
+    <div class="up-dropzone-icon">⇧</div>
+    <div class="up-dropzone-title">Tap untuk pilih file</div>
+    <div class="up-dropzone-sub">atau drag & drop di sini</div>
+  </div>
+  <input type="file" id="upFileInput" style="display:none"/>
+
+  <div id="upFileItemWrap"></div>
+  <div id="upErrorWrap"></div>
+  <div id="upResultWrap"></div>
+
+  <div class="up-note">File otomatis terhapus setelah 24 jam.<br/><span>core.api</span> — Created By Nixx.</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
