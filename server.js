@@ -56,12 +56,24 @@ loadRoutes(path.join(__dirname, "core", "api"));
 
 app.post("/api/laporan", require("./core/api/report").post);
 
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "main", "main.html"));
+});
+
+app.get("/dashboard", (req, res) => {
+  res.sendFile(path.join(__dirname, "main", "dashboard.html"));
+});
+
+app.get("/uploader", (req, res) => {
+  res.sendFile(path.join(__dirname, "main", "uploader.html"));
+});
+
 app.get("*", (req, res) => {
   if (req.path.startsWith("/api/")) {
     res.status(404);
     return res.sendFile(path.join(__dirname, "main", "error.html"));
   }
-  res.sendFile(path.join(__dirname, "main", "index.html"));
+  res.sendFile(path.join(__dirname, "main", "main.html"));
 });
 
 app.listen(PORT, () => {
