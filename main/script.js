@@ -1179,6 +1179,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+
 (() => {
   const c = document.getElementById("stars");
   if (!c || c.dataset.starsInit) return;
@@ -1191,7 +1192,6 @@ document.addEventListener("DOMContentLoaded", () => {
     c.appendChild(s);
   }
 })();
-
 
 (() => {
   const statTotalEl = document.getElementById("lpStatTotal");
@@ -1225,6 +1225,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const errorWrap = document.getElementById("upErrorWrap");
 
   const MAX_SIZE = 50 * 1024 * 1024;
+  let selectedFile = null;
 
   function formatSize(bytes) {
     if (bytes < 1024) return bytes + " B";
@@ -1233,7 +1234,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function resetUI() {
-    if (fileItemWrap) fileItemWrap.innerHTML = "";
     if (resultWrap) resultWrap.innerHTML = "";
     if (errorWrap) errorWrap.innerHTML = "";
   }
@@ -1243,13 +1243,9 @@ document.addEventListener("DOMContentLoaded", () => {
     errorWrap.innerHTML = `<div class="up-error">${msg}</div>`;
   }
 
-  function uploadFile(file) {
+  function showPreview(file) {
     resetUI();
-
-    if (file.size > MAX_SIZE) {
-      showError(`File terlalu besar (maks 50MB). Ukuran file: ${formatSize(file.size)}`);
-      return;
-    }
+    selectedFile = file;
 
     if (fileItemWrap) {
       fileItemWrap.innerHTML = `
@@ -1260,9 +1256,34 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="up-file-meta">${formatSize(file.size)}</div>
             <div class="up-progress-bg"><div class="up-progress-fill" id="upProgressFill"></div></div>
           </div>
-          <div class="up-file-status" id="upFileStatus">0%</div>
+          <div class="up-file-status" id="upFileStatus">Siap</div>
         </div>
+        <button class="up-copybtn" id="upStartBtn" style="width:100%;margin-top:10px;padding:12px;text-align:center">
+          ⬆ Upload
+        </button>
       `;
+    }
+
+    const startBtn = document.getElementById("upStartBtn");
+    if (startBtn) {
+      startBtn.onclick = () => uploadFile(selectedFile);
+    }
+  }
+
+  function uploadFile(file) {
+    if (!file) return;
+
+    if (file.size > MAX_SIZE) {
+      showError(`File terlalu besar (maks 50MB). Ukuran file: ${formatSize(file.size)}`);
+      return;
+    }
+
+    resetUI();
+
+    const startBtn = document.getElementById("upStartBtn");
+    if (startBtn) {
+      startBtn.disabled = true;
+      startBtn.textContent = "Uploading...";
     }
 
     const progressFill = document.getElementById("upProgressFill");
@@ -1287,13 +1308,18 @@ document.addEventListener("DOMContentLoaded", () => {
         json = JSON.parse(xhr.responseText);
       } catch (e) {
         showError("Response server tidak valid.");
+        if (startBtn) { startBtn.disabled = false; startBtn.textContent = "⬆ Upload"; }
         return;
       }
 
       if (!json.status) {
         showError(json.error || "Upload gagal.");
+        if (startBtn) { startBtn.disabled = false; startBtn.textContent = "⬆ Upload"; }
         return;
       }
+
+      if (fileStatus) fileStatus.textContent = "Selesai";
+      if (startBtn) startBtn.remove();
 
       const r = json.result;
       if (resultWrap) {
@@ -1333,6 +1359,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     xhr.onerror = () => {
       showError("Gagal terhubung ke server.");
+      if (startBtn) { startBtn.disabled = false; startBtn.textContent = "⬆ Upload"; }
     };
 
     xhr.send(formData);
@@ -1344,7 +1371,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (fileInput) {
     fileInput.addEventListener("change", () => {
-      if (fileInput.files.length) uploadFile(fileInput.files[0]);
+      if (fileInput.files.length) showPreview(fileInput.files[0]);
     });
   }
 
@@ -1360,7 +1387,6 @@ document.addEventListener("DOMContentLoaded", () => {
   dropzone.addEventListener("drop", (e) => {
     e.preventDefault();
     dropzone.classList.remove("dragover");
-    if (e.dataTransfer.files.length) uploadFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files.length) showPreview(e.dataTransfer.files[0]);
   });
 })();
-
