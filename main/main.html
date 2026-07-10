@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>core.api — REST API Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+<nav class="lp-navbar">
+  <div class="lp-nav-brand"><span style="color:var(--accent)">⬡</span> core<span style="color:var(--accent)">.</span>api</div>
+  <div class="lp-nav-links">
+    <a class="lp-nav-link" href="/dashboard">Endpoints</a>
+    <a class="lp-nav-link" href="/uploader">Uploader</a>
+    <a class="lp-nav-link cta" href="https://github.com/Nixx-Core" target="_blank">GitHub</a>
+  </div>
+</nav>
+
+<header class="lp-hero">
+  <div class="lp-hero-glow"></div>
+  <div class="lp-eyebrow">Free & Open REST API</div>
+  <h1 class="lp-hero-title">Kumpulan API Siap Pakai <span class="ac">Tanpa Ribet</span></h1>
+  <p class="lp-hero-sub">Downloader, AI, Tools, Search — semua dalam satu endpoint. Gratis, tanpa API key, tanpa limit ribet.</p>
+  <div class="lp-hero-ctas">
+    <a class="lp-btn lp-btn-primary" href="/dashboard">⬡ Lihat Endpoints</a>
+    <a class="lp-btn lp-btn-secondary" href="/uploader">⇧ File Uploader</a>
+  </div>
+</header>
+
+<div class="lp-stats-wrap">
+  <div class="lp-stats-grid">
+    <div class="lp-stat-box">
+      <div class="lp-stat-value" id="lpStatTotal">18</div>
+      <div class="lp-stat-label">Total Endpoints</div>
+    </div>
+    <div class="lp-stat-box">
+      <div class="lp-stat-value" id="lpStatActive">15</div>
+      <div class="lp-stat-label">Active</div>
+    </div>
+    <div class="lp-stat-box">
+      <div class="lp-stat-value">7</div>
+      <div class="lp-stat-label">Kategori</div>
+    </div>
+    <div class="lp-stat-box">
+      <div class="lp-stat-value">100%</div>
+      <div class="lp-stat-label">Gratis</div>
+    </div>
+  </div>
+</div>
+
+<div class="lp-menu-wrap">
+  <div class="lp-section-label">Mulai Dari Sini</div>
+  <div class="lp-menu-grid">
+    <a class="lp-menu-card" href="/dashboard">
+      <div class="lp-menu-icon">⬡</div>
+      <div class="lp-menu-name">Endpoints</div>
+      <div class="lp-menu-desc">Dokumentasi lengkap semua API, try it out langsung dari browser tanpa perlu Postman.</div>
+      <div class="lp-menu-arrow">Jelajahi →</div>
+    </a>
+    <a class="lp-menu-card" href="/uploader">
+      <div class="lp-menu-icon">⇧</div>
+      <div class="lp-menu-name">Uploader</div>
+      <div class="lp-menu-desc">Upload file dan dapatkan link download langsung. Expired 24 jam, maks 50MB.</div>
+      <div class="lp-menu-arrow">Upload →</div>
+    </a>
+  </div>
+</div>
+
+<div class="lp-faq-wrap">
+  <div class="lp-faq-title">Pertanyaan Umum</div>
+
+  <div class="lp-faq-item">
+    <div class="lp-faq-q">Apakah core.api gratis?</div>
+    <div class="lp-faq-a">Ya, sepenuhnya gratis. Tidak perlu API key, tidak ada sistem akun atau pembayaran.</div>
+  </div>
+
+  <div class="lp-faq-item">
+    <div class="lp-faq-q">Ada rate limit?</div>
+    <div class="lp-faq-a">Saat ini tidak ada limit ketat, tapi gunakan secara wajar. Request yang mencurigakan (spam/scan) akan otomatis diabaikan.</div>
+  </div>
+
+  <div class="lp-faq-item">
+    <div class="lp-faq-q">Endpoint apa saja yang tersedia?</div>
+    <div class="lp-faq-a">Media downloader (YouTube, Spotify, Facebook, MediaFire), AI (chat, text-to-image, image editor), tools (screenshot web, image to prompt), search (YouTube, Pinterest, LK21), dan stalk Instagram.</div>
+  </div>
+
+  <div class="lp-faq-item">
+    <div class="lp-faq-q">Bahasa pemrograman apa yang didukung?</div>
+    <div class="lp-faq-a">Semua bahasa yang bisa HTTP request — Node.js, Python, PHP, Go, atau cURL. Semua response format JSON standar.</div>
+  </div>
+
+  <div class="lp-faq-item">
+    <div class="lp-faq-q">Bagaimana dengan file yang diupload?</div>
+    <div class="lp-faq-a">File otomatis terhapus setelah 24 jam. Maksimal ukuran file 50MB per upload.</div>
+  </div>
+</div>
+
+<footer class="lp-footer">
+  <div class="lp-footer-links">
+    <a href="/dashboard">Endpoints</a>
+    <a href="/uploader">Uploader</a>
+    <a href="https://github.com/Nixx-Core" target="_blank">GitHub</a>
+  </div>
+  <span>core.api</span> — Created By Nixx. ©2k26
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
