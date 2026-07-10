@@ -1178,3 +1178,189 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+(() => {
+  const c = document.getElementById("stars");
+  if (!c || c.dataset.starsInit) return;
+  c.dataset.starsInit = "1";
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement("div");
+    s.className = "star";
+    const sz = Math.random() * 1.8 + .4;
+    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;--d:${3+Math.random()*5}s;--o:${.06+Math.random()*.35};animation-delay:${Math.random()*6}s`;
+    c.appendChild(s);
+  }
+})();
+
+
+(() => {
+  const statTotalEl = document.getElementById("lpStatTotal");
+  const statActiveEl = document.getElementById("lpStatActive");
+  if (!statTotalEl && !statActiveEl) return;
+
+  fetch("/api/list")
+    .then(res => res.json())
+    .then(json => {
+      if (!json.status || !json.data) return;
+      let total = 0, active = 0;
+      for (const cat of Object.values(json.data)) {
+        for (const api of Object.values(cat)) {
+          total++;
+          if (api.status) active++;
+        }
+      }
+      if (statTotalEl) statTotalEl.textContent = total;
+      if (statActiveEl) statActiveEl.textContent = active;
+    })
+    .catch(e => console.warn("Gagal load stats landing:", e.message));
+})();
+
+(() => {
+  const dropzone = document.getElementById("upDropzone");
+  if (!dropzone) return;
+
+  const fileInput = document.getElementById("upFileInput");
+  const fileItemWrap = document.getElementById("upFileItemWrap");
+  const resultWrap = document.getElementById("upResultWrap");
+  const errorWrap = document.getElementById("upErrorWrap");
+
+  const MAX_SIZE = 50 * 1024 * 1024;
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  }
+
+  function resetUI() {
+    if (fileItemWrap) fileItemWrap.innerHTML = "";
+    if (resultWrap) resultWrap.innerHTML = "";
+    if (errorWrap) errorWrap.innerHTML = "";
+  }
+
+  function showError(msg) {
+    if (!errorWrap) return;
+    errorWrap.innerHTML = `<div class="up-error">${msg}</div>`;
+  }
+
+  function uploadFile(file) {
+    resetUI();
+
+    if (file.size > MAX_SIZE) {
+      showError(`File terlalu besar (maks 50MB). Ukuran file: ${formatSize(file.size)}`);
+      return;
+    }
+
+    if (fileItemWrap) {
+      fileItemWrap.innerHTML = `
+        <div class="up-file-item">
+          <div class="up-file-icon">📄</div>
+          <div class="up-file-info">
+            <div class="up-file-name">${file.name}</div>
+            <div class="up-file-meta">${formatSize(file.size)}</div>
+            <div class="up-progress-bg"><div class="up-progress-fill" id="upProgressFill"></div></div>
+          </div>
+          <div class="up-file-status" id="upFileStatus">0%</div>
+        </div>
+      `;
+    }
+
+    const progressFill = document.getElementById("upProgressFill");
+    const fileStatus = document.getElementById("upFileStatus");
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/tools/upload");
+
+    xhr.upload.onprogress = (e) => {
+      if (!e.lengthComputable) return;
+      const pct = Math.round((e.loaded / e.total) * 100);
+      if (progressFill) progressFill.style.width = pct + "%";
+      if (fileStatus) fileStatus.textContent = pct + "%";
+    };
+
+    xhr.onload = () => {
+      let json;
+      try {
+        json = JSON.parse(xhr.responseText);
+      } catch (e) {
+        showError("Response server tidak valid.");
+        return;
+      }
+
+      if (!json.status) {
+        showError(json.error || "Upload gagal.");
+        return;
+      }
+
+      const r = json.result;
+      if (resultWrap) {
+        resultWrap.innerHTML = `
+          <div class="up-result-card">
+            <div class="up-result-head">✔ Upload Berhasil</div>
+            <div class="up-result-row">
+              <span class="up-result-label">Nama File</span>
+              <span class="up-result-value">${r.originalName}</span>
+            </div>
+            <div class="up-result-row">
+              <span class="up-result-label">Ukuran</span>
+              <span class="up-result-value">${formatSize(r.size)}</span>
+            </div>
+            <div class="up-result-row">
+              <span class="up-result-label">Expired</span>
+              <span class="up-result-value">${new Date(r.expiresAt).toLocaleString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+            </div>
+            <div class="up-copy">
+              <input class="up-input" id="upResultUrl" readonly value="${r.url}"/>
+              <button class="up-copybtn" id="upCopyBtn">Copy</button>
+            </div>
+          </div>
+        `;
+
+        const copyBtn = document.getElementById("upCopyBtn");
+        if (copyBtn) {
+          copyBtn.onclick = () => {
+            navigator.clipboard.writeText(r.url).then(() => {
+              copyBtn.textContent = "Copied!";
+              setTimeout(() => { copyBtn.textContent = "Copy"; }, 1500);
+            });
+          };
+        }
+      }
+    };
+
+    xhr.onerror = () => {
+      showError("Gagal terhubung ke server.");
+    };
+
+    xhr.send(formData);
+  }
+
+  dropzone.addEventListener("click", () => {
+    if (fileInput) fileInput.click();
+  });
+
+  if (fileInput) {
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files.length) uploadFile(fileInput.files[0]);
+    });
+  }
+
+  dropzone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropzone.classList.add("dragover");
+  });
+
+  dropzone.addEventListener("dragleave", () => {
+    dropzone.classList.remove("dragover");
+  });
+
+  dropzone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropzone.classList.remove("dragover");
+    if (e.dataTransfer.files.length) uploadFile(e.dataTransfer.files[0]);
+  });
+})();
+
