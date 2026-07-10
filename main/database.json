@@ -186,7 +186,18 @@
       "params": {
         "url": "Masukan URL Spotify track"
       }
+    },
+  "TikTok Download": {
+    "status": true,
+    "path": "api/download/tiktokdl",
+    "description": "Download video atau slideshow TikTok beserta metadata. Mendukung video tanpa watermark, watermark, HD (jika tersedia), serta gambar untuk postingan slideshow.",
+    "type": "json",
+    "endpoint": "/api/download/tiktokdl",
+    "method": "GET",
+    "params": {
+      "url": "Masukkan URL video atau slideshow TikTok"
     }
+  }
   },
   "INFO": {
     "API Info": {
