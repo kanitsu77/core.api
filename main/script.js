@@ -1390,3 +1390,26 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.dataTransfer.files.length) showPreview(e.dataTransfer.files[0]);
   });
 })();
+
+(() => {
+  const overlay = document.getElementById("loadingOverlay");
+  if (!overlay) return;
+
+  const statusText = document.getElementById("statusText");
+  const messages = ["Loading", "Connecting", "Fetching data", "Almost there"];
+  let msgIndex = 0;
+
+  const msgTimer = setInterval(() => {
+    msgIndex = (msgIndex + 1) % messages.length;
+    if (statusText) statusText.textContent = messages[msgIndex];
+  }, 2000);
+
+  setTimeout(() => {
+    clearInterval(msgTimer);
+    if (statusText) statusText.textContent = "Ready";
+    setTimeout(() => {
+      overlay.classList.add("hide");
+      setTimeout(() => overlay.remove(), 600);
+    }, 800);
+  }, 8000);
+})();
