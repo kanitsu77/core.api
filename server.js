@@ -57,6 +57,8 @@ loadRoutes(path.join(__dirname, "core", "api"));
 
 app.post("/api/laporan", require("./core/api/report").post);
 
+const uploadHandler = require("./core/api/tools/upload");
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "main", "main.html"));
 });
@@ -68,6 +70,8 @@ app.get("/dashboard", (req, res) => {
 app.get("/uploader", (req, res) => {
   res.sendFile(path.join(__dirname, "main", "uploader.html"));
 });
+
+app.post("/uploader", uploadHandler);
 
 app.get("*", (req, res) => {
   if (req.path.startsWith("/api/")) {
