@@ -1395,6 +1395,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const overlay = document.getElementById("loadingOverlay");
   if (!overlay) return;
 
+  if (sessionStorage.getItem("coreApiLoaded")) {
+    overlay.remove();
+    return;
+  }
+  sessionStorage.setItem("coreApiLoaded", "1");
+
   const statusText = document.getElementById("statusText");
   const messages = ["Loading", "Connecting", "Fetching data", "Almost there"];
   let msgIndex = 0;
