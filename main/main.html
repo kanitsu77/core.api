@@ -51,15 +51,53 @@
   </div>
 </div>
 
+
+<div class="sidebar-backdrop" id="sbBackdrop" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sb-head">
+    <div class="sb-logo"><span class="sb-logo-icon">⬡</span>core<span style="color:var(--accent)">.</span>api</div>
+    <button class="sb-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-item active" onclick="window.location.href='/'">
+      <span class="sb-item-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+      </span>
+      <span class="sb-item-label">Home</span>
+    </div>
+    <div class="sb-item" onclick="window.location.href='/uploader'">
+      <span class="sb-item-icon">⇧</span>
+      <span class="sb-item-label">Uploader</span>
+    </div>
+    <div class="sb-item" onclick="window.location.href='/dashboard'">
+      <span class="sb-item-icon">⬡</span>
+      <span class="sb-item-label">Dashboard</span>
+    </div>
+  </nav>
+</aside>
   
 <div class="stars" id="stars"></div>
 
 <nav class="lp-navbar">
-  <div class="lp-nav-brand"><span style="color:var(--accent)">⬡</span> core<span style="color:var(--accent)">.</span>api</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="lp-nav-brand">
+      <span style="color:var(--accent)">⬡</span>
+      core<span style="color:var(--accent)">.</span>api
+    </div>
+  </div>
+
   <div class="lp-nav-links">
     <a class="lp-nav-link" href="/dashboard">Endpoints</a>
     <a class="lp-nav-link" href="/uploader">Uploader</a>
-    <a class="lp-nav-link cta" href="https://github.com/Nixx-Core" target="_blank">GitHub</a>
+    <a class="lp-nav-link cta" href="https://github.com/Nixx-Core" target="_blank">
+      GitHub
+    </a>
   </div>
 </nav>
 
@@ -67,7 +105,7 @@
   <div class="lp-hero-glow"></div>
   <div class="lp-eyebrow">Free & Open REST API</div>
   <h1 class="lp-hero-title">Kumpulan API Siap Pakai <span class="ac">Tanpa Ribet</span></h1>
-  <p class="lp-hero-sub">Downloader, AI, Tools, Search — semua dalam satu endpoint. Gratis, tanpa API key, tanpa limit ribet.</p>
+  <p class="lp-hero-sub">Downloader, AI, Tools, Search — semua dalam satu endpoint.</p>
   <div class="lp-hero-ctas">
     <a class="lp-btn lp-btn-primary" href="/dashboard">⬡ Lihat Endpoints</a>
     <a class="lp-btn lp-btn-secondary" href="/uploader">⇧ File Uploader</a>

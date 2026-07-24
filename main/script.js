@@ -1,10 +1,8 @@
 let dat = {},
     activeApi = null,
     activeFilter = "ALL",
-    chatOpen = false,
     activeCodeTab = "curl",
     statusShown = false,
-    chatHistory = [],
     lastResultJson = "",
     statsInterval = null,
     currentPeriod = "today",
@@ -160,13 +158,14 @@ function renderGrid() {
       const card = document.createElement("div");
       card.className = "card" + (api.status ? "" : " inactive");
       card.style.setProperty("--delay", (idx * 0.045 + 0.05) + "s");
-      card.innerHTML = `
+        card.innerHTML = `
 <div class="card-top">
   <span class="cat-badge">${cat}</span>
   ${api.status
-    ? `<span class="sdot on"></span>`
+    ? `<span class="online-badge"><span class="online-dot"></span>Online</span>`
     : `<span class="offline-badge"><span class="offline-dot"></span>Offline</span>`
   }
+</div>
 </div>
 <div class="card-name">${name}</div>
 <div class="card-desc">${api.description}</div>
@@ -339,20 +338,7 @@ function openModal(cat, name, api) {
   st.textContent = api.status ? "● Active" : "● Inactive";
   st.className = "mstatus " + (api.status ? "on" : "off");
 
-  const paramsEl = document.getElementById("mParams");
-  paramsEl.innerHTML = "";
-  const keys = Object.keys(api.params);
-
-  if (!keys.length) {
-    paramsEl.innerHTML = `<div class="no-params">— tidak ada parameter</div>`;
-  } else {
-    keys.forEach(k => {
-      const row = document.createElement("div");
-      row.className = "param-row";
-      row.innerHTML = `<span class="pk">${k}</span><span class="pv">${api.params[k]}</span>`;
-      paramsEl.appendChild(row);
-    });
-  }
+  const keys = Object.keys(api.params)
 
   const inputsEl = document.getElementById("mInputs");
   inputsEl.innerHTML = "";
@@ -485,54 +471,6 @@ ${lastResultJson}
     btn.disabled = false;
     spinner.style.display = "none";
     label.textContent = "▶  Run Request";
-  }
-}
-
-function toggleChat() {
-  chatOpen = !chatOpen;
-  document.getElementById("chatWindow").classList.toggle("open", chatOpen);
-}
-
-async function sendChat() {
-  const input = document.getElementById("chatInput");
-  const text = input.value.trim();
-  if (!text) return;
-  const msgs = document.getElementById("chatMsgs");
-  const typing = document.getElementById("chatTyping");
-
-  const userMsg = document.createElement("div");
-  userMsg.className = "msg user";
-  userMsg.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">${nowTime()}</div>`;
-  msgs.insertBefore(userMsg, typing);
-  input.value = "";
-  msgs.scrollTop = msgs.scrollHeight;
-  typing.style.display = "flex";
-
-  chatHistory.push({ role: "user", content: text });
-
-  try {
-    const res = await fetch(base() + "/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: chatHistory })
-    });
-    const json = await res.json();
-    typing.style.display = "none";
-
-    const reply = json.result || "Maaf, terjadi kesalahan.";
-    chatHistory.push({ role: "assistant", content: reply });
-
-    const botMsg = document.createElement("div");
-    botMsg.className = "msg bot";
-    botMsg.innerHTML = `<div class="msg-bubble">${reply}</div><div class="msg-time">${nowTime()}</div>`;
-    msgs.insertBefore(botMsg, typing);
-    msgs.scrollTop = msgs.scrollHeight;
-  } catch (e) {
-    typing.style.display = "none";
-    const botMsg = document.createElement("div");
-    botMsg.className = "msg bot";
-    botMsg.innerHTML = `<div class="msg-bubble">Gagal terhubung ke server.</div><div class="msg-time">${nowTime()}</div>`;
-    msgs.insertBefore(botMsg, typing);
   }
 }
 
@@ -1419,3 +1357,63 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 800);
   }, 8000);
 })();
+
+let _currentApikey = "";
+
+async function loadProfile() {
+  const reqEl = document.getElementById("profileRequest");
+  const statusEl = document.getElementById("profileStatus");
+  const apikeyEl = document.getElementById("profileApikeyInline");
+  if (!reqEl) return;
+
+  try {
+    const res = await fetch(base() + "/api/account/me");
+    const json = await res.json();
+    if (!json.status) throw new Error("gagal");
+
+    const r = json.result;
+    _currentApikey = r.apikey;
+
+    reqEl.textContent = `${r.usedToday} / ${r.limitPerDay} hari ini`;
+
+    const isBanned = r.banned === true;
+    statusEl.textContent = isBanned ? "Banned" : "Active";
+    statusEl.className = "profile-stat-value " + (isBanned ? "status-banned" : "status-active");
+
+    apikeyEl.textContent = r.apikey;
+  } catch (e) {
+    reqEl.textContent = "—";
+    statusEl.textContent = "—";
+    apikeyEl.textContent = "Gagal memuat";
+  }
+}
+
+document.addEventListener("click", (e) => {
+  if (e.target.id !== "apikeyCopyBtn") return;
+  if (!_currentApikey) return;
+  navigator.clipboard.writeText(_currentApikey).then(() => {
+    const btn = e.target;
+    const original = btn.textContent;
+    btn.textContent = "Copied!";
+    setTimeout(() => { btn.textContent = original; }, 1500);
+  });
+});
+
+function setThema(thema) {
+  document.body.setAttribute("data-thema", thema);
+  localStorage.setItem("coreApiThema", thema);
+  document.querySelectorAll(".thema-toggle-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.thema === thema);
+  });
+}
+
+(() => {
+  const saved = localStorage.getItem("coreApiThema");
+  if (saved) document.body.setAttribute("data-thema", saved);
+})();
+
+const _origShowPage = showPage;
+showPage = function(name) {
+  _origShowPage(name);
+  if (name === "setting") loadProfile();
+};
