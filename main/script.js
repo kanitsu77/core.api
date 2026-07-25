@@ -188,7 +188,7 @@ function renderGrid() {
 }
 
 function buildUrlRaw(api) {
-  const keys = [...Object.keys(api.params), "apikey"];
+  const keys = Object.keys(api.params);
   const url = base() + "/" + api.path;
   if (!keys.length) return url;
   const filled = {};
@@ -201,7 +201,7 @@ function buildUrlRaw(api) {
 }
 
 function buildUrlHtml(api) {
-  const keys = [...Object.keys(api.params), "apikey"];
+  const keys = Object.keys(api.params);
   let html = `<span class="ep-base">${base()}/</span><span class="ep-name">${api.path}</span>`;
   if (!keys.length) return html;
   html += `<span class="ep-q">?</span>`;
@@ -338,21 +338,29 @@ function openModal(cat, name, api) {
   st.textContent = api.status ? "● Active" : "● Inactive";
   st.className = "mstatus " + (api.status ? "on" : "off");
 
-  const inputsEl = document.getElementById("mInputs");
-  inputsEl.innerHTML = "";
+  const paramsEl = document.getElementById("mParams");
+  paramsEl.innerHTML = "";
   const keys = Object.keys(api.params);
 
+  if (!keys.length) {
+    paramsEl.innerHTML = `<div class="no-params">— tidak ada parameter</div>`;
+  } else {
+    keys.forEach(k => {
+      const row = document.createElement("div");
+      row.className = "param-row";
+      row.innerHTML = `<span class="pk">${k}</span><span class="pv">${api.params[k]}</span>`;
+      paramsEl.appendChild(row);
+    });
+  }
+
+  const inputsEl = document.getElementById("mInputs");
+  inputsEl.innerHTML = "";
   keys.forEach(k => {
     const row = document.createElement("div");
     row.className = "input-row";
     row.innerHTML = `<label class="input-label">${k}</label><input class="tinput" id="inp_${k}" placeholder="${api.params[k]}" oninput="updatePreview()"/>`;
     inputsEl.appendChild(row);
   });
-
-  const apikeyRow = document.createElement("div");
-  apikeyRow.className = "input-row";
-  apikeyRow.innerHTML = `<label class="input-label">apikey <span style="color:var(--muted2)">(opsional)</span></label><input class="tinput" id="inp_apikey" placeholder="Kosongkan untuk pakai limit gratis" oninput="updatePreview()"/>`;
-  inputsEl.appendChild(apikeyRow);
 
   const tabsEl = document.getElementById("codeTabs");
   tabsEl.innerHTML = "";
@@ -1362,47 +1370,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 800);
   }, 8000);
 })();
-
-let _currentApikey = "";
-
-async function loadProfile() {
-  const reqEl = document.getElementById("profileRequest");
-  const statusEl = document.getElementById("profileStatus");
-  const apikeyEl = document.getElementById("profileApikeyInline");
-  if (!reqEl) return;
-
-  try {
-    const res = await fetch(base() + "/api/account/me");
-    const json = await res.json();
-    if (!json.status) throw new Error("gagal");
-
-    const r = json.result;
-    _currentApikey = r.apikey;
-
-    reqEl.textContent = `${r.usedToday} / ${r.limitPerDay} hari ini`;
-
-    const isBanned = r.banned === true;
-    statusEl.textContent = isBanned ? "Banned" : "Active";
-    statusEl.className = "profile-stat-value " + (isBanned ? "status-banned" : "status-active");
-
-    apikeyEl.textContent = r.apikey;
-  } catch (e) {
-    reqEl.textContent = "—";
-    statusEl.textContent = "—";
-    apikeyEl.textContent = "Gagal memuat";
-  }
-}
-
-document.addEventListener("click", (e) => {
-  if (e.target.id !== "apikeyCopyBtn") return;
-  if (!_currentApikey) return;
-  navigator.clipboard.writeText(_currentApikey).then(() => {
-    const btn = e.target;
-    const original = btn.textContent;
-    btn.textContent = "Copied!";
-    setTimeout(() => { btn.textContent = original; }, 1500);
-  });
-});
 
 function setThema(thema) {
   document.body.setAttribute("data-thema", thema);
