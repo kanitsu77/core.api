@@ -200,7 +200,7 @@
   },
 "All In One Downloader": {
    "status": true,
-   "path": "api/download/ai",
+   "path": "api/download/aio",
    "description": "Mendownload Video dan Image dari semua platform",
   "type": "json",
   "endpoint": "/api/download/aio",
