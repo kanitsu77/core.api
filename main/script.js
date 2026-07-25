@@ -188,7 +188,7 @@ function renderGrid() {
 }
 
 function buildUrlRaw(api) {
-  const keys = Object.keys(api.params);
+  const keys = [...Object.keys(api.params), "apikey"];
   const url = base() + "/" + api.path;
   if (!keys.length) return url;
   const filled = {};
@@ -201,7 +201,7 @@ function buildUrlRaw(api) {
 }
 
 function buildUrlHtml(api) {
-  const keys = Object.keys(api.params);
+  const keys = [...Object.keys(api.params), "apikey"];
   let html = `<span class="ep-base">${base()}/</span><span class="ep-name">${api.path}</span>`;
   if (!keys.length) return html;
   html += `<span class="ep-q">?</span>`;
@@ -342,12 +342,19 @@ function openModal(cat, name, api) {
 
   const inputsEl = document.getElementById("mInputs");
   inputsEl.innerHTML = "";
+  const keys = Object.keys(api.params);
+
   keys.forEach(k => {
     const row = document.createElement("div");
     row.className = "input-row";
     row.innerHTML = `<label class="input-label">${k}</label><input class="tinput" id="inp_${k}" placeholder="${api.params[k]}" oninput="updatePreview()"/>`;
     inputsEl.appendChild(row);
   });
+
+  const apikeyRow = document.createElement("div");
+  apikeyRow.className = "input-row";
+  apikeyRow.innerHTML = `<label class="input-label">apikey <span style="color:var(--muted2)">(opsional)</span></label><input class="tinput" id="inp_apikey" placeholder="Kosongkan untuk pakai limit gratis" oninput="updatePreview()"/>`;
+  inputsEl.appendChild(apikeyRow);
 
   const tabsEl = document.getElementById("codeTabs");
   tabsEl.innerHTML = "";
