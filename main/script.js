@@ -338,8 +338,6 @@ function openModal(cat, name, api) {
   st.textContent = api.status ? "● Active" : "● Inactive";
   st.className = "mstatus " + (api.status ? "on" : "off");
 
-  const keys = Object.keys(api.params)
-
   const inputsEl = document.getElementById("mInputs");
   inputsEl.innerHTML = "";
   const keys = Object.keys(api.params);
