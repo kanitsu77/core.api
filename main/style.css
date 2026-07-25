@@ -1669,9 +1669,11 @@ body {
 .lp-navbar{
   position:sticky;top:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
-  padding:14px 24px;background:rgba(5,5,8,.9);
+  padding:14px 24px;background:var(--navbar-bg);
   backdrop-filter:blur(16px);border-bottom:1px solid var(--border);
+  transition:background .3s;
 }
+
 .lp-nav-brand{display:flex;align-items:center;gap:7px;font-size:1rem;font-weight:700;letter-spacing:-.03em}
 .lp-nav-links{display:flex;gap:6px}
 .lp-nav-link{
@@ -2173,4 +2175,8 @@ body[data-thema="light"] .profile-card,
 body[data-thema="light"] .stats-box,
 body[data-thema="light"] .acc-item{
   box-shadow:0 1px 3px rgba(124,106,247,.08), 0 4px 12px rgba(124,106,247,.04);
+}
+body[data-thema="light"] .lp-hero-glow,
+body[data-thema="light"] .hero-glow{
+  opacity:.35;
 }
