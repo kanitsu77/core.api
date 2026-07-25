@@ -197,7 +197,19 @@
     "params": {
       "url": "Masukkan URL video atau slideshow TikTok"
     }
+  },
+"All In One Downloader": {
+   "status": true,
+   "path": "api/download/ai",
+   "description": "Mendownload Video dan Image dari semua platform",
+  "type": "json",
+  "endpoint": "/api/download/aio",
+  "method": "GET",
+  "params": {
+    "url": "Masukan url platform"
   }
+}
+    
   },
   "INFO": {
     "API Info": {
