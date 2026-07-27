@@ -338,20 +338,7 @@ function openModal(cat, name, api) {
   st.textContent = api.status ? "● Active" : "● Inactive";
   st.className = "mstatus " + (api.status ? "on" : "off");
 
-  const paramsEl = document.getElementById("mParams");
-  paramsEl.innerHTML = "";
   const keys = Object.keys(api.params);
-
-  if (!keys.length) {
-    paramsEl.innerHTML = `<div class="no-params">— tidak ada parameter</div>`;
-  } else {
-    keys.forEach(k => {
-      const row = document.createElement("div");
-      row.className = "param-row";
-      row.innerHTML = `<span class="pk">${k}</span><span class="pv">${api.params[k]}</span>`;
-      paramsEl.appendChild(row);
-    });
-  }
 
   const inputsEl = document.getElementById("mInputs");
   inputsEl.innerHTML = "";
@@ -394,6 +381,7 @@ function openModal(cat, name, api) {
   document.querySelector(".modal-inner").scrollTop = 0;
   document.getElementById("overlay").classList.add("open");
 }
+
 
 function closeModal() {
   document.getElementById("overlay").classList.remove("open");
